@@ -1,6 +1,9 @@
 //import {_loadjQueryCSV} from "./jQueryCSV.js";
 import "jquery-csv";
 
+// Dictionary of named tables
+var tables = {};
+
 // The TABLE class contains an 2x2 Array-Object and defines Item, Group and Label
 class Table {
     constructor(table) {
@@ -39,6 +42,17 @@ class Table {
     }
 }
 
+
+// Adds a table to the dictionary
+PennController.AddTable = function(name, table) {
+    if (typeof(name)!="string"||typeof(table)!="string")
+        return console.log("ERROR: tables and table names should be strings");
+    if (!Object.keys(tables).length)
+        PennController.defaultTable = table;
+    tables[name] = table;
+}
+
+
 // The main function
 // PennController.FeedItems("table.csv",        // Optional, or reference to a Table object
 //     (row) => PennController(                 // Or () => ["Message", {...}, "PennController", PennController(...)]
@@ -48,13 +62,11 @@ class Table {
 //         ,
 //         p.key("FJ")
 //     )    
-PennController.FeedItems = function (param1, param2) {
+PennController.FeedItems = function (tableName, func) {
+    let table;
     // Looks for a CSV file defining a datasource in chunk_includes
     function _smartTableDetection() {
         function _checkTable(table){
-            // Load the jQuery-CSV plugin
-            // if (!$.csv)
-            //     _loadjQueryCSV();
             table = $.csv.toObjects(table);
             // Checking that there is more than one column
             if (Object.keys(table[0]).length > 1)
@@ -154,20 +166,28 @@ PennController.FeedItems = function (param1, param2) {
         }
         return items;
     }
-    // No table specified, try to automatically detect
-    if (param1 instanceof Function && param2 == undefined) {
-        let table = _smartTableDetection();
+    // No table name specified, try to automatically detect
+    if (tableName instanceof Function) {
+        func = tableName;
+        table = _smartTableDetection();
         if (table == Abort)
             return Abort;
         table = new Table(table);
-        if (!(window.items instanceof Array))
-            window.items = [];
-        window.items = window.items.concat(_getItemsFrom(table, param1));
-        //return _getItemsFrom(table, param1);
     }
-    else {
-        if (typeof(param1) == "string")
-            return Abort;
-        // else if (param1 instanceof PennController.Table)
+    // Table name was specified
+    else if (typeof(tableName)=="string") {
+        // Check that it has been added
+        if (tables.hasOwnProperty(tableName))
+            table = new Table(tables[tableName]);
+        // If not, return an error
+        else
+            return console.log("ERROR: no table found with name "+tableName);
     }
+    else
+        return console.log("ERROR: bad format for FeedItems' first argument (should be table name or function from rows to Ibex elements)");
+    // If 'items' not created yet, create it
+    if (!(window.items instanceof Array))
+        window.items = [];
+    // Feed table and func to _getItemsFrom, and append it to items
+    window.items = window.items.concat(_getItemsFrom(table, func));
 };

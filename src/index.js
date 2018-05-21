@@ -29,8 +29,8 @@ import "./instructions/voice.js";       // Uses JSZip
 import "./instructions/youtube.js";     // Uses code from Google
 
 
-// Table feeding
-import "./feedTable.js";      // Uses jQuery-CSV extension
+// Table handling
+import "./tables.js";                   // Uses jQuery-CSV extension
 
 
 // IBEX controller
