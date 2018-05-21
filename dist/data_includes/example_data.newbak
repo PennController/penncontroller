@@ -1,0 +1,214 @@
+var shuffleSequence = seq("testCanvas", "testISH", "testYT", "testBig");
+
+// Preloading two zip files
+PennController.PreloadZip("http://files.lab.florianschwarz.net/ibexfiles/PsEntAliens/Images.zip",
+                          "http://files.lab.florianschwarz.net/ibexfiles/PennController/StopSentences.zip");
+
+PennController.AddHost("http://files.lab.florianschwarz.net/ibexfiles/Pictures/");
+
+// Much quicker to type t than to type PennController.instruction each time
+var t = PennController.instruction;
+
+// Setting items is standard
+var items = [
+
+  ["testCanvas", "PennController", PennController(t.key())],
+
+  //  THIS ITEM TESTS CANVAS
+  //
+  ["testCanvas", "PennController", PennController(
+
+      t.canva(400, 200)
+          .put(  canvaImgBakery  = t("bakery.png"    ).resize(200,200)  ,    0, 0, 0 )
+          .put(  canvaImgCovered = t("CoveredBox.jpg").resize(200,200)  ,  200, 0, 2 ) // covering beach (2)
+          .put(  canvaImgBeach   = t("beach.png"     ).resize(200,200)  ,  200, 0, 1 ) // under covered (1)      
+      ,
+      canvaMsgClickHere = t("Click here to continue").click()
+      ,
+      canvaMsgClickHere.remove()
+      ,
+      canvaImgCovered.hide()
+      ,
+      t.selector( canvaImgBakery, canvaImgBeach )
+          .once()
+          .save()
+          .wait()
+      ,
+      t(500).wait()
+
+  )],
+
+  //  THIS ITEM TESTS REFERENCES TO YOUTUBE VIDEOS
+  //
+  ["testYT", "PennController", PennController(
+
+      t(
+          // Two Youtube videos side by side, but pause the second for now
+          t( ytMcGurk1 = t.yt("aFPtc8BVdJk").resize(300,150).wait() , ytMcGurk2 = t.yt("jUsC-psm_fI").resize(300,150).pause() )
+          ,
+          // Their labels
+          t( lblMcGurk1 = t("This one").hide()  ,  lblMcGurk2 = t("This one").hide() )
+      )
+      ,
+      // Now that first video is done playing, play the second video
+      ytMcGurk2.play().wait()
+      ,
+      // Reveal the labels
+      lblMcGurk1.hide(false) , lblMcGurk2.hide(false)
+      ,
+      t("<p>Which video did you find most convincing?</p>")
+      ,
+      // Click on one of the two "This one"'s
+      t.selector(lblMcGurk1.click(), lblMcGurk2.click()).wait()
+
+  )],
+
+
+  //  THIS ITEM TESTS REFERENCES TO DROPBOX AND EMBEDDED TABLES
+  //
+  ["testISH", "PennController", PennController(
+
+      // Centered text
+      t("My object is tall-ish").center()
+      ,
+      // Centered 500x200 image from Dropbox
+      t.image("https://www.dropbox.com/s/iu7hhpo3kqk6zem/arrow.png?raw=1").resize(500,50)
+                                                                          .center()
+      ,
+      // Centered 500x200 image from Dropbox
+      t.image("https://www.dropbox.com/s/mc9mpj5do49tx03/practicetrial1.png?raw=1").resize(500,200)
+                                                                                   .center()
+      ,
+      // Centered 2x2 table
+      t(
+          // First row: 'True' and 'False'
+          t( ansTrue = t("True") , ansFalse = t("False")  )
+          ,
+          // Second row: 'F' and 'J'
+          t(      t("F")         ,      t("J")            )
+
+      ).center()
+      ,
+      // Wait for a keypress on F or J to select True or False
+      // Disable clicks on 'True' and 'False'
+      // Selector disabled after making a choice ('once')
+      t.selector(ansTrue, ansFalse).keys("FJ")
+                                   .clickable(false)
+                                   .once()
+                                   .wait()
+      ,
+      // Allow 500ms to see the choice being framed
+      t(500).wait()
+
+  )],
+
+
+  //  THIS ITEM IS FOR GENERAL DEMONSTRATION
+  //  IT IS OVERLY COMPLICATED AND HOMOGENEOUS
+  //
+  // You call PennController instead of giving an object of options
+  ["testBig", "PennController", PennController(
+
+      // Simply add a line of text; setting a variable (msgPressToStart) for future reference
+      msgPressToStart = 
+        t("Press any key to start playing the sound")
+      ,
+      // Waiting for any keypress before continuing
+      keyAny = t.key()
+      ,
+      // Remove the text associated with the variable msgPressToStart
+      msgPressToStart.remove()
+      ,
+      msgWhileListening = 
+        t("Please wait while the audio is playing...")
+      ,
+      // Replace Ps with Fs in the instruction if the pressed key was F
+      t.if( keyAny.pressed("F"),
+              msgWhileListening.text("Flease wait while the audio is flaying...")
+      )
+      ,
+      // Play a WAV file (from the zip file) and wait until it's been played
+      t("23.wav").wait()
+                 .save()
+      //t("https://github.com/florianslab/PennControllerIbexRepository/raw/master/practice1.wav")
+        //.wait()//.save()
+      ,
+      msgWhileListening.remove()
+      ,
+      msgPleaseClick = 
+        t("Please click on the picture below")
+      ,
+      // Add an image on which you have to click before continuing (msgPleaseClick's text removed upon click)
+      imgBakery = 
+        t("http://files.lab.florianschwarz.net/ibexfiles/Pictures/bakery.png").click(msgPleaseClick.remove())
+      ,
+      // Reward the click with a "Good job!" fancy message
+      msgGoodjob = 
+        t("Good job!").shift(50, -75).css("background", "yellow")
+      ,
+      // Remove goodjob's message after 1500ms
+      t.timer(1500, msgGoodjob.remove())
+      ,
+      // This is executed right away (no WAIT instruction to the timer)
+      t("How do you like the PennController so far?")
+      ,
+      // Group three elements on the same line
+      scaleLine = 
+        t(
+              t("hate it"),
+              // Add a 5 radio button scale (and save the final choice)
+              radioScale = t.radioButtons('radios',5).save(),
+              t("love it")
+          )
+      ,
+      msgClickHere = 
+        t("Click here to continue.")
+          .click()  // Click the text before continuing
+          .when(
+                  radioScale.selected(), // Check that a radio button is selected
+                  t(
+                      // If not, add a warning message (flow does not proceed)
+                      msgWarning = t("Please select a response before proceeding.")
+                                    .css({color: "red", "font-weight": "bold"})
+                                    .move(scaleLine)
+                      ,
+                      // And remove the warning message upon click on the scale
+                      radioScale.click(msgWarning.remove())
+                  )
+          )
+      ,
+      msgClickHere.remove()
+      ,
+      t("Now please select one of the two pictures on the screen using your mouse.")
+      ,
+      imgBeach = 
+        t("beach.png")
+        //t("http://files.lab.florianschwarz.net/ibexfiles/Pictures/beach.png")
+      ,
+      // The images associated with the two variables now belong to a group
+      // Wait for one to be selected (by clicking -- default) before continuing
+      slcBakeryOrbeach = 
+        t.selector(imgBakery, imgBeach).wait()
+      ,
+      msgPressSpaceContinue = 
+        t("Press Space to continue")
+      ,
+      // Wait for a keypress on the spacebar before continuing
+      t.key(" ")
+      ,
+      msgPressSpaceContinue.remove()
+      ,
+      // Disable selection of images (choice is now final)
+      slcBakeryOrbeach.enable(false)
+      ,
+      // Play a sound from a distant URL
+      t("https://github.com/florianslab/PennControllerIbexRepository/raw/master/practice1.wav")
+      ,
+      t("Will you have time to read this text before the audio playback is cut off in the middle?")
+      ,
+      // Proceed after 500ms from the start of playback (no WAIT instruction to the audio)
+      t(1000).wait()
+
+  )]
+      
+];

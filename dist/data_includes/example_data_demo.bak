@@ -1,0 +1,170 @@
+var shuffleSequence = seq("SpeededChoice", "CoveredBox", "Youtube", "Audio");
+
+// Preloading a zip file
+PennController.PreloadZip("http://files.lab.florianschwarz.net/ibexfiles/PsEntAliens/Images.zip");
+
+// 
+PennController.AddHost("http://files.lab.florianschwarz.net/ibexfiles/Pictures/");
+
+// Much quicker to type t than to type PennController.instruction each time
+var istr = PennController.instruction;
+
+// Setting items is standard
+var items = [
+
+  ["SpeededChoice", "PennController", PennController(
+
+      // Initialize with 0 everywhere
+      istr(function(){
+          this.points = 0;
+          this.selectionTime = 0;
+          this.selectedInstruction = null;
+      })
+      ,
+      // A canva of 400x200 pixels
+      istr.canvas(400, 240)
+          .put(  istr.image("bakery.png", 200,200).id("imgBakery")  ,    0, 0 ) // A 200x200 image 'bakery.png' at (0,0)
+          .put(  istr.image("beach.png",  200,200).id("imgBeach")   ,  200, 0 ) // A 200x200 image 'bakery.png' at (200,0)
+          .put(  istr("F") , 100, 210 )
+          .put(  istr("J") , 300, 210 )
+      ,
+      // Wait for a click on Bakery or Beach (and save which one was clicked)
+      istr.selector( istr("imgBakery"), istr("imgBeach")  )
+          .id("selectorImages")
+          .keys("FJ")
+          .save()
+          .callback(
+              function(instruction){
+                  // Remember which instruction was selected
+                  this.selectedInstruction = instruction;
+                  // If BEACH, note down timestamp
+                  if (instruction == istr("imgBeach"))
+                    this.selectionTime = Date.now();                    
+                  // Else, add points (if beach selected before)
+                  else if (this.selectionTime)
+                    this.points += Date.now() - this.selectionTime;
+              }
+          )
+      ,
+      istr("Choose the right image!")
+      ,
+      istr(3000).wait()
+      ,
+      // Disable selector
+      istr("selectorImages").enable(false)
+      ,
+      // Add some text
+      istr("You earned X points").id("points")
+      ,
+      // Dynamic text
+      istr(function(){
+          // Add points if still left to add
+          if (this.selectedInstruction == istr("imgBeach"))
+            this.points += Date.now() - this.selectionTime;
+          // Print text (note RUN)
+          istr("points").text("You earned "+this.points+" points.").run();
+      })
+      ,
+      istr("Click here to continue").click()
+
+  )],
+
+
+  // TWO CLICKABLE PICTURES PRESENTED SIDE BY SIDE, ONE COVERED BY A BLACK LAYER
+  //    Exercise: add an instruction to click on one of the two pictures after the revealing
+  ["CoveredBox", "PennController", PennController(
+
+      // A canva of 400x200 pixels
+      istr.canvas(400, 200)
+          .put(  istr.image("bakery.png",    200,200).id("imgBakery")  ,    0, 0 ) // A 200x200 image 'bakery.png' at (0,0)
+          .put(  istr.image("beach.png",     200,200).id("imgBeach")   ,  200, 0 ) // A 200x200 image 'bakery.png' at (200,0)
+          .put(  istr.image("CoveredBox.jpg",200,200).id("imgCovered") ,  200, 0 ) // This image covers 'bakery.png'
+      ,
+      // Some text to be click on
+      istr("Click here to continue").id("msgClickHere")
+                                 .click()
+      ,
+      // Remove the text after click
+      istr("msgClickHere").remove()
+      ,
+      // And hide the image that was covering
+      istr("imgCovered").hide()
+      ,
+      // Wait for a click on Bakery or Beach (and save which one was clicked)
+      istr.selector( istr("imgBakery"), istr("imgBeach")  )
+          .once()
+          .save()
+          .wait()
+      ,
+      // Allow for 500ms to see feedback on which one was chosen
+      istr(500).wait()
+
+  )],
+
+  //  TWO YOUTUBE VIDEOS PRESENTED SIDE BY SIDE, PLAYED ONE AFTER THE OTHER
+  //      Exercise: reveal the labels only after the second has played
+  ["Youtube", "PennController", PennController(
+
+      istr(
+          // Two Youtube videos side by side
+          istr(   istr.yt("aFPtc8BVdJk").resize(300,150).id("ytMcGurk1") , istr.yt("jUsC-psm_fI").resize(300,150).id("ytMcGurk2")   )
+          ,
+          // Their labels
+          istr(  istr.text("This one").id("lblMcGurk1")  ,  istr.text("This one").id("lblMcGurk2")  )
+      )
+      ,
+      // Pause the second video right away
+      istr("ytMcGurk2").pause()
+      ,
+      // Wait until the end of the first video
+      istr("ytMcGurk1").wait()
+      ,
+      // Play the second video when the first has ended
+      istr("ytMcGurk2").play()
+                    .wait()
+      ,
+      istr("<p>Which video did you find more convincing?</p>")
+      ,
+      // Click on one of the two "This one"'s
+      istr.selector(  istr("lblMcGurk1") , istr("lblMcGurk2")  )
+          .save()
+          .wait()
+
+  )],
+
+
+
+  //  A SIMPLE LEXICAL DECISION TASK
+  //      Exercise: add a table with 'F' and 'J' in the first row and 'word' and 'not a word' in the second
+  //      Bonus: have 'word'/'not a word' appear framed after selection
+  ["Audio", "PennController", PennController(
+
+      istr("Please place your index fingers on the F and J keys and press one of them.").id("msgPlaceIndex")
+      ,
+      // Key instructions automatically wait before proceeding
+      istr.key("FJ")
+      ,
+      istr("msgPlaceIndex").remove()
+      ,
+      istr("Good. You will hear a sound now. Press F is you think it is a WORD; press J if you tink it is NOT A WORD.").id("msgWnW")
+      ,
+      istr("Press F or J when you are ready, and be all ears!").id("msgPressFJears")
+      ,
+      istr.key("FJ")
+      ,
+      istr("msgWnW").remove()
+      ,
+      istr("msgPressFJears").remove()
+      ,
+      // Play the audio file and wait before proceeding
+      istr("http://files.lab.florianschwarz.net/ibexfiles/LucyCate/LDSF/geel.mp3").wait()
+      ,
+      istr("Press F if you think what you heard is WORD; press J if you think it is NOT A WORD.")
+      ,
+      // Save which key is pressed
+      istr.key("FJ")
+          .save()
+
+  )]
+      
+];
