@@ -18,10 +18,8 @@ export var Ctrlr = {
 var functionsRunningOrder = [];
 // Import and call this function to add a change to the running order
 export function changeRunningOrder(func) {
-    if (func instanceof Function) {
-        console.log("Pushed a function to modify running order");
+    if (func instanceof Function)
         functionsRunningOrder.push(func);
-    }
     else
         return console.log("ERROR: changeRunningOrder only takes functions as parameters");
 };
@@ -45,7 +43,6 @@ export var PennController = function() {
     Ctrlr.building.id = id;
     Ctrlr.building.sequence = sequence;
     Ctrlr.list.push(Ctrlr.building);
-    console.log("Just added controller:", Ctrlr.building);
     // Resetting Ctrlr.building for next one
     Ctrlr.building = {};
     // ID is _instructions' length minus 2: we just pushed for NEXT controller
@@ -79,7 +76,15 @@ PennController.AddHost = function() {
 }
 
 // This allows the users to call the instruction methods as global functions
-PennController.RemovePrefix = function() {
+PennController.ResetPrefix = function(prefix) {
+    if (typeof(prefix)=="text"){
+        if (window[prefix])
+            return console.log("ERROR: prefix string already used for another JS object");
+        window[prefix] = {};
+        prefix = window[prefix];
+    }
+    else
+        prefix = window;
     for (let i in PennController.instructions)
-        window[i] = PennController.instructions[i];
+        prefix[i] = PennController.instructions[i];
 }

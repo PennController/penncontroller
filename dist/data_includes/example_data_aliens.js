@@ -6,12 +6,12 @@ PennController.PreloadZip("http://files.lab.florianschwarz.net/ibexfiles/PsEntAl
 
 PennController.AddHost("http://files.lab.florianschwarz.net/ibexfiles/Ex1Factives/Audio/");
 
-// Much quicker to type t than to type PennController.instruction each time
-var istr = PennController.instruction;
+// Much quicker to type p than to type PennController.instruction each time
+var p = PennController.instruction;
 
 var items = [
 
-  ["checkTest", "Message", {html: "Ceci est un test"}],
+  ["checkTest", "Message", {html: "This is a test"}],
 
   ["checkTest", "PennController", PennController.CheckPreload("test", 10)],
   ["checkItems", "PennController", PennController.CheckPreload(startsWith("Item"))],
@@ -22,13 +22,13 @@ var items = [
   
   ["test", "PennController", PennController(
 
-      istr.voiceRecorder()
+      p.voiceRecorder()
       ,
-      istr.image("planets.png")
+      p.image("planets.png")
       ,
-      istr.voiceRecorder()
+      p.voiceRecorder()
       ,
-      istr.key(" ")
+      p.key(" ")
 
   )]
 
@@ -40,33 +40,32 @@ PennController.FeedItems(
     // Refering to each row in the datasource as 'item'
     (item) => PennController(
 
-        istr.text("Group: "+item.group)
+        p.text("Group: "+item.group)
         ,
-        istr.canvas(60, 230)
+        p.canvas(60, 230)
             // First planet
-            .put( istr.image("alien_"+item.Alien1Planet1, 20, 50),   0, 0)
-            .put( istr.image(item.Alien2Planet1, 20, 50),   0, 60)
-            .put( istr.image(item.Alien3Planet1, 20, 50),   0, 120)
-            .put( istr.image(item.Alien4Planet1, 20, 50),   0, 180)
+            .put( p.image("alien_"+item.Alien1Planet1, 20, 50),   0, 0)
+            .put( p.image(item.Alien2Planet1, 20, 50),   0, 60)
+            .put( p.image(item.Alien3Planet1, 20, 50),   0, 120)
+            .put( p.image(item.Alien4Planet1, 20, 50),   0, 180)
             // Second planet
-            .put( istr.image("alien_"+item.Alien1Planet2, 20, 50),   30, 0)
-            .put( istr.image(item.Alien2Planet2, 20, 50),   30, 60)
-            .put( istr.image(item.Alien3Planet2, 20, 50),   30, 120)
-            .put( istr.image(item.Alien4Planet2, 20, 50),   30, 180)
+            .put( p.image("alien_"+item.Alien1Planet2, 20, 50),   30, 0)
+            .put( p.image(item.Alien2Planet2, 20, 50),   30, 60)
+            .put( p.image(item.Alien3Planet2, 20, 50),   30, 120)
+            .put( p.image(item.Alien4Planet2, 20, 50),   30, 180)
             // Third planet
-            .put( istr.image("alien_"+item.Alien1Planet3, 20, 50),   60, 0)
-            .put( istr.image(item.Alien2Planet3, 20, 50),   60, 60)
-            .put( istr.image(item.Alien3Planet3, 20, 50),   60, 120)
-            .put( istr.image(item.Alien4Planet3, 20, 50),   60, 180)
+            .put( p.image("alien_"+item.Alien1Planet3, 20, 50),   60, 0)
+            .put( p.image(item.Alien2Planet3, 20, 50),   60, 60)
+            .put( p.image(item.Alien3Planet3, 20, 50),   60, 120)
+            .put( p.image(item.Alien4Planet3, 20, 50),   60, 180)
         ,
-        istr.text(item.AgainSentence)
+        p.text(item.AgainSentence)
         ,
-        istr.audio("thought_bike.mp3")
-        //istr.audio("w_beer_R.wav")
+        p.audio("thought_bike.mp3")
             .record("play","end")
             .wait()
         ,
-        istr.key("FJ")
+        p.key("FJ")
 
     )
 

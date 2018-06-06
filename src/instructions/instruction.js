@@ -27,7 +27,7 @@ export class Instruction {
         if (!Ctrlr.building.hasOwnProperty("instructions"))
             Ctrlr.building.instructions = [];
         Ctrlr.building.instructions.push(this);
-        console.log("Created a new instruction, adding to controller:", Ctrlr.building);
+        //console.log("Created a new instruction, adding to controller:", Ctrlr.building);
     }
 
     // Adds this's element to a given element

@@ -21,6 +21,7 @@ module.exports = {
       Abort: ['controller', 'Abort'],
       PennController: ['controller', 'PennController'],
       Ctrlr: ['controller', 'Ctrlr'],
+      Block: ['block', 'Block'],
       Instruction: ['instruction', 'Instruction'],
     })
   ]

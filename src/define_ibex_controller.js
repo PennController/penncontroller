@@ -203,13 +203,8 @@ import { getChangeRunningOrder } from "./controller.js";
 
 // Apply any change to the running order
 window.modifyRunningOrder = function (ro) {
-    console.log("Running modifyRunningOrder");
     let functionsRunningOrder = getChangeRunningOrder();
-    console.log("Now going through...");
-    for (let i = 0; i < functionsRunningOrder.length; i++){
-        console.log("Modifying running order with a function");
+    for (let i = 0; i < functionsRunningOrder.length; i++)
         ro = functionsRunningOrder[i](ro);
-    }
-    console.log("New running order:", ro);
     return ro;
 }

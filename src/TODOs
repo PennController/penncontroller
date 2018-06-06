@@ -75,8 +75,6 @@ IDEA FOR RESTRUCTURING INSTRUCTIONS
                         .wait()
     )
 
-- Upload the recordings before __SendResults__
-    and provide a function to generate a link to download the archive?
 
 - Add a drag'n'drop function (and record the associated events)
 
@@ -85,8 +83,6 @@ IDEA FOR RESTRUCTURING INSTRUCTIONS
 - Add a VIDEO Instruction
 
 - Add a Tooltip Instruction
-
-- Add a VoiceRecorder Instruction
 
 - Mouse
     > Save mouse location on click events
@@ -119,7 +115,8 @@ IDEA FOR RESTRUCTURING INSTRUCTIONS
 - Add a MOUSE Instruction?
         > record position
 
-- Add support for HTML files to the t() function (chunk_includes)
+- Add support for HTML files to the PennController.instruction() function (chunk_includes)
+        > maybe rather a PennController.instruction.html()?
 
 - Integrate an instruction equivalent to the DashedSentence controller?
 
@@ -145,6 +142,12 @@ MAYBE
 - Add a first trial that measures latencies?
 
 
+DONE 
+- Upload the recordings before __SendResults__
+    and provide a function to generate a link to download the archive?
+
+DONE
+- Add a VoiceRecorder Instruction
 
 DONE
 - Create one copy of preloaded element PER INSTRUCTION
@@ -258,7 +261,8 @@ DONE
 
 
 NOTES
-
 - The 'class' keyword is not recognized by early versions of browsers (e.g. my Safari)
     create a copy of the file with other methods?
+    >> SOLVED with webpack (I think) but now problem with 'const'
+
 - Unpredictible bugs when same variable name used multiple times (e.g. YT video playback starts)

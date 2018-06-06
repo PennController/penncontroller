@@ -176,7 +176,6 @@ changeRunningOrder(function (ro) {
     }
     // If no manual upload detected, then add the upload controller before __SendResults__
     if (!manualUpload) {
-        console.log("No manual upload");
         let uploadElement = new DynamicElement("PennController", {custom: uploadRecordings});
         // If __SendResults__ was added manually, add upload controller before it
         if (sendResultsID[0]>=0)
@@ -185,7 +184,6 @@ changeRunningOrder(function (ro) {
         else 
             ro.push([uploadElement]);
     }
-    console.log("Returning ro from voice:", ro);
     return ro;
 });
 
