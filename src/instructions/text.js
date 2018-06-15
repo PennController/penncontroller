@@ -1,10 +1,11 @@
 // Adds a SPAN to the parent element
 // Done immediately
 class TextInstr extends Instruction {
-    constructor(text) {
-        super(text, "text");
+    constructor(id, text) {
+        super(id, text, "text");
         if (text != Abort) {
             this.setElement($("<span>").html(text));
+            let ti = this;
         }
     }
 
@@ -15,7 +16,7 @@ class TextInstr extends Instruction {
     run() {
         if (super.run() == Abort)
             return Abort;
-        this._addElement(this.parentElement);
+        //this._addElement(this.parentElement);
         this.done();
     }
 
@@ -34,4 +35,12 @@ class TextInstr extends Instruction {
     }
 }
 
-PennController.instruction.text = function(text){ return new TextInstr(text); };
+
+
+TextInstr._setDefaultsName("text");
+
+PennController.instruction.newText = function(id, text){ 
+    return TextInstr._newDefault(new TextInstr(id, text));
+};
+
+PennController.instruction.getText = function(id){ return PennController.instruction(id); };

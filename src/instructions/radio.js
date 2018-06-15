@@ -1,8 +1,8 @@
 // Adds a radio scale to the parent element
 // Done immediately
 class RadioInstr extends Instruction {
-    constructor(label, length) {
-        super({label: label, length: length}, "radio");
+    constructor(id, label, length) {
+        super(id, {label: label, length: length}, "radio");
         if (label != Abort) {
             this.label = label;
             this.length = length;
@@ -111,4 +111,11 @@ class RadioInstr extends Instruction {
     }
 }
 
-PennController.instruction.radioButtons = function(label, length){ return new RadioInstr(label, length); };
+
+RadioInstr._setDefaultsName("scale");
+
+PennController.instruction.newScale = function(id, label, length){ 
+    return RadioInstr._newDefault(new RadioInstr(id, label, length));
+};
+
+PennController.instruction.getScale = function(id){ return PennController.instruction(id); };

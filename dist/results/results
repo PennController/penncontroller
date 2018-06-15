@@ -10792,3 +10792,35 @@
 # 8. VoiceRecordingsFilename.
 # 9. UploadStatus.
 1526919492,b52b2efc426e3f041d19dda23c4dfcbf,PennController,DYNAMIC,DYNAMIC,DYNAMIC,DYNAMIC,msr-2018-05-21T16-18-11-738Z.zip,Success
+#
+# Results on Monday June 11 2018 16:19:35 UTC.
+# USER AGENT: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:60.0) Gecko/20100101 Firefox/60.0
+# Design number was non-random = 48
+#
+# The lines below this comment are in groups of 2.
+# The formats of the lines in each of these groups are as follows:
+#
+# Line 1:
+#     Col. 1: Time results were received.
+#     Col. 2: MD5 hash of participant's IP address.
+#     Col. 3: Controller name.
+#     Col. 4: Item number.
+#     Col. 5: Element number.
+#     Col. 6: Type.
+#     Col. 7: Group.
+#     Col. 8: Parameter.
+#     Col. 9: Value.
+#     Col. 10: Time.
+#     Col. 11: Comment.
+# Line 2:
+#     Col. 1: Time results were received.
+#     Col. 2: MD5 hash of participant's IP address.
+#     Col. 3: Controller name.
+#     Col. 4: Item number.
+#     Col. 5: Element number.
+#     Col. 6: Type.
+#     Col. 7: Group.
+#     Col. 8: VoiceRecordingsFilename.
+#     Col. 9: UploadStatus.
+1528733976,a18efa2d7af0ada4dc6182f87e670a49,PennController,4,0,test,NULL,Page,End,1528733975559,NULL
+1528733976,a18efa2d7af0ada4dc6182f87e670a49,PennController,DYNAMIC,DYNAMIC,DYNAMIC,DYNAMIC,msr-2018-06-11T16-19-35-568Z.zip,Success

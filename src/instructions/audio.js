@@ -3,15 +3,15 @@ import {_autoPreloadAudio, _instructionsToPreload} from "../preload/preload.js";
 // Adds an AUDIO to the parent element
 // Done immediately
 class AudioInstr extends Instruction {
-    constructor(file) {
-        super(file, "audio");
+    constructor(id, file) {
+        super(id, file, "audio");
         if (file != Abort) {
             if (!file.match(/\.(ogg|wav|mp3)$/i)) {
                 console.log("Error: "+file+" is not a valid audio file.");
                 return Abort;
             }
-            // Autoplay by default
-            this.autoPlay = true;
+            // Autoplay false by default
+            this.autoPlay = false;
             // Do not show controls by default
             this.controls = false;
             // Will be set to true when playback ends
@@ -109,6 +109,15 @@ class AudioInstr extends Instruction {
     // ========================================
     // METHODS RETURNING NEW INSTRUCTIONS
     // ========================================
+
+    // Returns an instruction to play the audio
+    // Done immediately
+    play() {
+        return this.newMeta(function(){
+            this.origin.audio[0].play();
+            this.done();
+        })           
+    }
 
     // Returns an instruction to show the audio (and its controls)
     // Done immediately
@@ -209,4 +218,11 @@ class AudioInstr extends Instruction {
     }
 }
 
-PennController.instruction.audio = function(audio){ return new AudioInstr(audio); };
+
+AudioInstr._setDefaultsName("audio");
+
+PennController.instruction.newAudio = function(id, audio){ 
+    return AudioInstr._newDefault(new AudioInstr(id, audio));
+};
+
+PennController.instruction.getAudio = function(id){ return PennController.instruction(id); };

@@ -12,8 +12,8 @@
 // Runs all instructions passed as arguments
 // Done immediately
 class ComplexInstr extends Instruction {
-    constructor(instructions) {
-        super(instructions, "complex");
+    constructor(id, instructions) {
+        super(id, instructions, "complex");
         if (instructions != Abort) {
             this.table = $("<table>").addClass("PennController-Complex");
             // The instructions still to be done (initial state: all of them)
@@ -151,4 +151,11 @@ class ComplexInstr extends Instruction {
     }
 }
 
-PennController.instruction.sequence = function(){ return new ComplexInstr(arguments); };
+
+ComplexInstr._setDefaultsName("sequence");
+
+PennController.instruction.newSequence = function(id, ...rest){ 
+    return ComplexInstr._newDefault(new ComplexInstr(id, rest));
+};
+
+PennController.instruction.getSequence = function(id){ return PennController.instruction(id); };

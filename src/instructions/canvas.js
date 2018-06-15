@@ -1,8 +1,8 @@
 // Adds a Canvas where you can place multiple instructions
 // Done immediately
 class CanvasInstr extends Instruction {
-    constructor(w,h) {
-        super({width: w, height: h}, "canvas");
+    constructor(id, w, h) {
+        super(id, {width: w, height: h}, "canvas");
         if (w != Abort) {
             if (typeof(w) != "number" || typeof(h) != "number" || w < 0 || h < 0)
                 return Abort;
@@ -28,13 +28,13 @@ class CanvasInstr extends Instruction {
             }
             // If instruction has not been run yet, run it
             if (!origin.hasBeenRun) {
-                origin.run();
                 origin.done = origin.extend("done", function(){
                     origin.element.css({position: "absolute", left: object[1], top: object[2], "z-index": object[3]});
                 });
+                origin.run();
             }
         }
-        this._addElement(this.parentElement);
+        //this._addElement(this.parentElement);
         this.done();
     }
 
@@ -81,14 +81,40 @@ class CanvasInstr extends Instruction {
     // METHODS RETURNING NEW INSTRUCTIONS
     // ========================================
 
-    // Returns an instruction to add/update an instruction on the canvas at (X,Y)
+
+    // Returns an insturction to print the canvas
     // Done immediately
-    put(instruction, x, y, z) {
+    print(which) {
+        let s = super.print();
         return this.newMeta(function(){
-            this.origin._addObject(instruction, x, y, z);
+            if (typeof(which)=="undefined"||which=="all") {
+                for (let o in this.origin.objects) {
+                    if (this.origin.objects[o][0] instanceof Instruction)
+                        this.origin.objects[o][0].origin.print().run();
+                }
+            }
+            s.run();
             this.done();
         });
     }
 }
 
-PennController.instruction.canvas = function(width, height){ return new CanvasInstr(width, height); };
+// SETTINGS instructions
+CanvasInstr.prototype.settings = {
+    // Returns an instruction to add/update an instruction on the canvas at (X,Y)
+    add: function(x,y,instruction,z){
+        return this.newMeta(function(){
+            this.origin._addObject(instruction, x, y, z);
+            this.done();
+        });
+    }
+};
+
+
+CanvasInstr._setDefaultsName("canvas");
+
+PennController.instruction.newCanvas = function(id, width, height){ 
+    return CanvasInstr._newDefault(new CanvasInstr(id, width, height));
+};
+
+PennController.instruction.getCanvas = function(id){ return PennController.instruction(id); };

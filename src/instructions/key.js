@@ -1,8 +1,8 @@
 // Binds a keypress event to the document
 // Done upon keypress
 class KeyInstr extends Instruction {
-    constructor(keys, caseSensitive) {
-        super(keys, "key");
+    constructor(id, keys, caseSensitive) {
+        super(id, keys, "key");
         if (keys != Abort) {
             this.setElement($("<key>"));
             this.keys = [];
@@ -32,6 +32,7 @@ class KeyInstr extends Instruction {
     // ========================================
 
     // Adds key press event
+    // Done immediately
     run() {
         if (super.run() == Abort)
             return Abort;
@@ -40,6 +41,7 @@ class KeyInstr extends Instruction {
             if (ti.keys.length==0 || ti.keys.indexOf(e.keyCode)>=0)
                 ti._pressed(e.keyCode);
         });
+        this.done();
     }
 
     // Validate WHEN in origin's PRESSED
@@ -49,11 +51,10 @@ class KeyInstr extends Instruction {
 
     // Called when the right (or any if unspecified) key is pressed
     _pressed(key) {
-        if (!this.isDone) {
-            this.origin.key = String.fromCharCode(key);
-            this.origin.time = Date.now();
-            this.origin.done();
-        }
+        if (this.origin.key)
+            return;
+        this.origin.key = String.fromCharCode(key);
+        this.origin.time = Date.now();
     }
 
     // ========================================
@@ -93,6 +94,25 @@ class KeyInstr extends Instruction {
             this.done();
         });
     }
+
+    // Returns an instruction to wait for the keypress before proceeding
+    // Done when key is pressed
+    wait() {
+        return this.newMeta(function(){
+            let ti = this;
+            if (this.origin.key)
+                this.done();
+            else
+                this.origin._pressed = this.origin.extend("_pressed", function(){ ti.done() });
+        });
+    }
 }
 
-PennController.instruction.key = function(keys){ return new KeyInstr(keys); };
+
+KeyInstr._setDefaultsName("key");
+
+PennController.instruction.newKey = function(id, keys){ 
+    return KeyInstr._newDefault(new KeyInstr(id, keys));
+};
+
+PennController.instruction.getKey = function(id){ return PennController.instruction(id); };

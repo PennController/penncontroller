@@ -30,8 +30,8 @@ $(document).ready(function(){
 // Adds a Youtube video
 // Done immediately
 class YTInstr extends Instruction {
-    constructor(code) {
-        super(code, "youtube");
+    constructor(id, code) {
+        super(id, code, "youtube");
         if (code != Abort){
             let ti = this;
             // This function creates a player through the YT API
@@ -271,4 +271,11 @@ class YTInstr extends Instruction {
     }
 }
 
-PennController.instruction.yt = function(code){ return new YTInstr(code); };
+
+YTInstr._setDefaultsName("youtube");
+
+PennController.instruction.newYoutube = function(id, code){ 
+    return YTInstr._newDefault(new YTInstr(id, code));
+};
+
+PennController.instruction.getYoutube = function(id){ return PennController.instruction(id); };

@@ -85,6 +85,6 @@ PennController.ResetPrefix = function(prefix) {
     }
     else
         prefix = window;
-    for (let i in PennController.instructions)
-        prefix[i] = PennController.instructions[i];
+    for (let i in PennController.instruction)
+        prefix[i] = PennController.instruction[i];
 }

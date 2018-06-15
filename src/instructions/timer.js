@@ -3,8 +3,8 @@
 // Adds a timer
 // Done immediately
 class TimerInstr extends Instruction {
-    constructor(delay, callback) {
-        super(delay, "timer");
+    constructor(id, delay, callback) {
+        super(id, delay, "timer");
         if (delay != Abort){
             this.delay = delay;
             this.setElement($("<timer>"));
@@ -31,7 +31,7 @@ class TimerInstr extends Instruction {
                 ti._elapsed();
             }
         }, this.step);*/
-        this.timer = setTimeout(function(){ ti._elapsed(); }, this.delay);
+        //this.timer = setTimeout(function(){ ti._elapsed(); }, this.delay);
         //_setCtrlr("timers", Ctrlr.running.timers.concat([this.timer]));
         Ctrlr.running.timers.push(this.timer);
         this.done();
@@ -39,18 +39,28 @@ class TimerInstr extends Instruction {
 
     // Called when timer has elapsed
     _elapsed() {
-        this.cleared = true;
-        if (this.callback instanceof Function)
-            this.callback();
-        else if (this.callback instanceof Instruction) {
-            this.callback.parentElement = Ctrlr.running.element;
-            this.callback.run();
+        this.origin.cleared = true;
+        if (this.origin.callback instanceof Function)
+            this.origin.callback();
+        else if (this.origin.callback instanceof Instruction) {
+            this.origin.callback.parentElement = Ctrlr.running.element;
+            this.origin.callback.run();
         }
     }
 
     // ========================================
     // METHODS RETURNING NEW INSTRUCTIONS
     // ========================================
+
+    // Returns an instruction to start the timer
+    // Done immediately
+    start() {
+        return this.newMeta(function(){
+            let origin = this.origin;
+            origin.timer = setTimeout(function(){ origin._elapsed(); }, origin.delay);
+            this.done();
+        });
+    }
 
     // Returns an instruction that prematurely stops the timer
     // Done immediately
@@ -86,7 +96,7 @@ class TimerInstr extends Instruction {
                 else if (callback instanceof Instruction && !callback.hasBeenRun)
                     callback.run();
             };
-            if (cleared)
+            if (this.origin.cleared)
                 timerCleared();
             else
                 this.origin._elapsed = this.origin.extend("_elapsed", timerCleared);
@@ -94,4 +104,12 @@ class TimerInstr extends Instruction {
     }
 }
 
-PennController.instruction.timer = function(delay, callback){ return new TimerInstr(delay, callback); };
+
+
+TimerInstr._setDefaultsName("timer");
+
+PennController.instruction.newTimer = function(id, delay, callback){ 
+    return TimerInstr._newDefault(new TimerInstr(id, delay, callback));
+};
+
+PennController.instruction.getTimer = function(id){ return PennController.instruction(id); };

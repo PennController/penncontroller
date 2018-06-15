@@ -3,8 +3,8 @@ import {_autoPreloadImages} from "../preload/preload.js";
 // Adds an IMG to the parent element
 // Done immediately
 class ImageInstr extends Instruction {
-    constructor(image, width, height) {
-        super(image, "image");
+    constructor(id, image, width, height) {
+        super(id, image, "image");
         if (image != Abort) {
             let div = $("<div>").css("display", "inline-block");
             if (typeof(width) == "number" && typeof(height) == "number")
@@ -28,7 +28,7 @@ class ImageInstr extends Instruction {
         if (super.run() == Abort)
             return Abort;
         //this.element.append(this.image);
-        this._addElement(this.parentElement);
+        //this._addElement(this.parentElement);
         this.done();
     }
 
@@ -64,4 +64,11 @@ class ImageInstr extends Instruction {
     }
 }
 
-PennController.instruction.image = function(image, width, height){ return new ImageInstr(image, width, height); };
+
+ImageInstr._setDefaultsName("image");
+
+PennController.instruction.newImage = function(id, image, width, height){ 
+    return ImageInstr._newDefault(new ImageInstr(id, image, width, height));
+};
+
+PennController.instruction.getImage = function(id){ return PennController.instruction(id); };

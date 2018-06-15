@@ -20,7 +20,13 @@ define_ibex_controller({
             if (_t.options.hasOwnProperty("custom") && _t.options.custom instanceof Function)
                 return _t.options.custom(_t);
 
-            _t.instructions = _t.options.instructions;
+            // Filtering out non-instructions
+            _t.instructions = [];
+            for (let i in _t.options.instructions) {
+                if (_t.options.instructions[i] instanceof Instruction)
+                    _t.instructions.push(_t.options.instructions[i]);
+            }
+            
             _t.id = _t.options.id;
 
             _t.toSave = [];

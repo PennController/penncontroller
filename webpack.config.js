@@ -7,7 +7,7 @@ module.exports = {
     filename: 'PennController.js',
     path: path.resolve(__dirname, 'dist/js_includes')
   },
-  //devtool: 'inline-source-map',
+  devtool: 'inline-source-map',
   resolve: {
     extensions: ['.js'],
     alias: {

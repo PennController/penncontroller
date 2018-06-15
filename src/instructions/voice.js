@@ -214,10 +214,9 @@ PennController.DownloadVoiceButton = function (text) {
 // Adds an VOICE to the parent element
 // Done immediately
 class VoiceRecorderInstr extends Instruction {
-    constructor(arg) {
-        super(arg, "voice");
+    constructor(id, arg) {
+        super(id, arg, "voice");
         if (arg != Abort) {
-
             this.recording = false;
 
             this.audioPlayer = document.createElement("audio");
@@ -365,4 +364,11 @@ class VoiceRecorderInstr extends Instruction {
     }
 }
 
-PennController.instruction.voiceRecorder = function(){ return new VoiceRecorderInstr(); };
+
+VoiceRecorderInstr._setDefaultsName("voiceRecorder");
+
+PennController.instruction.newVoiceRecorder = function(id){ 
+    return VoiceRecorderInstr._newDefault(new VoiceRecorderInstr(id));
+};
+
+PennController.instruction.getVoiceRecorder = function(id){ return PennController.instruction(id); };

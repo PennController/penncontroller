@@ -9,8 +9,7 @@ var _localInstructions = [{}];
 
 // The Instruction class itself
 export class Instruction {
-
-    constructor(content, type) {
+    constructor(id, content, type) {
         this.type = type;
         this.content = content;
         this.hasBeenRun = false;
@@ -22,13 +21,43 @@ export class Instruction {
         this.resource = null;
         // J provides with copies of the element's methods/attributes that return instructions/conditional functions
         this.j = {}
+        // Binding 'ti' (=this) to the SETTINGS and TEST functions (because they're objects *of an object* of the prototype)
+        let ti = this;
+        this.settings = {};
+        this.test = {};
+        // We take the chain into account
+        var constructorClass = this.constructor;
+        while (constructorClass != Object.getPrototypeOf(Function)) {
+            // Evaluate prototype now, as constructorClass will change at next loop
+            let proto = (function(p) { return p; })(constructorClass.prototype);
+            // Settings
+            for (let s in proto.settings){
+                // Add only if not already added at previous loop (= higher level of constructorClass)
+                if (!ti.settings.hasOwnProperty(s) && proto.settings[s] instanceof Function)
+                    ti.settings[s] = function(){ return proto.settings[s].apply(ti, arguments); };
+            }
+            // Test
+            for (let s in proto.test){
+                // Add only if not already added at previous loop (= higher level of constructorClass)
+                if (!ti.test.hasOwnProperty(s) && proto.test[s] instanceof Function)
+                    ti.test[s] = function(){ return proto.test[s].apply(ti, arguments); };
+            }
+            // Go up a level
+            constructorClass = Object.getPrototypeOf(constructorClass);
+        }
         //console.log("Created instruction of type "+type+" with "+this.content);
         // Add instruction to the current controller
         if (!Ctrlr.building.hasOwnProperty("instructions"))
             Ctrlr.building.instructions = [];
         Ctrlr.building.instructions.push(this);
         //console.log("Created a new instruction, adding to controller:", Ctrlr.building);
+        // Check that _localInstructions is up to date with list of PennControllers created so far
+        while (_localInstructions.length < Ctrlr.list.length+1)
+            _localInstructions.push({});
+        _localInstructions[_localInstructions.length-1][id] = this.origin;
+        this._id = id;
     }
+
 
     // Adds this's element to a given element
     _addElement(to, element, callback) {
@@ -291,7 +320,7 @@ export class Instruction {
     newMeta(callback, before) {
         // Maybe newMeta shouldn't pass on the source's content?
         //let source = this, instr = new this.origin.constructor(this.content);
-        let source = this, instr = new this.origin.constructor(Abort);
+        let source = this, instr = new this.origin.constructor("_newMeta_", Abort);
         // This will be called after source is run (actual running of this instruction)
         instr.sourceCallback = function(){
             // Cannot be run if sources not done yet
@@ -345,6 +374,17 @@ export class Instruction {
         return instr;
     }
 
+    // Prints the element on the screen
+    // Done immediately
+    print() {
+        return this.newMeta(function(){
+            this.origin._addElement(this.origin.parentElement);
+            if (this.origin._setAlignment)
+                this.origin.element.parent().css("text-align", this.origin._setAlignment);
+            this.done();
+        });
+    }
+
     // Returns an instruction to remove the element (if any)
     // Done immediately
     remove() {
@@ -369,15 +409,6 @@ export class Instruction {
                 else
                     origin.after(this.origin.element);
             }
-            this.done();
-        });
-    }
-
-    // Returns an instruction to resize the image to W,H
-    // Done immediately
-    resize(w,h) {
-        return this.newMeta(function(){
-            this.origin.element.css({width: w, height: h});
             this.done();
         });
     }
@@ -456,21 +487,149 @@ export class Instruction {
 
     // Returns an instruction to assign an id to the instruction
     // Done immediately
-    id(name) {
+    _setId(name) {
         _localInstructions[_localInstructions.length-1][name] = this.origin;
         this.origin._id = name;
         return this.newMeta(function(){ this.done(); });
     }
 }
 
-// Returns an instruction in function of the argument(s) type
+
+// SETTINGS instructions
+Instruction.prototype.settings = {
+    // Center the text on the screen
+    center: function(){
+        return this.newMeta(function(){
+            this.origin.element.css({"text-align": "center", margin: "auto"});
+            this.origin.element.parent().css("text-align","center");
+            this.origin._setAlignment = "center";
+            this.done();
+        });
+    }
+    ,
+    // Align the text to the left ot its container
+    left: function(){
+        return this.newMeta(function(){
+            this.origin.element.css({"text-align": "left", "margin-left": 0});
+            this.origin.element.parent().css("text-align","left");
+            this.origin._setAlignment = "left";
+            this.done();
+        });
+    }
+    ,
+    // Align the text to the right ot its container
+    right: function(){
+        return this.newMeta(function(){
+            this.origin.element.css({"text-align": "right", "margin-right": 0});
+            this.origin.element.parent().css("text-align","right");
+            this.origin._setAlignment = "right";
+            this.done();
+        });
+    }
+    ,
+    // Make the font bold-faced
+    bold: function(on){
+        return this.newMeta(function(){
+            if (on===false)
+                this.origin.element.css("font-weight", "normal");
+            else
+                this.origin.element.css("font-weight", "bold");
+            this.done();
+        });
+    }
+    ,
+    // Make the font italics
+    italic: function(on){
+        return this.newMeta(function(){
+            if (on===false)
+                this.origin.element.css("font-style","normal");
+            else
+                this.origin.element.css("font-style","italic");
+            this.done();
+        });
+    }
+    ,
+
+    // Returns an instruction to resize the image to W,H
+    // Done immediately
+    size: function(w,h) {
+        return this.newMeta(function(){
+            this.origin.element.css({width: w, height: h});
+            this.done();
+        });
+    }
+};
+
+
+
+// Handling default instructions
+// called for each instruction type (create handlers)
+Instruction._setDefaultsName = function(name) {
+    let ti = this;
+    ti._defaultInstructions = [];
+    // handler
+    PennController.instruction[name] = {defaults: {settings: {}}};
+    // We go up the chain
+    var constructorClass = ti;
+    while (constructorClass != Object.getPrototypeOf(Function)) {
+        // Evaluate prototype now, as constructorClass will change at next loop
+        let proto = (function(p) { return p; })(constructorClass.prototype);
+        // Actions
+        let instructionClassProperties = Object.getOwnPropertyNames(proto);
+        for (let index in instructionClassProperties){
+            let f = instructionClassProperties[index];
+            // Add only if not added at previous loop (i.e., at a higher instance level)
+            if (!PennController.instruction[name].defaults.hasOwnProperty(f) &&
+                proto[f] instanceof Function && !f.match(/^(_.+|constructor|done|run|extend|newMeta)$/)) {
+                PennController.instruction[name].defaults[f] = function(){
+                    ti._defaultInstructions.push([f, arguments]);
+                    return PennController.instruction[name].defaults;
+                };
+            }
+        }
+        // Settings
+        for (let s in proto.settings){
+            // Add only if not added at previous loop (i.e., at a higher instance level)
+            if (!PennController.instruction[name].defaults.settings.hasOwnProperty(s) &&
+                proto.settings[s] instanceof Function && !s.match(/^_/)) {
+                PennController.instruction[name].defaults.settings[s] = function(){
+                    ti._defaultInstructions.push(["settings."+s, arguments]);
+                    return PennController.instruction[name].defaults;
+                };
+            }
+        }
+        // Go up a level
+        constructorClass = Object.getPrototypeOf(constructorClass);
+    }
+}
+// called when an instance is created (applies the default instructions)
+Instruction._newDefault = function(instruction) {
+    if (Object.keys(this._defaultInstructions).length){
+        for (let f in this._defaultInstructions){
+            let name = this._defaultInstructions[f][0];
+            let args = this._defaultInstructions[f][1];
+            let isSettings = name.match(/^settings\.([^.]+)$/);
+            // if a setting
+            if (isSettings){
+                instruction = instruction.settings[isSettings[1]].apply(instruction, args);
+            }
+            else
+                instruction = instruction[name].apply(instruction, args);
+        }
+    }
+    return instruction;   
+}
+
+
+
+// Returns an instruction by its ID
 PennController.instruction = function(id) {
     if (typeof(id)!="string")
         return Abort;
-    // If there's an instrution referenced as ARG while EXECUTING a controller
-    if (Ctrlr.running && _localInstructions[Ctrlr.running.id].hasOwnProperty(arg))
-        return _localInstructions[Ctrlr.running.id][arg];
-    // If there's an instrution referenced as ARG while CREATING a controller
-    else if (!Ctrlr.running && _localInstructions[_localInstructions.length-1].hasOwnProperty(arg))
-        return _localInstructions[_localInstructions.length-1][arg];
+    // If there's an instrution referenced as ID while EXECUTING a controller
+    if (Ctrlr.running.hasOwnProperty("id") && _localInstructions[Ctrlr.running.id].hasOwnProperty(id))
+        return _localInstructions[Ctrlr.running.id][id];
+    // If there's an instrution referenced as ID while CREATING a controller
+    else if (!Ctrlr.running.hasOwnProperty("id") && _localInstructions[_localInstructions.length-1].hasOwnProperty(id))
+        return _localInstructions[_localInstructions.length-1][id];
 };
