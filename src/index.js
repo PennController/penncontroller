@@ -23,6 +23,7 @@ import "./instructions/save.js";
 //import "./instructions/screen.js";    // TBI
 import "./instructions/selector.js";
 import "./instructions/text.js";
+import "./instructions/textInput.js";
 import "./instructions/timer.js";
 //import "./instructions/tooltip.js";   // TBI
 import "./instructions/voice.js";       // Uses JSZip

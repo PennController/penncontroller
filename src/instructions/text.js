@@ -19,14 +19,11 @@ class TextInstr extends Instruction {
         //this._addElement(this.parentElement);
         this.done();
     }
+}
 
-    // ========================================
-    // METHODS RETURNING NEW INSTRUCTIONS
-    // ========================================
-
+TextInstr.prototype.settings = {
     // Changes the content
-    // Done immediately
-    text(text) {
+    text: function (text) {
         return this.newMeta(function(){
             this.origin.content = text;
             this.origin.element.html(text);
@@ -34,7 +31,6 @@ class TextInstr extends Instruction {
         })
     }
 }
-
 
 
 TextInstr._setDefaultsName("text");

@@ -24,6 +24,25 @@ var items = [
     ,
     canvas.defaults.settings.center()
     ,
+    newTextInput("text input")
+        .settings.before("I thought the weather was warm, but it really is ")
+        .settings.after("!")
+        .settings.once()
+        .print()
+        .wait()
+    ,
+    newScale("answer",    "", "", "neutral", "", "")
+            .settings.radio()   // We force a radio-button display
+            .settings.before("easy") // Text on the left
+            .settings.after("hard") // Text on the right
+            .settings.labels("top") // "neutral" will appear above the middle button
+            .print()
+            .wait()
+    ,
+    newScale("answer2",    "so easy", "fine", "hard", "impossible")
+            .print()
+            .wait()
+    ,
     newText("question", "Which patch do you find greener?")
         .print()
     ,

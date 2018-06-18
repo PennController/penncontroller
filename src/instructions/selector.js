@@ -15,6 +15,7 @@ class SelectorInstr extends Instruction {
             this.callbackFunction = null;
             this.setElement($("<div>").addClass("PennController-Selector"));
             this.selections = [];
+            this._frameCSS = "solid 2px green";
         }
     }
 
@@ -54,6 +55,8 @@ class SelectorInstr extends Instruction {
             ti.selectedInstruction = instruction.origin;
             // Add the 'selected' class to the element
             instruction.origin.element.addClass("PennController-selected");
+            if (ti._frameCSS.match(/^.+ .+ .+$/))
+                instruction.origin.element.css("outline", ti._frameCSS);
             // Go through the other instructions' elements and remove the class
             for (let i in ti.instructions) {
                 // If this is the selected instruction, inform to be able to save later
@@ -66,8 +69,10 @@ class SelectorInstr extends Instruction {
                         ti.selections.push([i, Date.now()]);
                 }
                 // If not the selected instruction, make sure it's not tagged as selected
-                else if (ti.instructions[i].origin.element != instruction.element)
+                else if (ti.instructions[i].origin.element != instruction.element){
                     ti.instructions[i].origin.element.removeClass("PennController-selected");
+                    ti.instructions[i].origin.element.css("outline", "none");
+                }
             }
             if (ti.callbackFunction instanceof Function)
                 ti.callbackFunction(instruction);
@@ -365,6 +370,13 @@ SelectorInstr.prototype.settings = {
                 let instruction = instructions[i];
                 this.origin._addInstruction(instruction);
             }
+            this.done();
+        });
+    }
+    ,
+    frame: function(css){
+        return this.newMeta(function(){
+            this.origin._frameCSS = css;
             this.done();
         });
     }

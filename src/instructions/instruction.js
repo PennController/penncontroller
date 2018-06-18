@@ -61,10 +61,13 @@ export class Instruction {
 
     // Adds this's element to a given element
     _addElement(to, element, callback) {
+        // If no destination element specified, use the controller's main level element (div)
         if (to == null)
             to = Ctrlr.running.element;
+        // If no to-add element specified, use the element of the current instruction
         if (element == null)
             element = this.element;
+        // The elements should be jQuery elements
         if (!(element instanceof jQuery) || !(to instanceof jQuery))
             return Abort;
         // If adding directly to the controller, embed in a DIV
@@ -85,7 +88,34 @@ export class Instruction {
                 childList: true
             });
         }
+        // Content to the left
+        if (this.origin._left){
+            let leftSpan = $("<span>").addClass("PennController-before");
+            if (this.origin._left instanceof Instruction) {
+                this.origin._left.origin.parentElement = leftSpan;
+                if (!this.origin._left.hasBeenRun)
+                    this.origin._left.run();
+                this.origin._left.origin.print().run();
+            }
+            else if (this.origin._left instanceof jQuery)
+                leftSpan.append(this.origin._left);
+            element.prepend(leftSpan);
+        }
+        // The element itself
         to.append(element);
+        // Content to the left
+        if (this.origin._right){
+            let rightSpan = $("<span>").addClass("PennController-after");
+            if (this.origin._right instanceof Instruction) {
+                this.origin._right.origin.parentElement = rightSpan;
+                if (!this.origin._right.hasBeenRun)
+                    this.origin._right.run();
+                this.origin._right.origin.print().run();
+            }
+            else if (this.origin._right instanceof jQuery)
+                rightSpan.append(this.origin._right);
+            element.append(rightSpan);
+        }
     }
 
     // Method to set the jQuery element
@@ -389,8 +419,23 @@ export class Instruction {
     // Done immediately
     remove() {
         return this.newMeta(function(){
+            // Content to the left
+            if (this.origin._left){
+                if (this.origin._left instanceof Instruction)
+                    this.origin._left.origin.element.detach();
+                else if (this.origin._left instanceof jQuery)
+                    this.origin._left.detach();
+            }
+            // The element itself
             if (this.origin.element instanceof jQuery) {
                 this.origin.element.detach();
+            }
+            // Content to the right
+            if (this.origin._right){
+                if (this.origin._right instanceof Instruction)
+                    this.origin._right.origin.element.detach();
+                else if (this.origin._right instanceof jQuery)
+                    this.origin._right.detach();
             }
             this.done();
         });
@@ -413,17 +458,6 @@ export class Instruction {
         });
     }
 
-    // Returns an instruction to center the element inside its parent
-    // Done immediately
-    center() {
-        return this.newMeta(function(){
-            this.origin.element.parent().css("text-align","center");
-            this.origin.element.css("text-align","center");
-            this.origin.element.css("margin","auto");
-            this.done();
-        });
-    }
-
     // Returns an instruction to shift X & Y's offsets
     // Done immediately
     shift(x, y) {
@@ -438,16 +472,6 @@ export class Instruction {
                     top: this.origin.element.css("top")+y
                 });
             }
-            this.done();
-        });
-    }
-
-    // Returns an instruction to dynamically change css
-    // Done immediately
-    css() {
-        let arg = arguments;
-        return this.newMeta(function(){
-            this.origin.element.css.apply(this.origin.element, arg);
             this.done();
         });
     }
@@ -549,12 +573,63 @@ Instruction.prototype.settings = {
         });
     }
     ,
-
-    // Returns an instruction to resize the image to W,H
-    // Done immediately
+    // Resizes the element to W,H
     size: function(w,h) {
         return this.newMeta(function(){
             this.origin.element.css({width: w, height: h});
+            this.done();
+        });
+    }
+    ,
+    // Adds content to the left
+    before: function(element){
+        let o = this.origin;
+        return this.newMeta(function(){
+            if (typeof(element).match(/number|string/))
+                element = $("<span>").html(element);
+            if (element instanceof jQuery || element instanceof Instruction)
+                o._left = element;
+            else
+                console.log("Warning: tried to 'before' an invalid element", element);
+            this.done();
+        });
+    }
+    ,
+    // Adds content to the right
+    after: function(element){
+        let o = this.origin;
+        return this.newMeta(function(){
+            if (typeof(element).match(/number|string/))
+                element = $("<span>").html(element);
+            if (element instanceof jQuery || element instanceof Instruction)
+                o._right = element;
+            else
+                console.log("Warning: tried to 'after' an invalid element", element);
+            this.done();
+        });
+    }
+    ,
+    // Dynamically changes css
+    css: function() {
+        let arg = arguments;
+        return this.newMeta(function(){
+            this.origin.element.css.apply(this.origin.element, arg);
+            this.done();
+        });
+    }
+    ,
+    // Enables an element (only effective if input)
+    enable: function(){
+        return this.newMeta(function(){
+            this.origin.element.attr("disabled", false);
+            this.done();
+        });
+    }
+    ,
+    // Disables an element (only effective if input)
+    disable: function(){
+        return this.newMeta(function(){
+            this.origin.element.attr("disabled", true);
             this.done();
         });
     }
