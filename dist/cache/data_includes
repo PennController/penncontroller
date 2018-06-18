@@ -33,6 +33,10 @@ var items = [
         .print()
         .wait()
     ,
+    newButton("button", "Click me")
+        .print()
+        .wait()
+    ,
     newScale("answer",    "", "", "neutral", "", "")
             .settings.radio()   // We force a radio-button display
             .settings.before("easy") // Text on the left

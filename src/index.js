@@ -10,6 +10,7 @@ import "./preload/preloadZip.js";       //  Uses JSZip
 import "./instructions/instruction.js";
 // List of specific instructions to import
 import "./instructions/audio.js";
+import "./instructions/button.js";
 import "./instructions/canvas.js";
 import "./instructions/clear.js";
 import "./instructions/complex.js";
