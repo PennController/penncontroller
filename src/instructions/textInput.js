@@ -47,17 +47,92 @@ class TextInputInstr extends Instruction {
 
     // Wait for a keypress on 'enter'
     // Done when pressed enter
-    wait() {
+    wait(what) {
         return this.newMeta(function(){
-            if (this.origin._entered)
+            // If only first enter should be tested
+            if (what == "first" && this.origin._entered)
                 this.done();
             else {
                 let ti = this;
-                this.origin._pressedEnter = this.origin.extend("_pressedEnter", function(){ ti.done(); });
+                // If Test instruction passed as argument
+                if (what instanceof Instruction) {
+                    // Test instructions have 'success'
+                    if (what.hasOwnProperty("success")) {
+                        // Done only when success
+                        what.success = what.extend("success", function(arg){ if (!(arg instanceof Instruction)) ti.done(); });
+                        // Test 'what' whenever press on enter until done
+                        ti.origin._pressedEnter = ti.origin.extend("_pressedEnter", function(){
+                            if (!ti.isDone) {
+                                // Resets for re-running the test each time
+                                what.hasBeenRun = false;
+                                what.isDone = false;
+                                what.run();
+                            }
+                        });
+                    }
+                    // If no 'success,' then invalid test
+                    else {
+                        console.log("ERROR: invalid test passed to 'wait'");
+                        ti.done();
+                    }
+                }
+                // If no test instruction was passed, listen for next 'enter'
+                else
+                    this.origin._pressedEnter = this.origin.extend("_pressedEnter", function(){ ti.done(); });
             }
         });
     }
 }
+
+TextInputInstr.prototype.test = {
+    // Test wheter the text in the input matches test
+    text: function (test) {
+        let o = this.origin;
+        let istr = this.newMeta(function(){
+            // Test for a simple textual match
+            if (typeof(test) == "string") {
+                if (o.element.val() == test)
+                    return this.success();
+                else
+                    return this.failure();
+            }
+            // Test for a RegExp match
+            else if (test instanceof RegExp) {
+                if (o.element.val().match(test))
+                    return this.success();
+                else
+                    return this.failure();
+            }
+            else
+                return this.failure();
+        });
+        // What happens if success
+        istr.success = function(successInstruction){
+            if (successInstruction instanceof Instruction){
+                istr._then = successInstruction;
+                successInstruction.done = successInstruction.extend("done", function(){ istr.done() });
+            }
+            else if (istr._then instanceof Instruction)
+                istr._then.run();
+            else
+                istr.done();
+            return istr;
+        };
+        // What happens if failure
+        istr.failure = function(failureInstruction){
+            if (failureInstruction instanceof Instruction){
+                istr._fail = failureInstruction;
+                failureInstruction.done = failureInstruction.extend("done", function(){ istr.done() });
+            }
+            else if (istr._fail instanceof Instruction)
+                istr._fail.run();
+            else
+                istr.done();
+            return istr;
+        };
+        return istr;
+    }
+};
 
 TextInputInstr.prototype.settings = {
     // Records what is typed

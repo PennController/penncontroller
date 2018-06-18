@@ -24,16 +24,27 @@ var items = [
     ,
     canvas.defaults.settings.center()
     ,
-    newTextInput("text input")
-        .settings.before("I thought the weather was warm, but it really is ")
-        .settings.after("!")
-        .settings.once()
-        .print()
-        .wait()
+    newText("warning", "Please enter some text before pressing Return.")
+        .settings.bold()
+        .settings.italic()
+        .settings.color("red")
     ,
-    newButton("button", "Click me")
+    newTextInput("alternative")
+        .settings.before("I thought the weather was warm, but it really is ")
         .print()
-        .wait()
+        .wait(
+            // The 'wait' only gets validated if the text is not "" (i.e. box is not void)
+            getTextInput("alternative").testNot.text("")
+                                        .failure( // We print a message in case of failure to comply
+                                            getText("warning").print()
+                                        ) // Keep track of the closing parentheses...
+        ) // ... as the structure becomes more complicated
+    ,
+    getTextInput("alternative")
+        .settings.disable()
+    ,
+    getText("warning")
+        .remove()
     ,
     newScale("answer",    "", "", "neutral", "", "")
             .settings.radio()   // We force a radio-button display
@@ -41,7 +52,11 @@ var items = [
             .settings.after("hard") // Text on the right
             .settings.labels("top") // "neutral" will appear above the middle button
             .print()
-            .wait()
+            //.wait()
+    ,
+    newButton("button", "Click me")
+        .print()
+        .wait()
     ,
     newScale("answer2",    "so easy", "fine", "hard", "impossible")
             .print()
@@ -168,7 +183,7 @@ PennController.FeedItems(
         newText("test sentence", item.AgainSentence)
         ,
         newAudio("test audio", "thought_bike.mp3")
-            .record("play","end")
+            .settings.log("play","end")
             .play()
             .wait()
         ,

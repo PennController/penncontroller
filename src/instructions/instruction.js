@@ -25,6 +25,7 @@ export class Instruction {
         let ti = this;
         this.settings = {};
         this.test = {};
+        this.testNot = {};
         // We take the chain into account
         var constructorClass = this.constructor;
         while (constructorClass != Object.getPrototypeOf(Function)) {
@@ -39,8 +40,46 @@ export class Instruction {
             // Test
             for (let s in proto.test){
                 // Add only if not already added at previous loop (= higher level of constructorClass)
-                if (!ti.test.hasOwnProperty(s) && proto.test[s] instanceof Function)
+                if (!ti.test.hasOwnProperty(s) && proto.test[s] instanceof Function) {
                     ti.test[s] = function(){ return proto.test[s].apply(ti, arguments); };
+                    // Also add testNot
+                    ti.testNot[s] = function(){ 
+                        // Let's create a positive test
+                        let pos = proto.test[s].apply(ti, arguments);
+                        // The negative test runs the positive test
+                        let istr =  ti.newMeta(function(){ pos.hasBeenRun = false; pos.isDone = false; pos.run(); });
+                        // We bind failure of the negative to success of the positive
+                        pos.success = pos.extend("success", function(arg){ if (!(arg instanceof Instruction)) istr.failure(); });
+                        // We bind success of the negative to failure of the positive
+                        pos.failure = pos.extend("failure", function(arg){ if (!(arg instanceof Instruction)) istr.success(); });
+                        // We create the 'success' method of test instructions
+                        istr.success = function(successInstruction){
+                            if (successInstruction instanceof Instruction){
+                                istr._then = successInstruction;
+                                successInstruction.done = successInstruction.extend("done", function(){ istr.done() });
+                            }
+                            else if (istr._then instanceof Instruction)
+                                istr._then.run();
+                            else
+                                istr.done();
+                            return istr;
+                        };
+                        // We create the 'failure' method of test instructions
+                        istr.failure = function(failureInstruction){
+                            if (failureInstruction instanceof Instruction){
+                                istr._fail = failureInstruction;
+                                failureInstruction.done = failureInstruction.extend("done", function(){ istr.done() });
+                            }
+                            else if (istr._fail instanceof Instruction)
+                                istr._fail.run();
+                            else
+                                istr.done();
+                            return istr;                        
+                        }
+                        // Return the negative test
+                        return istr;
+                    }
+                }
             }
             // Go up a level
             constructorClass = Object.getPrototypeOf(constructorClass);
@@ -569,6 +608,14 @@ Instruction.prototype.settings = {
                 this.origin.element.css("font-style","normal");
             else
                 this.origin.element.css("font-style","italic");
+            this.done();
+        });
+    }
+    ,
+    // Make the font italics
+    color: function(colour){
+        return this.newMeta(function(){
+            this.origin.element.css("color", colour);
             this.done();
         });
     }

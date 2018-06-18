@@ -141,13 +141,39 @@ class SelectorInstr extends Instruction {
 
     // Returns an instruction to wait for something to be selected
     // Done upon selection
-    wait() {
+    wait(what) {
         return this.newMeta(function(){ 
             let ti = this;
-            if (this.origin.selectedInstruction)
+            // If only first selection
+            if (what == "first" && this.origin.selectedInstruction)
                 this.done();
-            else
-                this.origin._select = this.origin.extend("_select", function(){ ti.done(); });
+            else {
+                if (what instanceof Instruction) {
+                    // Test instructions have 'success'
+                    if (what.hasOwnProperty("success")) {
+                        // Done only when success
+                        what.success = what.extend("success", function(arg){ if (!(arg instanceof Instruction)) ti.done(); });
+                        // Test 'what' whenever press on enter until done
+                        ti.origin._select = ti.origin.extend("_select", function(){
+                            if (!ti.isDone) {
+                                // Resets for re-running the test each time
+                                what.hasBeenRun = false;
+                                what.isDone = false;
+                                what.run();
+                            }
+                        });
+                    }
+                    // If no 'success,' then invalid test
+                    else {
+                        console.log("ERROR: invalid test passed to 'wait'");
+                        ti.done();
+                    }
+                }
+                // If no test instruction was passed, listen for next 'enter'
+                else
+                   this.origin._select = this.origin.extend("_select", function(){ ti.done(); });
+            }
+                
         });
     }
 }
@@ -337,7 +363,7 @@ SelectorInstr.prototype.settings = {
     }
     ,
     // Returns an instruction to save the selection(s)
-    record: function (parameters) {
+    log: function (parameters) {
         return this.newMeta(function(){
             let o = this.origin;
             Ctrlr.running.callbackBeforeFinish(function(){ 

@@ -124,27 +124,47 @@ class RadioInstr extends Instruction {
             this.origin._addElement(this.origin.parentElement);
             this.origin._left = l;
             this.origin._right = r;
+            if (this.origin._setAlignment)
+                this.origin.element.parent().css("text-align", this.origin._setAlignment);
             this.done();
         });
     }
 
-    // Returns an instruction to wait for a click (on (a) specific value(s))
-    // Done upon click meeting the specified conditions (if any)
-    wait(values) {
-        let instr = this.newMeta(), ti = this;
-        this.origin._clicked = this.origin.extend("_clicked", function(value){
-            if (typeof values == "number") {
-                if (value == values)
-                    instr.done();
+    // Returns an instruction to wait for a click
+    // Done when clicked
+    wait(what) {
+        return this.newMeta(function(){ 
+            let ti = this;
+            // If only first selection
+            if (what == "first" && ti.origin.values.length)
+                this.done();
+            else {
+                if (what instanceof Instruction) {
+                    // Test instructions have 'success'
+                    if (what.hasOwnProperty("success")) {
+                        // Done only when success
+                        what.success = what.extend("success", function(arg){ if (!(arg instanceof Instruction)) ti.done(); });
+                        // Test 'what' whenever press on enter until done
+                        ti.origin._clicked = ti.origin.extend("_clicked", function(){
+                            if (!ti.isDone) {
+                                // Resets for re-running the test each time
+                                what.hasBeenRun = false;
+                                what.isDone = false;
+                                what.run();
+                            }
+                        });
+                    }
+                    // If no 'success,' then invalid test
+                    else {
+                        console.log("ERROR: invalid test passed to 'wait'");
+                        ti.done();
+                    }
+                }
+                // If no test instruction was passed, listen for next 'clicked'
+                else
+                   this.origin._clicked = this.origin.extend("_clicked", function(){ ti.done(); });
             }
-            else if (values instanceof Array) {
-                if (values.indexOf(value) >= 0)
-                    instr.done();
-            }
-            else
-                instr.done();
         });
-        return instr;
     }
 }
 

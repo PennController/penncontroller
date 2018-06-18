@@ -156,67 +156,69 @@ class AudioInstr extends Instruction {
         return instr;
     }
 
-    // Returns an instruction to SAVE the parameters
-    // Done immediately
-    record(parameters) {
-        let o = this.origin, 
-            saveFct = function(event) {
-                if (event == "play") {
-                    if (o.savePlays)
-                        return Abort;
-                    o.savePlays = true;
-                }
-                else if (event == "pause") {
-                    if (o.savePauses)
-                        return Abort;
-                    o.savePauses = true;
-                }
-                else if (event == "end") {
-                    if (o.saveEnds)
-                        return Abort;
-                    o.saveEnds = true;
-                }
-                else if (event == "seek") {
-                    if (o.saveSeeks)
-                        return Abort;
-                    o.saveSeeks = true;
-                }
-                else
-                    return Abort;
-                // Adding it to done, because Ctrlr.running is not defined upon creation of instruction
-                o.done = o.extend("done", function(){
-                    Ctrlr.running.callbackBeforeFinish(function(){
-                        for (let r in o.eventsRecord) {
-                            let record = o.eventsRecord[r];
-                            if (record[0] == event)
-                                Ctrlr.running.save(o.content, record[0], record[1], record[2]);
-                        }
-                    });
-                });
-            };
-        // Argument is a string
-        if (arguments.length == 1 && typeof(parameters) == "string")
-            saveFct(parameters);
-        // Multiple arguments
-        else if (arguments.length > 1) {
-            for (let a = 0; a < arguments.length; a++)
-                saveFct(arguments[a]);
-        }
-        // No argument (or unintelligible argument): save everything
-        else {
-            saveFct("play");
-            saveFct("pause");
-            saveFct("end");
-            saveFct("seek");
-        }
-        return this.newMeta(function(){ this.done(); });
-    }
-
     preload() {
         this.origin._addToPreload();
         return this.newMeta(function(){ this.done(); });
     }
 }
+
+AudioInstr.prototype.settings = {
+    // Returns an instruction to SAVE the parameters
+    // Done immediately
+    log: function(parameters) {
+        let o = this.origin;
+        let saveFct = function(event) {
+            if (event == "play") {
+                if (o.savePlays)
+                    return Abort;
+                o.savePlays = true;
+            }
+            else if (event == "pause") {
+                if (o.savePauses)
+                    return Abort;
+                o.savePauses = true;
+            }
+            else if (event == "end") {
+                if (o.saveEnds)
+                    return Abort;
+                o.saveEnds = true;
+            }
+            else if (event == "seek") {
+                if (o.saveSeeks)
+                    return Abort;
+                o.saveSeeks = true;
+            }
+            else
+                return Abort;
+            Ctrlr.running.callbackBeforeFinish(function(){
+                for (let r in o.eventsRecord) {
+                    let record = o.eventsRecord[r];
+                    if (record[0] == event)
+                        Ctrlr.running.save(o.content, record[0], record[1], record[2]);
+                }
+            });
+        };
+        let args = arguments;
+        return this.newMeta(function(){ 
+            // Argument is a string
+            if (args.length == 1 && typeof(parameters) == "string")
+                saveFct(parameters);
+            // Multiple arguments
+            else if (args.length > 1) {
+                for (let a = 0; a < args.length; a++)
+                    saveFct(args[a]);
+            }
+            // No argument (or unintelligible argument): save everything
+            else {
+                saveFct("play");
+                saveFct("pause");
+                saveFct("end");
+                saveFct("seek");
+            }
+            this.done(); 
+        });
+    }
+};
 
 
 AudioInstr._setDefaultsName("audio");

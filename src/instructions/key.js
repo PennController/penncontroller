@@ -85,9 +85,10 @@ class KeyInstr extends Instruction {
 
     // Returns an instruction to save the key that was pressed
     // Done immediately
-    record(comment) {
+    log(comment) {
         return this.newMeta(function(){
             let ti = this;
+            this._logging = true;
             Ctrlr.running.callbackBeforeFinish(function(){ 
                 Ctrlr.running.save('keypress', ti.origin.key, ti.origin.time, comment);
             });
@@ -97,13 +98,50 @@ class KeyInstr extends Instruction {
 
     // Returns an instruction to wait for the keypress before proceeding
     // Done when key is pressed
-    wait() {
-        return this.newMeta(function(){
+    wait(what) {
+        return this.newMeta(function(){ 
             let ti = this;
-            if (this.origin.key)
+            // If only first selection
+            if (what == "first" && this.origin.key)
                 this.done();
-            else
-                this.origin._pressed = this.origin.extend("_pressed", function(){ ti.done() });
+            else {
+                if (what instanceof Instruction) {
+                    var keyPressed = null, time = null;
+                    // Test instructions have 'success'
+                    if (what.hasOwnProperty("success")) {
+                        // Done only when success
+                        what.success = what.extend("success", function(arg){ 
+                            if (!(arg instanceof Instruction)) {
+                                ti.done();
+                                // Probably also want to save key that was pressed on success
+                                if (this._logging)
+                                    Ctrlr.running.callbackBeforeFinish(function(){ 
+                                        Ctrlr.running.save('keypress', keyPressed, time, "Success press");
+                                    });
+                            }
+                        });
+                        // Test 'what' whenever press on enter until done
+                        ti.origin._pressed = ti.origin.extend("_pressed", function(key){
+                            if (!ti.isDone) {
+                                keyPressed = key;
+                                time = Date.now();
+                                // Resets for re-running the test each time
+                                what.hasBeenRun = false;
+                                what.isDone = false;
+                                what.run();
+                            }
+                        });
+                    }
+                    // If no 'success,' then invalid test
+                    else {
+                        console.log("ERROR: invalid test passed to 'wait'");
+                        ti.done();
+                    }
+                }
+                // If no test instruction was passed, listen for next 'enter'
+                else
+                   this.origin._pressed = this.origin.extend("_pressed", function(){ ti.done(); });
+            }     
         });
     }
 }
