@@ -1,3 +1,157 @@
+var shuffleSequence = seq("welcome", "preload", startsWith("Test"));
+
+PennController.ResetPrefix(null);
+
+PennController.AddHost("http://files.lab.florianschwarz.net/ibexfiles/PennController/SampleTrials/");
+
+var items = [
+
+    ["welcome", "Message", {html: "Welcome. The resources are currently being preloaded, but you can already try to move to the first trial: it won't start before the resources are preloaded anyway."}]
+    ,
+    ["preload", "PennController", PennController.CheckPreload(startsWith("Test"))]
+    ,
+    ["TestRecord", "PennController", 
+        PennController.InitiateRecorder("http://files.lab.florianschwarz.net/ibexfiles/RecordingsFromIbex/saveAudioZip.php")
+    ]
+    ,
+    ["TestRecord", "PennController",PennController(
+        newText("instructions", "Please record a sample and proceed.")
+          .print()
+        ,
+        newVoiceRecorder("recorder")
+          .print()
+        ,
+        newButton("validate", "Click here to continue")
+          .print()
+          .wait()
+    )]
+    ,
+    [["Test1a", 1], "PennController", PennController(
+    
+        newImage("tank", "1fishSquareTank.png")
+            .print()
+        ,
+        newText("description", "The tank is round.")
+            .print()
+        ,
+        newKey("validate", "FJ")
+            .wait()
+    
+    )]
+    ,
+    [["Test1b", 1], "PennController", PennController(
+    
+        newImage("tank", "1fishSquareTank.png")
+            .print()
+        ,
+        newText("description", "The tank is square.")
+            .print()
+        ,
+        newKey("FJ")
+            .wait()
+    
+    )]
+    ,
+    [["Test2a", 2], "PennController", PennController(
+    
+        newImage("tank", "2fishRoundTank.png")
+            .print()
+        ,
+        newText("description", "The tank is round.")
+            .print()
+        ,
+        newKey("FJ")
+            .wait()
+    
+    )]
+    ,
+    [["Test2b", 2], "PennController", PennController(
+    
+        newImage("tank", "2fishRoundTank.png")
+            .print()
+        ,
+        newText("description", "The tank is square.")
+            .print()
+        ,
+        newKey("FJ")
+            .wait()
+    
+    )]
+];
+
+
+/*
+var shuffleSequence = seq(randomize("rating"), randomize("input"));
+PennController.ResetPrefix(null);
+
+PennController.FeedItems( PennController.GetTable("design.csv").filter("Label","rating") ,
+    (item) => PennController(
+        newText("A's line", item.A)
+            .print()
+        ,
+        newText("B's line", item.B)
+            .print()
+        ,
+        newText("question", "How natural do you find B's answer?")
+            .settings.italic()
+            .settings.center()
+            .print()
+        ,
+        newScale("answer",    "Unnatural", "So-so...", "Natural")
+            .settings.log() // We want to collect data here
+            .settings.radio()
+            .settings.labels("bottom")
+            .settings.center()
+            .print()
+            .wait()
+        ,
+        newButton("validate score", "Click here to validate")
+            .settings.center()
+            .print()
+            .wait()
+    )
+    // We save ID, Label, Item and Group
+        .logAppend( "ID" , PennController.GetURLParameter("id") )
+        .logAppend( "Label" , item.Label )
+        .logAppend( "Item"  , item.Item  )
+        .logAppend( "Group" , item.Group )
+);
+
+PennController.FeedItems( PennController.GetTable("design.csv").filter("Label","input") ,
+        (item) => PennController(
+        newText("warning input", "Please enter some text before validating")
+            .settings.bold()
+            .settings.italic()
+            .settings.color("red")
+        ,
+        newText("Instruction", "Please fill the box below to create a sentence that you find natural.")
+            .settings.italic()
+            .print()
+        ,
+        newTextInput("alternative")
+            .settings.log() // We want to collect data here
+            .settings.before(item.Sentence+" ") // Just adding a space character
+            .print()
+        ,
+        newButton("validate input", "Click here to validate")
+            .settings.center()
+            .print()
+            .wait(
+                getTextInput("alternative")
+                    .testNot.text("")
+                    .failure( getText("warning input").print() )
+            )
+    )
+    // Note that 'logAppend' relates to 'PennController' above (to the right of '=>')
+        .logAppend( "ID" , PennController.GetURLParameter("id") )
+        .logAppend( "Label" , item.Label )
+        .logAppend( "Item"  , item.Item  )
+        .logAppend( "Group" , item.Group )
+);
+*/
+
+
+/*
 var shuffleSequence = seq("checkTest", "test", "checkItems", startsWith("Item"));
 
 PennController.ResetPrefix(null);
@@ -154,7 +308,7 @@ var items = [
 image.defaults.settings.size(20,50);
 
 // Feed/Create the items from the datasource
-PennController.FeedItems(
+PennController.FeedItems(PennController.GetTable("default").filter("ColorTest", "blue"),
 
     // Refering to each row in the datasource as 'item'
     (item) => PennController(
@@ -189,6 +343,7 @@ PennController.FeedItems(
         ,
         newKey("fj key", "FJ")
             .wait()
-    )
 
-);
+    ).save("Group", item.group)
+
+);*/

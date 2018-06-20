@@ -46,8 +46,25 @@ export var PennController = function() {
     // Resetting Ctrlr.building for next one
     Ctrlr.building = {};
     // ID is _instructions' length minus 2: we just pushed for NEXT controller
-    return {instructions: sequence, id: id};
+    let returnObject = {instructions: sequence, id: id};
+    // Adding a method to save additional parameters
+    returnObject._toSave = [];
+    returnObject.save = function(fieldName, value, comments){
+        returnObject._toSave.push([fieldName, value, comments]);
+        return returnObject;
+    };
+    // Adding a method to append additional parameters to the end of each result line
+    returnObject._appendResultLine = [];
+    returnObject.logAppend = function(fieldName, value){
+        if (typeof(value)=="undefined")
+            value = fieldName;
+        returnObject._appendResultLine.push([fieldName, value]);
+        return returnObject;
+    };
+    // Return the object
+    return returnObject;
 };
+
 
 // General settings
 PennController.Configure = function(parameters){
@@ -62,6 +79,19 @@ PennController.Configure = function(parameters){
         ...
     */
 };
+
+
+// A handler for retrieving parameters passed in the URL
+let Parameters = {};
+PennController.GetURLParameter = function(parameter){
+    if (!Object.keys(Parameters).length){
+        let URLParameters = window.location.search.replace("?", "").split("&");
+        for (let param in URLParameters)
+            Parameters[URLParameters[param].split("=")[0]] = URLParameters[param].split("=")[1];   
+    }
+    if (Parameters.hasOwnProperty(parameter))
+        return Parameters[parameter];
+}
 
 // This adds a URL where resources will be looked for
 PennController.AddHost = function() {

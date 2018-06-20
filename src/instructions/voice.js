@@ -345,7 +345,7 @@ class VoiceRecorderInstr extends Instruction {
                 Ctrlr.running.save("VoiceRecorder", "Filename", ti.filename, ti._id);
         });
 
-        this._addElement(this.parentElement);
+        //this._addElement(this.parentElement);
 
         this.done();
     }

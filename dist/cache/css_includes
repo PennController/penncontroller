@@ -63,31 +63,6 @@
 .Message-continue-link:visited { color: blue; }
 
 
-.PennController-selected {
-    border: solid 2px green;
-}
-.PennController-PennController {
-	width: 40em;
-	margin: auto;
-	text-align: center;
-}
-.PennController-PennController img {
-	margin: auto;
-}
-.PennController-PennController tr {
-	text-align: center;
-}
-.PennController-clickable {
-	color: blue;
-}
-span.PennController-clickable:hover {
-	cursor: pointer;
-}
-.PennController-Selector span:first-child {
-	margin-right: 50px;
-}
-
-
 .Question-Question {
     margin-left: 0;
     padding-left: 0;

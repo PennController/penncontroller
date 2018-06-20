@@ -4,8 +4,8 @@ class TextInputInstr extends Instruction {
     constructor(id, text) {
         super(id, text, "text");
         if (text != Abort) {
-            this.setElement($("<input>").attr({type: "text", name: id}).val(text));
-            let ti = this;
+            this._fixedRows = true;
+            this.setElement($("<textarea>").attr({name: id, rows: 1, cols: 40}).val(text));
         }
     }
 
@@ -18,6 +18,28 @@ class TextInputInstr extends Instruction {
             return Abort;
         //this._addElement(this.parentElement);
         let ti = this;
+        // Prevent adding a line if limited number of lines
+        this.origin.element.bind("keydown", function(e){
+            if (!ti.origin._fixedRows)
+                return true;
+            let rows = Number(ti.origin.element.attr("rows"));
+            if (rows > 0 && e.keyCode == 13){
+                let returns = ti.origin.element.val().match(/[\r\n]/g);
+                if (rows == 1 || (returns instanceof Array && returns.length+1 >= rows))
+                    return false;
+            }
+        });
+        this.origin.element.bind("keyup", function(e){
+            if (!ti.origin._fixedRows)
+                return true;
+            let rows = Number(ti.origin.element.attr("rows"));
+            let returns = ti.origin.element.val().match(/[\r\n]/g);
+            if (rows > 0 && (rows == 1 || (returns instanceof Array && returns.length >= rows+1))) {
+                let regx = "([\\n\\r]?[^\\n\\r]*){"+rows+"}";
+                ti.origin.element.val(ti.origin.element.val().match(RegExp(regx))[0]);
+            }
+        });
+        // Binding press on Return
         Ctrlr.running.safeBind(this.origin.element, 'keydown', function (e) { 
             if (e.keyCode == 13)
                 ti._pressedEnter();
@@ -160,6 +182,18 @@ TextInputInstr.prototype.settings = {
             }
             this.done();
         });
+    }
+    ,
+    // Sets the maximum number of lines (0 is unlimited)
+    lines: function(n){
+        return this.newMeta(function(){
+            if (n<1)
+                this.origin._fixedRows = false;
+            else
+                this.origin._fixedRows = true;
+            this.origin.element.attr("rows", n);
+            this.done();
+        })
     }
 };
 

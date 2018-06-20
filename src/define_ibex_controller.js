@@ -40,12 +40,18 @@ define_ibex_controller({
 
             // Adds a parameter/line to the list of things to save
             _t.save = function(parameter, value, time, comment){
-                _t.toSave.push([
-                        ["Parameter", parameter],
-                        ["Value", value],
-                        ["Time", time],
-                        ["Comment", comment ? comment : "NULL"]
-                    ]);
+                let toSave = [
+                                ["Parameter", parameter],
+                                ["Value", value],
+                                ["Time", time],
+                                ["Comment", comment ? comment : "NULL"]
+                             ];
+                for (let i = 0; i < _t.options._appendResultLine.length; i++){
+                    let line = _t.options._appendResultLine[i];
+                    if (line instanceof Array && line.length == 2)
+                        toSave.push(line);
+                }
+                _t.toSave.push(toSave);
             };
 
             // Adds a function to be executed before finishedCallBack
@@ -78,8 +84,13 @@ define_ibex_controller({
                     clearInterval(this.timers[t]);
                     clearTimeout(this.timers[t]);
                 }
+                // If anything added to save as options
+                for (let i = 0; i < _t.options._toSave.length; i++){
+                    let toSave = _t.options._toSave[i];
+                    _t.save("Parameter", toSave[0], toSave[1], toSave[2]);
+                }
                 // Save time
-                _t.save("Page", "End", Date.now(), "NULL");
+                _t.save("_Page", "End", Date.now(), "_Page");
                 // Next trial
                 _t.finishedCallback(_t.toSave);
             };
@@ -147,7 +158,7 @@ define_ibex_controller({
 
             // Record running of first instruction
             _t.instructions[0].run = _t.instructions[0].extend("run", function(){ 
-                _t.save("Page", "RunFirstInstruction", Date.now(), "NULL");
+                _t.save("_Page", "RunFirstInstruction", Date.now(), "_Page");
             });
 
             // Create local variables (see FuncInstr)
@@ -191,7 +202,7 @@ define_ibex_controller({
                 _t.instructions[0].run();
 
             // Save time of creation
-            _t.save("Page", "Creation", Date.now(), "NULL");
+            _t.save("_Page", "Creation", Date.now(), "_Page");
 
         }
     },

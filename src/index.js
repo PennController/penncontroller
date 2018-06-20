@@ -16,6 +16,7 @@ import "./instructions/clear.js";
 import "./instructions/complex.js";
 import "./instructions/end.js";
 import "./instructions/function.js";
+import "./instructions/html.js";
 import "./instructions/if.js";
 import "./instructions/image.js";
 import "./instructions/key.js";

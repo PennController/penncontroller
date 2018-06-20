@@ -58,28 +58,6 @@ class KeyInstr extends Instruction {
     }
 
     // ========================================
-    // CONDITIONAL FUNCTIONS
-    // ========================================
-
-    // Returns a function to true if the key pressed matches
-    // false otherwise
-    pressed(keys) {
-        let ti = this.origin;
-        return function(){
-            let key = ti.key;
-            if (!key)
-                return false;
-            else if (typeof(keys) == "string")
-                return RegExp(key,'i').test(keys);
-            else if (typeof(keys) == "number")
-                return keys == key.charCodeAt(0);
-            else
-                return key.charCodeAt(0);
-        };
-    }
-
-
-    // ========================================
     // METHODS RETURNING NEW INSTRUCTIONS
     // ========================================
 
@@ -146,6 +124,53 @@ class KeyInstr extends Instruction {
     }
 }
 
+KeyInstr.prototype.test = {
+    pressed: function(keys) {
+        let istr = this.newMeta(function(){
+            let ti = this.origin;
+            let key = ti.key;
+            if (!key)
+                return this.failure();
+            else if (typeof(keys) == "string"){
+                if (RegExp(key,'i').test(keys))
+                    return this.success();
+                else
+                    return this.failure();
+            }
+            else if (typeof(keys) == "number") {
+                if (keys == key.charCodeAt(0))
+                    return this.success();
+                else
+                    return this.failure();
+            }
+        });
+        // What happens if success
+        istr.success = function(successInstruction){
+            if (successInstruction instanceof Instruction){
+                istr._then = successInstruction;
+                successInstruction.done = successInstruction.extend("done", function(){ istr.done() });
+            }
+            else if (istr._then instanceof Instruction)
+                istr._then.run();
+            else
+                istr.done();
+            return istr;
+        };
+        // What happens if failure
+        istr.failure = function(failureInstruction){
+            if (failureInstruction instanceof Instruction){
+                istr._fail = failureInstruction;
+                failureInstruction.done = failureInstruction.extend("done", function(){ istr.done() });
+            }
+            else if (istr._fail instanceof Instruction)
+                istr._fail.run();
+            else
+                istr.done();
+            return istr;
+        };
+        return istr;
+    }
+}
 
 KeyInstr._setDefaultsName("key");
 

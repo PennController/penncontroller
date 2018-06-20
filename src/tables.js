@@ -40,6 +40,42 @@ class Table {
         }
         this.label = col;
     }
+    filter(...args) {
+        if (args.length == 2 && typeof(args[0]) == "string" && typeof(args[1]) == "string"){
+            if (this.table[0].hasOwnProperty(args[0])){
+                let returnTable = [];
+                for (let row = 0; row < this.table.length; row++){
+                    if (this.table[row][args[0]]==args[1])
+                        returnTable.push(this.table[row]);
+                }
+                return new Table(returnTable);
+            }
+            else
+                return console.log("ERROR: no column named "+args[0]+" found in the table");
+        }
+        else if (args.length && args[0] instanceof Function){
+            let returnTable = [];
+            for (let row = 0; row < this.table.length; row++){
+                if (args[0].call(this.table[row]))
+                    returnTable.push(this.table[row]);
+            }
+            return new Table(returnTable);
+        }
+
+    }
+}
+
+// Checks that table is of the right format, and return a csv-formatted one
+function _checkTable(table){
+    table = $.csv.toObjects(table);
+    // Checking that there is more than one column
+    if (Object.keys(table[0]).length > 1)
+        return table;
+    // If it didn't work with comma as the default separator, try with tab
+    table = $.csv.toObjects(CHUNKS_DICT[entry], {separator: "\t"});
+    if (Object.keys(table[0]).length > 1)
+        return table;
+    return null;
 }
 
 
@@ -52,6 +88,22 @@ PennController.AddTable = function(name, table) {
     tables[name] = table;
 }
 
+// Returns a table from the dictionary
+PennController.GetTable = function(name) {
+    if (tables.hasOwnProperty(name)){
+        let table = _checkTable(tables[name]);
+        if (table)
+            return new Table(table);
+        else{
+            console.log("ERROR: table "+name+" does not have the right format.");
+            return Abort;
+        }
+    }
+    else {
+        console.log("ERROR: no table named "+name+" found.");
+        return Abort;
+    }
+}
 
 // The main function
 // PennController.FeedItems("table.csv",        // Optional, or reference to a Table object
@@ -66,17 +118,6 @@ PennController.FeedItems = function (tableName, func) {
     let table;
     // Looks for a CSV file defining a datasource in chunk_includes
     function _smartTableDetection() {
-        function _checkTable(table){
-            table = $.csv.toObjects(table);
-            // Checking that there is more than one column
-            if (Object.keys(table[0]).length > 1)
-                return table;
-            // If it didn't work with comma as the default separator, try with tab
-            table = $.csv.toObjects(CHUNKS_DICT[entry], {separator: "\t"});
-            if (Object.keys(table[0]).length > 1)
-                return table;
-            return null;
-        }
         // A default table was defined
         if (PennController.hasOwnProperty("defaultTable")) {
             let table = _checkTable(PennController.defaultTable);
@@ -90,7 +131,6 @@ PennController.FeedItems = function (tableName, func) {
             let table = _checkTable(CHUNKS_DICT[entry]);
             if (table)
                 return table;
-            
         }
         // If nothing worked, return Abort
         return Abort;
@@ -177,14 +217,24 @@ PennController.FeedItems = function (tableName, func) {
     // Table name was specified
     else if (typeof(tableName)=="string") {
         // Check that it has been added
-        if (tables.hasOwnProperty(tableName))
-            table = new Table(tables[tableName]);
+        if (tables.hasOwnProperty(tableName)) {
+            table = _checkTable(tables[tableName]);
+            if (table)
+                return new Table(table);
+            else{
+                console.log("ERROR: table "+name+" does not have the right format.");
+                return Abort;
+            }   
+        }
         // If not, return an error
         else
             return console.log("ERROR: no table found with name "+tableName);
     }
+    // Else, directly use the Table, if not, problem
+    else if (tableName instanceof Table)
+        table = tableName;
     else
-        return console.log("ERROR: bad format for FeedItems' first argument (should be table name or function from rows to Ibex elements)");
+        return console.log("ERROR: bad format for FeedItems' first argument (should be a PennController table, table name or function from rows to Ibex elements)");
     // If 'items' not created yet, create it
     if (!(window.items instanceof Array))
         window.items = [];
