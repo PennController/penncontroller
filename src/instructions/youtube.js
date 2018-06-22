@@ -6,7 +6,6 @@ const MutationObserver =
 // Youtube videos to load
 var _youtubeVideos = {};
 
-
 // Load the Youtube API (see https://developers.google.com/youtube/iframe_api_reference)
 // Will be executed when jQuery is ready
 $(document).ready(function(){
@@ -60,7 +59,7 @@ class YTInstr extends Instruction {
             // Add the frame to html (invisible)
             $("html").append(this.iframe.css({display: "none", position: "absolute"}));
             // The instruction's element is a DIV, because iframe needs to be global (appending it would RECREATE it)
-            this.setElement($("<div>"));
+            this.setElement($("<div>").css({width: 200, height: 200}));
             // If the player has not already been created
             if (!_youtubeVideos.hasOwnProperty(code)) {
                 // Add a player to be created when the YT API is ready (see above in PRELOADER ENGINE)
@@ -103,15 +102,16 @@ class YTInstr extends Instruction {
         let observer = new MutationObserver(function(mutations) {
             // Check that the element is in the DOM and visible
             if ($.contains(document.body, ti.element[0]) && ti.element[0].offsetParent) {
+                ti.iframe.css("display", ti.element.css("display"));
                 let w = ti.element.width(), h = ti.element.height();
                 if (w != ti.visual.width || h != ti.visual.height) {
-                    ti.iframe.css({width: w, height: h, display: "block"});
+                    ti.iframe.css({width: w, height: h});
                     ti.visual.width = w;
                     ti.visual.height = h;
                 }
                 let o = ti.element.offset(), x = o.left, y = o.top;
                 if (x != ti.visual.left || y != ti.visual.top) {
-                    ti.iframe.css({left: x, top: y, display: "block"});
+                    ti.iframe.css({left: x, top: y});
                     ti.visual.left = x;
                     ti.visual.top = y;
                 }
@@ -119,16 +119,13 @@ class YTInstr extends Instruction {
             }
         });
         // Listen to any modification that might affect the display of the div
+        // Whenn adding the div element to the document, any mutation is listened to
         observer.observe(document.body, { childList : true, attributes : true, subtree : true });
-        // Add the div element to the document (any mutation is listened)
-        this._addElement(this.parentElement);
-        // If player exists, start playback
-        if (ti.origin.player && ti.origin.autoPlay)
-            ti._play();
         // Stop playing the video when the trial is over
         Ctrlr.running.callbackBeforeFinish(function(){
             ti._forcePause();
         });
+        this.done();
     }
 
     // Force playing because playVideo sometimes simply has no effect at all
@@ -237,12 +234,15 @@ class YTInstr extends Instruction {
 
     // Returns an instruction to wait for the end of the video
     // Done when the video has been entirely played
-    wait() {
-        if (this.origin.hasPlayed)
-            return this.newMeta(function(){ this.done(); });
-        let instr = this.newMeta();
-        this.origin._ended = this.origin.extend("_ended", function(){ instr.done(); });
-        return instr;
+    wait(what) {
+        return this.newMeta(function(){
+            if (what == "first" && this.origin.hasPlayed)
+                this.done();
+            else {
+                let ti = this;
+                this.origin._ended = this.origin.extend("_ended", function(){ ti.done(); });
+            }
+        })
     }
 
     // Returns an instruction to pause the video

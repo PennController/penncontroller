@@ -1,3 +1,14 @@
+- defaultText instead of text.defaults
+- fix video automatically starting when first thing on first trial(?)
+- fix voicerecorder with Chrome
+- add .record to VoiceRecorder element (add something that tells signals recording is on)
+- add .wait for VoiceRecorder (upon second press on red button)
+- add .settings.once for VoiceRecorder (disable recorder after first recording's done)
+- add a way to record fields from an HTML element 
+- add the drag'n'drop element (but what/when to log?)
+- add a way of dynamically manipulating variables (counter design)
+
+
 - PRIORITY NOTES:                                                               [ Not happened in a while... ]
     >   Conflict between AUDIO and IFRAME??? > Sometimes
             >> MAYBE NOT DUE TO IFRAME, BUT PROBLEM MORE GENERALLY...?
@@ -27,55 +38,6 @@ DEVELOPMENT:
     });
 
 
-IDEA FOR RESTRUCTURING INSTRUCTIONS
-    >   Creating/Retrieving instructions: PennController.newText("text", id), PennController.newImage("file", w, h, id), ...
-    >   Setting:    PennController.text(id).settings.text("text"), PennController.image(id).settings.file("file")
-                    PennController.audio(id).settings.record(), PennController.key(id).settings.keys("FJ")
-                    PennController.text(id).settings.click(), PennController.image(id).settings.preload()
-    >   Action:     PennController.text(id).show(), PennController.audio(id).play()
-    >   Test:       PennController.audio(id).test.finished(), PennController.selector(id).test.selected()
-
-    PennController( 
-            ====     Settings     ====
-            
-            PennController.newText("Please wait...", "please")
-                        .settings.clickable()
-                        .settings.recordClicks()
-            ,
-            PennController.newImage("alien1.png", 50, 100, "target")
-            ,
-            PennController.newImage("alien2.png", 50, 100, "distractor")
-            ,
-            PennController.newSelector( PennController.image("target"), PennController.image("distractor") , "images")
-                        .settings.once()
-                        .settings.record()
-            ,
-            ====       Flow       ====
-            
-            PennController.text("please")
-                        .show()
-            ,
-            PennController.selector("images")
-                        .show()
-                        .wait()
-            ,
-            PennController.if(
-                            PennController.selector("images")
-                                        .test.selected( PennController.image("target") )
-                            ,
-                            PennController.newTimer(100)
-                                        .start()
-                                        .wait()
-            )
-            PennController.newText("Good, now let's proceed.")
-                        .show()
-            ,
-            PennController.newTimer("beforeNextPage", 1000)
-                        .start()
-                        .wait()
-    )
-
-
 - Add a drag'n'drop function (and record the associated events)
 
 - Fix what happens when no host and no zip provided
@@ -102,11 +64,6 @@ IDEA FOR RESTRUCTURING INSTRUCTIONS
 - Add some way to LOOP instructions
     > In particular, trigger an instruction EACH TIME a key is pressed (t.key("FJ").whenever( t("imgBeach").hide() )
 
-- Add PLAY and PAUSE/STOP for Audio instructions (revise auto play then? Same for YT?)
-
-- Revise the SHOW method for Audio
-    > currently changes property AFTER creation = no effect
-
 - Add 'controls' for YT (and Audio?)
 
 - Write the Screen Instruction to prevent added elements from showing up
@@ -114,9 +71,6 @@ IDEA FOR RESTRUCTURING INSTRUCTIONS
 
 - Add a MOUSE Instruction?
         > record position
-
-- Add support for HTML files to the PennController.instruction() function (chunk_includes)
-        > maybe rather a PennController.instruction.html()?
 
 - Integrate an instruction equivalent to the DashedSentence controller?
 
@@ -141,6 +95,17 @@ MAYBE
 
 - Add a first trial that measures latencies?
 
+
+DONE
+- Add support for HTML files to the PennController.instruction() function (chunk_includes)
+        > maybe rather a PennController.instruction.html()?
+
+DONE (obsolete)
+- Revise the SHOW method for Audio
+    > currently changes property AFTER creation = no effect
+
+DONE
+- Add PLAY and PAUSE/STOP for Audio instructions (revise auto play then? Same for YT?)
 
 DONE 
 - Upload the recordings before __SendResults__

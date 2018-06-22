@@ -1,3 +1,43 @@
+/*
+var shuffleSequence = seq("intro", "test");
+
+PennController.ResetPrefix(null);
+
+var items = [
+    
+  ["intro", "PennController", PennController(
+      
+      newYoutube("mcgurk", "aFPtc8BVdJk")
+          .print()
+      ,
+      newButton("validation", "click here")
+          .print()
+          .wait()
+      
+  )]
+  ,
+
+  // Indicate where to look for the PHP file you uploaded on you server
+  ["intro", "PennController", PennController.InitiateRecorder(
+      "http://files.lab.florianschwarz.net/ibexfiles/RecordingsFromIbex/saveAudioZip.php",
+      ""
+  )]
+  ,
+  ["test", "PennController", PennController(
+      newText("instructions", "Please record a sample and proceed.")
+        .print()
+      ,
+      newVoiceRecorder("recorder")
+        .print()
+      ,
+      newButton("validate", "Click here to continue")
+        .print()
+        .wait()
+  )]
+
+];
+*/
+
 var shuffleSequence = seq("welcome", "preload", startsWith("Test"));
 
 PennController.ResetPrefix(null);
@@ -5,6 +45,30 @@ PennController.ResetPrefix(null);
 PennController.AddHost("http://files.lab.florianschwarz.net/ibexfiles/PennController/SampleTrials/");
 
 var items = [
+
+    ["welcome", "PennController",PennController(
+        newText("testdsd", "waf")
+            .print()
+        ,
+        newButton("valButton", "valdiate")
+            .print()
+            .wait()
+    )]
+    ,
+
+    ["welcome", "PennController",PennController(
+        newButton("valPareso", "wouf")
+            .print()
+            .wait()
+        ,
+        newYoutube("testYT", "aFPtc8BVdJk")
+            .print()
+        ,
+        newButton("valButton", "valdiate")
+            .print()
+            .wait()
+    )]
+    ,
 
     ["welcome", "Message", {html: "Welcome. The resources are currently being preloaded, but you can already try to move to the first trial: it won't start before the resources are preloaded anyway."}]
     ,

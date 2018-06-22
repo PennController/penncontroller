@@ -690,7 +690,8 @@ Instruction._setDefaultsName = function(name) {
     let ti = this;
     ti._defaultInstructions = [];
     // handler
-    PennController.instruction[name] = {defaults: {settings: {}}};
+    name = "default"+name.substr(0,1).toUpperCase()+name.substr(1);
+    PennController.instruction[name] = {settings: {}};
     // We go up the chain
     var constructorClass = ti;
     while (constructorClass != Object.getPrototypeOf(Function)) {
@@ -701,22 +702,22 @@ Instruction._setDefaultsName = function(name) {
         for (let index in instructionClassProperties){
             let f = instructionClassProperties[index];
             // Add only if not added at previous loop (i.e., at a higher instance level)
-            if (!PennController.instruction[name].defaults.hasOwnProperty(f) &&
+            if (!PennController.instruction[name].hasOwnProperty(f) &&
                 proto[f] instanceof Function && !f.match(/^(_.+|constructor|done|run|extend|newMeta)$/)) {
-                PennController.instruction[name].defaults[f] = function(){
+                PennController.instruction[name][f] = function(){
                     ti._defaultInstructions.push([f, arguments]);
-                    return PennController.instruction[name].defaults;
+                    return PennController.instruction[name];
                 };
             }
         }
         // Settings
         for (let s in proto.settings){
             // Add only if not added at previous loop (i.e., at a higher instance level)
-            if (!PennController.instruction[name].defaults.settings.hasOwnProperty(s) &&
+            if (!PennController.instruction[name].settings.hasOwnProperty(s) &&
                 proto.settings[s] instanceof Function && !s.match(/^_/)) {
-                PennController.instruction[name].defaults.settings[s] = function(){
+                PennController.instruction[name].settings[s] = function(){
                     ti._defaultInstructions.push(["settings."+s, arguments]);
-                    return PennController.instruction[name].defaults;
+                    return PennController.instruction[name];
                 };
             }
         }
