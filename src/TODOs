@@ -99,6 +99,9 @@ MAYBE
 // Below: beta 0.2
 
 DONE
+- fixed a bug with typeof(element).match that called 'match' directly on 'element'(!?)
+
+DONE
 - add .test.is for function elements (tests return value)
 
 DONE

@@ -68,6 +68,16 @@ var items = [
     ,*/
 
     ["test", "PennController",PennController(
+        newImage("square", "1fishSquareTank.png")
+        ,
+        newImage("round", "2fishRoundTank.png")
+            .settings.before( getImage("square") )
+            .print()
+        ,
+        newSelector("shapes")
+            .settings.add( getImage("round") , getImage("square") )
+            .wait()
+        ,
         newFunction("test function", function(){ score++; })
             .call()
         ,

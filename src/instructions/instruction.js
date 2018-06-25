@@ -631,7 +631,8 @@ Instruction.prototype.settings = {
     before: function(element){
         let o = this.origin;
         return this.newMeta(function(){
-            if (typeof(element).match(/number|string/))
+            let type = typeof(element);
+            if (type.match(/number|string/))
                 element = $("<span>").html(element);
             if (element instanceof jQuery || element instanceof Instruction)
                 o._left = element;
@@ -645,7 +646,8 @@ Instruction.prototype.settings = {
     after: function(element){
         let o = this.origin;
         return this.newMeta(function(){
-            if (typeof(element).match(/number|string/))
+            let type = typeof(element);
+            if (type.match(/number|string/))
                 element = $("<span>").html(element);
             if (element instanceof jQuery || element instanceof Instruction)
                 o._right = element;
