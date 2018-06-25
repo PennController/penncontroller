@@ -116,29 +116,6 @@ class SelectorInstr extends Instruction {
         });
     }
 
-    // Returns an instruction that sets whether selector is clickable
-    // Done immediately
-    clickable(canClick) {
-        return this.newMeta(function(){ 
-            this.origin.canClick = canClick;
-            this.done();
-        });
-    }
-
-    // Returns an instruction to execute callback upon selection
-    // Done immediately
-    callback(instrOrFunc) {
-        return this.newMeta(function(){
-            this.origin._select = this.origin.extend("_select", function(){
-                if (instrOrFunc instanceof Instruction)
-                    instrOrFunc.run();
-                else if (instrOrFunc instanceof Function)
-                    instrOrFunc.apply(Ctrlr.running.variables, [this.origin.selectedInstruction]);
-            });
-            this.done();
-        });
-    }
-
     // Returns an instruction to wait for something to be selected
     // Done upon selection
     wait(what) {
@@ -240,6 +217,22 @@ SelectorInstr.prototype.test = {
 
 // SETTINGS instructions
 SelectorInstr.prototype.settings = {
+    // Returns an instruction that sets selector as non-clickable
+    disableClicks: function() {
+        return this.newMeta(function(){
+            this.origin.canClick = false;
+            this.done();
+        });
+    }
+    ,
+    // Returns an instruction that sets selector as clickable
+    enableClicks: function() {
+        return this.newMeta(function(){
+            this.origin.canClick = true;
+            this.done();
+        });
+    }
+    ,
     // Returns an instruction that associates instructions with keys
     keys: function (...rest) {
         let keys = rest;
@@ -371,17 +364,17 @@ SelectorInstr.prototype.settings = {
                     return Abort;
                 if (typeof(parameters) == "string") {
                     if (parameters == "first")
-                        Ctrlr.running.save("selection", o.selections[0][0], o.selections[0][1], "NULL");
+                        Ctrlr.running.save(o._id, o.selections[0][0], o.selections[0][1], "selector");
                     else if (parameters == "last")
-                        Ctrlr.running.save("selection", o.selections[o.selections.length-1][0], o.selections[o.selections.length-1][1], "NULL");
+                        Ctrlr.running.save(o._id, o.selections[o.selections.length-1][0], o.selections[o.selections.length-1][1], "selector");
                     else {
                         for (let s in o.selections)
-                            Ctrlr.running.save("selection", o.selections[s][0], o.selections[s][1], "NULL");
+                            Ctrlr.running.save(o._id, o.selections[s][0], o.selections[s][1], "selector");
                     }
                 }
                 else {
                     for (let s in o.selections)
-                            Ctrlr.running.save("selection", o.selections[s][0], o.selections[s][1], "NULL");
+                            Ctrlr.running.save(o._id, o.selections[s][0], o.selections[s][1], "selector");
                 }
             });
             this.done();
@@ -400,9 +393,23 @@ SelectorInstr.prototype.settings = {
         });
     }
     ,
+    // Returns an instruction to set the CSS of the frame
     frame: function(css){
         return this.newMeta(function(){
             this.origin._frameCSS = css;
+            this.done();
+        });
+    }
+    ,
+    // Returns an instruction to execute callback upon selection
+    callback: function(instrOrFunc) {
+        return this.newMeta(function(){
+            this.origin._select = this.origin.extend("_select", function(){
+                if (instrOrFunc instanceof Instruction)
+                    instrOrFunc.run();
+                else if (instrOrFunc instanceof Function)
+                    instrOrFunc.apply(Ctrlr.running.variables, [this.origin.selectedInstruction]);
+            });
             this.done();
         });
     }

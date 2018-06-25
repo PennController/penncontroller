@@ -26,6 +26,8 @@ class AudioInstr extends Instruction {
             this.saveEnds = false;
             // Whether to save seeks
             this.saveSeeks = false;
+            // In case disable, div overlay
+            this.disElement = null;
             // Set element to SPAN (will append audio later)
             this.setElement($("<span>"));
             // Calling addToPreload immediately if settings say so 
@@ -50,21 +52,8 @@ class AudioInstr extends Instruction {
             // If audio not entirely preloaded yet, send an error signal
             if (this.audio.readyState < 4 && _instructionsToPreload.indexOf(this.origin)>=0)
                 Ctrlr.running.save("ERROR_PRELOADING_AUDIO", this.content, Date.now(), "Audio was not fully loaded");
-            // Show controls
-            if (this.controls) {
-                this.audio.attr('controls',true);
-                this.audio.css("display", "inherit");
-            }
-            // Hide audio element
-            else
-                this.audio.css('display','none');
             // Adding it to the element
             this.element.append(this.audio);
-            // Adding the element to the document
-            this._addElement(this.parentElement);
-            // Autoplay
-            if (this.autoPlay)
-                this.audio[0].play();
         }
         this.done();
     }
@@ -121,39 +110,59 @@ class AudioInstr extends Instruction {
 
     // Returns an instruction to show the audio (and its controls)
     // Done immediately
-    show(doShow) {
-        if (typeof(doShow) == "undefined")
-            doShow = true;
+    print() {
         return this.newMeta(function(){ 
-            this.origin.controls = doShow;
-            this.done();
-        });
-    }
-
-    // Returns an instruction that users should click to start playing the audio
-    // Done immediately
-    clickToStart() {
-        return this.newMeta(function(){ 
-            // Making sure the controls are visible
-            if (!this.origin.controls)
-                this.origin.controls = true;
-            this.origin.auto = false;
+            // Adding the element to the document
+            this.origin._addElement(this.origin.parentElement);
+            // In case it was set to 'disabled'
+            if (this.origin.disElement) {
+                let w = this.origin.audio.width();
+                let h = this.origin.audio.height();
+                this.origin.disElement.css({
+                    width: w,
+                    height: h,
+                    'margin-top': -1 * h
+                });
+            }
             this.done();
         });
     }
     
     // Returns an instruction to wait
     // Done when origin's element has been played
-    wait() {
-        // If sound's already completely played back, done immediately
-        if (this.origin.ended)
-            return this.newMeta(function(){ this.done(); });
-        // Else, done when origin's played back
-        let instr = this.newMeta();
-        this.origin._whenEnded = this.origin.extend("_whenEnded", function(){
-            instr.done();
-        })
-        return instr;
+    wait(what) {
+        return this.newMeta(function(){
+            // If sound's already completely played back, done immediately
+            if (what=="first" && this.origin.ended)
+                return this.done();
+            // Else, done when origin's played back
+            let ti = this;
+            // If Test instruction passed as argument
+            if (what instanceof Instruction) {
+                // Test instructions have 'success'
+                if (what.hasOwnProperty("success")) {
+                    // Done only when success
+                    what.success = what.extend("success", function(arg){ if (!(arg instanceof Instruction)) ti.done(); });
+                    // Test 'what' whenever press on enter until done
+                    ti.origin._whenEnded = ti.origin.extend("_whenEnded", function(){
+                        if (!ti.isDone) {
+                            // Resets for re-running the test each time
+                            what.hasBeenRun = false;
+                            what.isDone = false;
+                            what.run();
+                        }
+                    });
+                }
+                // If no 'success,' then invalid test
+                else {
+                    console.log("ERROR: invalid test passed to 'wait'");
+                    ti.done();
+                }
+            }
+            // If no test instruction was passed, listen for next 'enter'
+            else
+                this.origin._whenEnded = this.origin.extend("_whenEnded", function(){ ti.done(); });
+        });
     }
 
     preload() {
@@ -163,6 +172,45 @@ class AudioInstr extends Instruction {
 }
 
 AudioInstr.prototype.settings = {
+    disable: function(){
+        return this.newMeta(function(){
+            this.origin.disElement = $("<div>").addClass("PennController-AudioDisable");
+            let w = this.origin.audio.width();
+            let h = this.origin.audio.height();
+            this.origin.disElement.css({
+                position: "absolute",
+                width: w,
+                height: h,
+                'margin-top': -1 * h,
+                'z-index': 9999,
+                'background-color': "gray",
+                opacity: 0.7
+            });
+            this.origin.element.append(this.origin.disElement);
+            this.done();
+        });
+    }
+    ,
+    enable: function(){
+        return this.newMeta(function(){
+            if (this.origin.disElement){
+                this.origin.disElement.remove();
+                this.origin.disElement = null;
+            }
+        });
+    }
+    ,
+    once: function(){
+        return this.newMeta(function(){
+            let o = this.origin;
+            if (o.ended)
+                o.settings.disable().run();
+            else 
+                o._whenEnded = o.extend("_whenEnded", function(){ o.settings.disable().run(); });
+            this.done();
+        });
+    }
+    ,
     // Returns an instruction to SAVE the parameters
     // Done immediately
     log: function(parameters) {

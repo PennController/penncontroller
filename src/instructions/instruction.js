@@ -277,8 +277,7 @@ export class Instruction {
         if (type.match(/audio/)) {
             // Add SOURCE inside AUDIO, and add 'preload=auto'
             element = $("<audio>").append($("<source>").attr({src: src, type: type}))
-                                    .css("display", "none")
-                                    .attr({preload: "auto"});
+                                    .attr({preload: "auto", controls: "controls"});
             // If the file was so fast to load that it can already play
             if (element.get(0).readyState > (4 - (event=="canplay")))
                 ti._setResource(element);
@@ -689,6 +688,7 @@ Instruction.prototype.settings = {
 Instruction._setDefaultsName = function(name) {
     let ti = this;
     ti._defaultInstructions = [];
+    ti._temporaryDefaultInstructions
     // handler
     name = "default"+name.substr(0,1).toUpperCase()+name.substr(1);
     PennController.instruction[name] = {settings: {}};
@@ -755,4 +755,8 @@ PennController.instruction = function(id) {
     // If there's an instrution referenced as ID while CREATING a controller
     else if (!Ctrlr.running.hasOwnProperty("id") && _localInstructions[_localInstructions.length-1].hasOwnProperty(id))
         return _localInstructions[_localInstructions.length-1][id];
+    else {
+        console.log("ERROR: could not find an element named "+id+", check the spelling (esp. lower/upper-case)");
+        return Abort;
+    }
 };

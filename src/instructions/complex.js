@@ -1,3 +1,7 @@
+// OBSOLETE, REMOVED FROM COMPILATION
+//      Now use .before and .after for in-line display
+//      Replace with 'sequence' element? (asynchroneous creation & execution requires rehaul)
+
 // NOTE: passing an instruction's ID in 'validation' points to the instruction's origin
 //      this is probably not what is intended if Complex contains a wait
 //      > Create separate instructions?

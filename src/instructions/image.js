@@ -47,14 +47,15 @@ class ImageInstr extends Instruction {
     // METHODS RETURNING NEW INSTRUCTIONS
     // ========================================
 
+    // OBSOLETE SINCE INTRODUCTION OF CANVAS
     // Returns an instruction to move the image to X,Y
     // Done immediately
-    move(x,y) {
-        return this.newMeta(function(){
-            this.origin.element.css({left: x, top: y, position: 'absolute'});
-            this.done();
-        });
-    }
+    // move(x,y) {
+    //     return this.newMeta(function(){
+    //         this.origin.element.css({left: x, top: y, position: 'absolute'});
+    //         this.done();
+    //     });
+    // }
 
     // Returns an instruction that the image should be preloaded
     // Done immediately

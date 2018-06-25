@@ -13,7 +13,7 @@ import "./instructions/audio.js";
 import "./instructions/button.js";
 import "./instructions/canvas.js";
 import "./instructions/clear.js";
-import "./instructions/complex.js";
+//import "./instructions/complex.js";   // Obsolete since beta 0.1
 import "./instructions/end.js";
 import "./instructions/function.js";
 import "./instructions/html.js";
@@ -22,7 +22,7 @@ import "./instructions/image.js";
 import "./instructions/key.js";
 import "./instructions/radio.js";
 import "./instructions/save.js";
-//import "./instructions/screen.js";    // TBI
+//import "./instructions/screen.js";    // TBI(?)
 import "./instructions/selector.js";
 import "./instructions/text.js";
 import "./instructions/textInput.js";

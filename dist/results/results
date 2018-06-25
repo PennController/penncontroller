@@ -293,3 +293,267 @@
 # 8. VoiceRecordingsFilename.
 # 9. UploadStatus.
 1529690979,b2720a268b77ce14cf28ba50acba01b5,PennController,DYNAMIC,DYNAMIC,DYNAMIC,DYNAMIC,msr-2018-06-22T18-09-38-729Z.zip,Success
+#
+# Results on Monday June 25 2018 16:05:34 UTC.
+# USER AGENT: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:60.0) Gecko/20100101 Firefox/60.0
+# Design number was non-random = 73
+#
+# Columns below this comment are as follows:
+# 1. Time results were received.
+# 2. MD5 hash of participant's IP address.
+# 3. Controller name.
+# 4. Item number.
+# 5. Element number.
+# 6. Type.
+# 7. Group.
+# 8. Parameter.
+# 9. Value.
+# 10. Time.
+# 11. Comment.
+1529942734,b2720a268b77ce14cf28ba50acba01b5,PennController,0,0,welcome,NULL,Preload,Start,1529942696959,NULL
+1529942734,b2720a268b77ce14cf28ba50acba01b5,PennController,0,0,welcome,NULL,_Page,Creation,1529942696959,_Page
+1529942734,b2720a268b77ce14cf28ba50acba01b5,PennController,0,0,welcome,NULL,Preload,Complete,1529942699041,NULL
+1529942734,b2720a268b77ce14cf28ba50acba01b5,PennController,0,0,welcome,NULL,None,,1529942699042,name
+1529942734,b2720a268b77ce14cf28ba50acba01b5,PennController,0,0,welcome,NULL,None,,1529942699042,age
+1529942734,b2720a268b77ce14cf28ba50acba01b5,PennController,0,0,welcome,NULL,None,,1529942699042,write_something
+1529942734,b2720a268b77ce14cf28ba50acba01b5,PennController,0,0,welcome,NULL,None,unchecked,1529942699042,credit
+1529942734,b2720a268b77ce14cf28ba50acba01b5,PennController,0,0,welcome,NULL,None,unchecked,1529942699042,consent
+1529942734,b2720a268b77ce14cf28ba50acba01b5,PennController,0,0,welcome,NULL,_Page,RunFirstInstruction,1529942699044,_Page
+1529942734,b2720a268b77ce14cf28ba50acba01b5,PennController,0,0,welcome,NULL,_Page,End,1529942721932,_Page
+1529942734,b2720a268b77ce14cf28ba50acba01b5,PennController,4,0,TestRecord,NULL,_Page,RunFirstInstruction,1529942725201,_Page
+1529942734,b2720a268b77ce14cf28ba50acba01b5,PennController,4,0,TestRecord,NULL,_Page,Creation,1529942725201,_Page
+1529942734,b2720a268b77ce14cf28ba50acba01b5,PennController,4,0,TestRecord,NULL,VoiceRecorder,StartRecording,1529942726174,recorder
+1529942734,b2720a268b77ce14cf28ba50acba01b5,PennController,4,0,TestRecord,NULL,VoiceRecorder,StopRecording,1529942728488,recorder
+1529942734,b2720a268b77ce14cf28ba50acba01b5,PennController,4,0,TestRecord,NULL,VoiceRecorder,Filename,msr-2018-06-25T16-05-28-502Z.ogg,recorder
+1529942734,b2720a268b77ce14cf28ba50acba01b5,PennController,4,0,TestRecord,NULL,_Page,End,1529942730519,_Page
+1529942734,b2720a268b77ce14cf28ba50acba01b5,PennController,6,0,Test1b,1,_Page,RunFirstInstruction,1529942730528,_Page
+1529942734,b2720a268b77ce14cf28ba50acba01b5,PennController,6,0,Test1b,1,_Page,Creation,1529942730528,_Page
+1529942734,b2720a268b77ce14cf28ba50acba01b5,PennController,6,0,Test1b,1,_Page,End,1529942733203,_Page
+1529942734,b2720a268b77ce14cf28ba50acba01b5,PennController,7,0,Test2a,2,_Page,RunFirstInstruction,1529942733208,_Page
+1529942734,b2720a268b77ce14cf28ba50acba01b5,PennController,7,0,Test2a,2,_Page,Creation,1529942733208,_Page
+1529942734,b2720a268b77ce14cf28ba50acba01b5,PennController,7,0,Test2a,2,_Page,End,1529942734036,_Page
+# Columns below this comment are as follows:
+# 1. Time results were received.
+# 2. MD5 hash of participant's IP address.
+# 3. Controller name.
+# 4. Item number.
+# 5. Element number.
+# 6. Type.
+# 7. Group.
+# 8. VoiceRecordingsFilename.
+# 9. UploadStatus.
+1529942734,b2720a268b77ce14cf28ba50acba01b5,PennController,DYNAMIC,DYNAMIC,DYNAMIC,DYNAMIC,msr-2018-06-25T16-05-34-088Z.zip,Success
+#
+# Results on Monday June 25 2018 16:07:51 UTC.
+# USER AGENT: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:60.0) Gecko/20100101 Firefox/60.0
+# Design number was non-random = 74
+#
+# Columns below this comment are as follows:
+# 1. Time results were received.
+# 2. MD5 hash of participant's IP address.
+# 3. Controller name.
+# 4. Item number.
+# 5. Element number.
+# 6. Type.
+# 7. Group.
+# 8. Parameter.
+# 9. Value.
+# 10. Time.
+# 11. Comment.
+1529942872,b2720a268b77ce14cf28ba50acba01b5,PennController,0,0,test,NULL,Preload,Start,1529942853101,NULL
+1529942872,b2720a268b77ce14cf28ba50acba01b5,PennController,0,0,test,NULL,_Page,Creation,1529942853101,_Page
+1529942872,b2720a268b77ce14cf28ba50acba01b5,PennController,0,0,test,NULL,Preload,Complete,1529942855261,NULL
+1529942872,b2720a268b77ce14cf28ba50acba01b5,PennController,0,0,test,NULL,_Page,RunFirstInstruction,1529942855263,_Page
+1529942872,b2720a268b77ce14cf28ba50acba01b5,PennController,0,0,test,NULL,None,Jeremy,1529942871727,name
+1529942872,b2720a268b77ce14cf28ba50acba01b5,PennController,0,0,test,NULL,None,23,1529942871727,age
+1529942872,b2720a268b77ce14cf28ba50acba01b5,PennController,0,0,test,NULL,None,Yoyoyoyo,1529942871727,write_something
+1529942872,b2720a268b77ce14cf28ba50acba01b5,PennController,0,0,test,NULL,None,checked,1529942871728,credit
+1529942872,b2720a268b77ce14cf28ba50acba01b5,PennController,0,0,test,NULL,None,checked,1529942871728,consent
+1529942872,b2720a268b77ce14cf28ba50acba01b5,PennController,0,0,test,NULL,None,male,1529942871730,sex
+1529942872,b2720a268b77ce14cf28ba50acba01b5,PennController,0,0,test,NULL,_Page,End,1529942871730,_Page
+# Columns below this comment are as follows:
+# 1. Time results were received.
+# 2. MD5 hash of participant's IP address.
+# 3. Controller name.
+# 4. Item number.
+# 5. Element number.
+# 6. Type.
+# 7. Group.
+# 8. VoiceRecordingsFilename.
+# 9. UploadStatus.
+1529942872,b2720a268b77ce14cf28ba50acba01b5,PennController,DYNAMIC,DYNAMIC,DYNAMIC,DYNAMIC,msr-2018-06-25T16-07-51-754Z.zip,Success
+#
+# Results on Monday June 25 2018 16:09:21 UTC.
+# USER AGENT: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:60.0) Gecko/20100101 Firefox/60.0
+# Design number was non-random = 75
+#
+# Columns below this comment are as follows:
+# 1. Time results were received.
+# 2. MD5 hash of participant's IP address.
+# 3. Controller name.
+# 4. Item number.
+# 5. Element number.
+# 6. Type.
+# 7. Group.
+# 8. Parameter.
+# 9. Value.
+# 10. Time.
+# 11. Comment.
+1529942962,b2720a268b77ce14cf28ba50acba01b5,PennController,0,0,test,NULL,Preload,Start,1529942942474,NULL
+1529942962,b2720a268b77ce14cf28ba50acba01b5,PennController,0,0,test,NULL,_Page,Creation,1529942942475,_Page
+1529942962,b2720a268b77ce14cf28ba50acba01b5,PennController,0,0,test,NULL,Preload,Complete,1529942944462,NULL
+1529942962,b2720a268b77ce14cf28ba50acba01b5,PennController,0,0,test,NULL,_Page,RunFirstInstruction,1529942944463,_Page
+1529942962,b2720a268b77ce14cf28ba50acba01b5,PennController,0,0,test,NULL,test html,Jeremy,1529942961858,name
+1529942962,b2720a268b77ce14cf28ba50acba01b5,PennController,0,0,test,NULL,test html,28,1529942961859,age
+1529942962,b2720a268b77ce14cf28ba50acba01b5,PennController,0,0,test,NULL,test html,wafawfawf,1529942961859,write_something
+1529942962,b2720a268b77ce14cf28ba50acba01b5,PennController,0,0,test,NULL,test html,checked,1529942961859,credit
+1529942962,b2720a268b77ce14cf28ba50acba01b5,PennController,0,0,test,NULL,test html,checked,1529942961860,consent
+1529942962,b2720a268b77ce14cf28ba50acba01b5,PennController,0,0,test,NULL,test html,male,1529942961862,sex
+1529942962,b2720a268b77ce14cf28ba50acba01b5,PennController,0,0,test,NULL,_Page,End,1529942961863,_Page
+# Columns below this comment are as follows:
+# 1. Time results were received.
+# 2. MD5 hash of participant's IP address.
+# 3. Controller name.
+# 4. Item number.
+# 5. Element number.
+# 6. Type.
+# 7. Group.
+# 8. VoiceRecordingsFilename.
+# 9. UploadStatus.
+1529942962,b2720a268b77ce14cf28ba50acba01b5,PennController,DYNAMIC,DYNAMIC,DYNAMIC,DYNAMIC,msr-2018-06-25T16-09-21-886Z.zip,Success
+#
+# Results on Monday June 25 2018 16:17:05 UTC.
+# USER AGENT: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:60.0) Gecko/20100101 Firefox/60.0
+# Design number was non-random = 76
+#
+# Columns below this comment are as follows:
+# 1. Time results were received.
+# 2. MD5 hash of participant's IP address.
+# 3. Controller name.
+# 4. Item number.
+# 5. Element number.
+# 6. Type.
+# 7. Group.
+# 8. Parameter.
+# 9. Value.
+# 10. Time.
+# 11. Comment.
+1529943426,b2720a268b77ce14cf28ba50acba01b5,PennController,4,0,TestRecord,NULL,_Page,RunFirstInstruction,1529943421451,_Page
+1529943426,b2720a268b77ce14cf28ba50acba01b5,PennController,4,0,TestRecord,NULL,_Page,Creation,1529943421451,_Page
+1529943426,b2720a268b77ce14cf28ba50acba01b5,PennController,4,0,TestRecord,NULL,VoiceRecorder,StartRecording,1529943421450,recorder
+1529943426,b2720a268b77ce14cf28ba50acba01b5,PennController,4,0,TestRecord,NULL,VoiceRecorder,StopRecording,1529943422452,recorder
+1529943426,b2720a268b77ce14cf28ba50acba01b5,PennController,4,0,TestRecord,NULL,VoiceRecorder,Filename,msr-2018-06-25T16-17-02-464Z.ogg,recorder
+1529943426,b2720a268b77ce14cf28ba50acba01b5,PennController,4,0,TestRecord,NULL,_Page,End,1529943425714,_Page
+# Columns below this comment are as follows:
+# 1. Time results were received.
+# 2. MD5 hash of participant's IP address.
+# 3. Controller name.
+# 4. Item number.
+# 5. Element number.
+# 6. Type.
+# 7. Group.
+# 8. VoiceRecordingsFilename.
+# 9. UploadStatus.
+1529943426,b2720a268b77ce14cf28ba50acba01b5,PennController,DYNAMIC,DYNAMIC,DYNAMIC,DYNAMIC,msr-2018-06-25T16-17-05-752Z.zip,Success
+#
+# Results on Monday June 25 2018 16:17:43 UTC.
+# USER AGENT: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:60.0) Gecko/20100101 Firefox/60.0
+# Design number was non-random = 77
+#
+# Columns below this comment are as follows:
+# 1. Time results were received.
+# 2. MD5 hash of participant's IP address.
+# 3. Controller name.
+# 4. Item number.
+# 5. Element number.
+# 6. Type.
+# 7. Group.
+# 8. Parameter.
+# 9. Value.
+# 10. Time.
+# 11. Comment.
+1529943463,b2720a268b77ce14cf28ba50acba01b5,PennController,4,0,TestRecord,NULL,_Page,RunFirstInstruction,1529943455990,_Page
+1529943463,b2720a268b77ce14cf28ba50acba01b5,PennController,4,0,TestRecord,NULL,_Page,Creation,1529943455990,_Page
+1529943463,b2720a268b77ce14cf28ba50acba01b5,PennController,4,0,TestRecord,NULL,VoiceRecorder,StartRecording,1529943457420,recorder
+1529943463,b2720a268b77ce14cf28ba50acba01b5,PennController,4,0,TestRecord,NULL,VoiceRecorder,StopRecording,1529943459858,recorder
+1529943463,b2720a268b77ce14cf28ba50acba01b5,PennController,4,0,TestRecord,NULL,VoiceRecorder,Filename,msr-2018-06-25T16-17-39-868Z.ogg,recorder
+1529943463,b2720a268b77ce14cf28ba50acba01b5,PennController,4,0,TestRecord,NULL,_Page,End,1529943463235,_Page
+# Columns below this comment are as follows:
+# 1. Time results were received.
+# 2. MD5 hash of participant's IP address.
+# 3. Controller name.
+# 4. Item number.
+# 5. Element number.
+# 6. Type.
+# 7. Group.
+# 8. VoiceRecordingsFilename.
+# 9. UploadStatus.
+1529943463,b2720a268b77ce14cf28ba50acba01b5,PennController,DYNAMIC,DYNAMIC,DYNAMIC,DYNAMIC,msr-2018-06-25T16-17-43-285Z.zip,Success
+#
+# Results on Monday June 25 2018 16:19:46 UTC.
+# USER AGENT: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:60.0) Gecko/20100101 Firefox/60.0
+# Design number was non-random = 78
+#
+# Columns below this comment are as follows:
+# 1. Time results were received.
+# 2. MD5 hash of participant's IP address.
+# 3. Controller name.
+# 4. Item number.
+# 5. Element number.
+# 6. Type.
+# 7. Group.
+# 8. Parameter.
+# 9. Value.
+# 10. Time.
+# 11. Comment.
+1529943587,b2720a268b77ce14cf28ba50acba01b5,PennController,4,0,TestRecord,NULL,_Page,RunFirstInstruction,1529943578702,_Page
+1529943587,b2720a268b77ce14cf28ba50acba01b5,PennController,4,0,TestRecord,NULL,_Page,Creation,1529943578702,_Page
+1529943587,b2720a268b77ce14cf28ba50acba01b5,PennController,4,0,TestRecord,NULL,VoiceRecorder,StartRecording,1529943579568,recorder
+1529943587,b2720a268b77ce14cf28ba50acba01b5,PennController,4,0,TestRecord,NULL,VoiceRecorder,StopRecording,1529943581490,recorder
+1529943587,b2720a268b77ce14cf28ba50acba01b5,PennController,4,0,TestRecord,NULL,VoiceRecorder,Filename,msr-2018-06-25T16-19-41-505Z.ogg,recorder
+1529943587,b2720a268b77ce14cf28ba50acba01b5,PennController,4,0,TestRecord,NULL,_Page,End,1529943586336,_Page
+# Columns below this comment are as follows:
+# 1. Time results were received.
+# 2. MD5 hash of participant's IP address.
+# 3. Controller name.
+# 4. Item number.
+# 5. Element number.
+# 6. Type.
+# 7. Group.
+# 8. VoiceRecordingsFilename.
+# 9. UploadStatus.
+1529943587,b2720a268b77ce14cf28ba50acba01b5,PennController,DYNAMIC,DYNAMIC,DYNAMIC,DYNAMIC,msr-2018-06-25T16-19-46-407Z.zip,Success
+#
+# Results on Monday June 25 2018 16:42:23 UTC.
+# USER AGENT: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:60.0) Gecko/20100101 Firefox/60.0
+# Design number was non-random = 79
+#
+# Columns below this comment are as follows:
+# 1. Time results were received.
+# 2. MD5 hash of participant's IP address.
+# 3. Controller name.
+# 4. Item number.
+# 5. Element number.
+# 6. Type.
+# 7. Group.
+# 8. Parameter.
+# 9. Value.
+# 10. Time.
+# 11. Comment.
+1529944944,b2720a268b77ce14cf28ba50acba01b5,PennController,4,0,TestRecord,NULL,_Page,RunFirstInstruction,1529944935693,_Page
+1529944944,b2720a268b77ce14cf28ba50acba01b5,PennController,4,0,TestRecord,NULL,_Page,Creation,1529944935694,_Page
+1529944944,b2720a268b77ce14cf28ba50acba01b5,PennController,4,0,TestRecord,NULL,VoiceRecorder,StartRecording,1529944937719,recorder
+1529944944,b2720a268b77ce14cf28ba50acba01b5,PennController,4,0,TestRecord,NULL,VoiceRecorder,StopRecording,1529944942377,recorder
+1529944944,b2720a268b77ce14cf28ba50acba01b5,PennController,4,0,TestRecord,NULL,VoiceRecorder,Filename,msr-2018-06-25T16-42-22-393Z.ogg,recorder
+1529944944,b2720a268b77ce14cf28ba50acba01b5,PennController,4,0,TestRecord,NULL,_Page,End,1529944943651,_Page
+# Columns below this comment are as follows:
+# 1. Time results were received.
+# 2. MD5 hash of participant's IP address.
+# 3. Controller name.
+# 4. Item number.
+# 5. Element number.
+# 6. Type.
+# 7. Group.
+# 8. VoiceRecordingsFilename.
+# 9. UploadStatus.
+1529944944,b2720a268b77ce14cf28ba50acba01b5,PennController,DYNAMIC,DYNAMIC,DYNAMIC,DYNAMIC,msr-2018-06-25T16-42-23-725Z.zip,Success

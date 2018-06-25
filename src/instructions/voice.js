@@ -19,15 +19,18 @@ var initiated = false;
 var zipFile;
 // The voice instruction currently active
 var currentVoiceInstruction;
-
+// The top-right DOM element indicating whether it is currently recording
+var statusElement;
 
 // The permission message displayed when the user is asked for access to the recording device
-var permissionMessage = "This experiment collects voice recordings from its participants. "+
-                        "Your browser should now be asking for your permission to use your recording device (if applicable). "+
-                        "By giving you authorization to record and by participating in this experiment, "+
+var permissionMessage = "This experiment collects voice recording samples from its participants. "+
+                        "Your browser should now be prompting a permission request to use your recording device (if applicable). "+
+                        "By giving your authorization to record, and by participating in this experiment, "+
                         "you are giving permission to the designer(s) of this experiment to anonymously collect "+
-                        "the voice  samples recorded during this experiment. "+
-                        "The output audio files will be uploaded to and hosted on a server designated by the experimenter(s). ";
+                        "the voice samples recorded during this experiment. "+
+                        "The output audio files will be uploaded to and hosted on a server designated by the experimenter(s). "+
+                        "If you accept the request, a label will remain visible at the top of this window throughout the whole experiment, "+
+                        "indicating whether you are being recorded.";
                         //"You will be given the option to download a copy of the archive of your audio recordings before it is uploaded.";
 
 // This function defines a controller that initates the recording device
@@ -54,6 +57,9 @@ function initiateRecorder(controller){
         mediaRecorder = new MediaRecorder(stream);
     
         mediaRecorder.onstop = function(e) {
+            statusElement.css({'font-weight': "normal", color: "black", 'background-color': "lightgray"});
+            statusElement.html("Not recording");
+
             console.log("data available after MediaRecorder.stop() called.");
 
             currentVoiceInstruction.filename = 'msr-' + (new Date).toISOString().replace(/:|\./g, '-') + '.ogg';
@@ -68,6 +74,11 @@ function initiateRecorder(controller){
 
             console.log("recorder stopped");
         };
+
+        mediaRecorder.onstart = function(e) {
+            statusElement.css({'font-weight': "bold", color: "white", 'background-color': "red"});
+            statusElement.html("Recording...");
+        }
     
         mediaRecorder.ondataavailable = function(e) {
             chunks.push(e.data);
@@ -83,6 +94,16 @@ function initiateRecorder(controller){
                 .addClass("Message-continue-link")
                 .click(controller.finishedCallback)
         );
+
+        statusElement = $("<div>Not recording</div>");
+        statusElement.css({
+            position: "fixed",
+            left: "47%",
+            top: "0px",
+            padding: "2px",
+            'background-color': "lightgray"
+        });
+        $("#bod").append(statusElement);
 
     })
     .catch(function(err) {
@@ -362,7 +383,83 @@ class VoiceRecorderInstr extends Instruction {
         currentVoiceInstruction = this;
         mediaRecorder.stop();
     }
+    
+    // ========================================
+    // METHODS THAT RETURN NEW INSTRUCTIONS
+    // ========================================
+
+    record() {
+        return this.newMeta(function(){
+            this.origin._start();
+            this.done();
+        });
+    }
+
+    stop() {
+        return this.newMeta(function(){
+            this.origin._stop();
+            if (this.origin.audioPlayer && this.origin.audioPlayer.src)
+                this.origin.audioPlayer.pause();
+            this.done();
+        });
+    }
+
+    play() {
+        return this.newMeta(function(){
+            if (this.origin.audioPlayer && this.origin.audioPlayer.src){
+                this.origin.audioPlayer.currentTime = 0;
+                this.origin.audioPlayer.play();
+            }
+            this.done();
+        });
+    }
+
+    wait(what) {
+        return this.newMeta(function(){
+            let ti = this;
+            if (what=="first" && !this.origin.recording && this.origin.filename)
+                this.done();
+            else if (what instanceof Instruction) {
+                // Test instructions have 'success'
+                if (what.hasOwnProperty("success")) {
+                    // Done only when success
+                    what.success = what.extend("success", function(arg){ if (!(arg instanceof Instruction)) ti.done(); });
+                    // Test 'what' whenever press on enter until done
+                    this.origin._stop = this.origin.extend("_stop", function(){
+                        if (!ti.isDone) {
+                            // Resets for re-running the test each time
+                            what.hasBeenRun = false;
+                            what.isDone = false;
+                            what.run();
+                        }
+                    });
+                }
+                // If no 'success,' then invalid test
+                else {
+                    console.log("ERROR: invalid test passed to 'wait'");
+                    ti.done();
+                }
+            }
+            // If no test instruction was passed, listen for next 'clicked'
+            else
+                this.origin._stop = this.origin.extend("_stop", function(){ ti.done(); })
+        });
+    }
 }
+
+
+// SETTINGS instructions
+VoiceRecorderInstr.prototype.settings = {
+    // Returns an instruction to add/update an instruction on the canvas at (X,Y)
+    once: function(){
+        return this.newMeta(function(){
+            this.origin._stop = this.origin.extend("_stop", function(){
+                this.origin.element.find("button.PennController-VoiceRecorderRecord").attr("disabled", true);
+            });
+            this.done();
+        });
+    }
+};
 
 
 VoiceRecorderInstr._setDefaultsName("voiceRecorder");

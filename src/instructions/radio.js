@@ -138,32 +138,30 @@ class RadioInstr extends Instruction {
             // If only first selection
             if (what == "first" && ti.origin.values.length)
                 this.done();
-            else {
-                if (what instanceof Instruction) {
-                    // Test instructions have 'success'
-                    if (what.hasOwnProperty("success")) {
-                        // Done only when success
-                        what.success = what.extend("success", function(arg){ if (!(arg instanceof Instruction)) ti.done(); });
-                        // Test 'what' whenever press on enter until done
-                        ti.origin._clicked = ti.origin.extend("_clicked", function(){
-                            if (!ti.isDone) {
-                                // Resets for re-running the test each time
-                                what.hasBeenRun = false;
-                                what.isDone = false;
-                                what.run();
-                            }
-                        });
-                    }
-                    // If no 'success,' then invalid test
-                    else {
-                        console.log("ERROR: invalid test passed to 'wait'");
-                        ti.done();
-                    }
+            else if (what instanceof Instruction) {
+                // Test instructions have 'success'
+                if (what.hasOwnProperty("success")) {
+                    // Done only when success
+                    what.success = what.extend("success", function(arg){ if (!(arg instanceof Instruction)) ti.done(); });
+                    // Test 'what' whenever press on enter until done
+                    ti.origin._clicked = ti.origin.extend("_clicked", function(){
+                        if (!ti.isDone) {
+                            // Resets for re-running the test each time
+                            what.hasBeenRun = false;
+                            what.isDone = false;
+                            what.run();
+                        }
+                    });
                 }
-                // If no test instruction was passed, listen for next 'clicked'
-                else
-                   this.origin._clicked = this.origin.extend("_clicked", function(){ ti.done(); });
+                // If no 'success,' then invalid test
+                else {
+                    console.log("ERROR: invalid test passed to 'wait'");
+                    ti.done();
+                }
             }
+            // If no test instruction was passed, listen for next 'clicked'
+            else
+                this.origin._clicked = this.origin.extend("_clicked", function(){ ti.done(); });
         });
     }
 }

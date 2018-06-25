@@ -75,26 +75,49 @@ class TimerInstr extends Instruction {
         return instr;
     }
 
-    // Returns an instruction after setting the origin's step
-    // Done immediately
-    step(value) {
-        // (Re)set the step
-        this.origin.step = value;
-        // Return the instruction itself
-        return this.newMeta(function(){ this.done(); });
-    }
-
     // Returns an instruction to sait until the timer has elapsed
     // Done when the timer has elapsed
-    wait(callback) {
+    wait(what) {
         return this.newMeta(function(){
             let ti = this;
+            if (what=="first" && this.origin.cleared)
+                this.done();
+            else if (what instanceof Instruction) {
+                // Test instructions have 'success'
+                if (what.hasOwnProperty("success")) {
+                    // Done only when success
+                    what.success = what.extend("success", function(arg){ if (!(arg instanceof Instruction)) ti.done(); });
+                    // Test 'what' whenever press on enter until done
+                    ti.origin._elapsed = ti.origin.extend("_elapsed", function(){
+                        if (!ti.isDone) {
+                            // Resets for re-running the test each time
+                            what.hasBeenRun = false;
+                            what.isDone = false;
+                            what.run();
+                        }
+                    });
+                }
+                // If no 'success,' then invalid test
+                else {
+                    console.log("ERROR: invalid test passed to 'wait'");
+                    ti.done();
+                }
+            }
+            // If no test instruction was passed, listen for next 'clicked'
+            else
+                this.origin._elapsed = this.origin.extend("_elapsed", function(){ ti.done(); });
+        });
+    }
+}
+
+TimerInstr.prototype.settings = {
+    callback: function(instructionOrFunction){
+        return this.newMeta(function(){
             let timerCleared = function(){
-                ti.done();
-                if (callback instanceof Function)
+                if (instructionOrFunction instanceof Function)
                     callback();
-                else if (callback instanceof Instruction && !callback.hasBeenRun)
-                    callback.run();
+                else if (instructionOrFunction instanceof Instruction && !instructionOrFunction.hasBeenRun)
+                    instructionOrFunction.run();
             };
             if (this.origin.cleared)
                 timerCleared();
@@ -102,9 +125,16 @@ class TimerInstr extends Instruction {
                 this.origin._elapsed = this.origin.extend("_elapsed", timerCleared);
         });
     }
+    ,
+    // Returns an instruction to set the timer's step
+    step: function(value) {
+        return this.newMeta(function(){ 
+            // (Re)set the step
+            this.origin.step = value;
+            this.done(); 
+        });
+    }
 }
-
-
 
 TimerInstr._setDefaultsName("timer");
 

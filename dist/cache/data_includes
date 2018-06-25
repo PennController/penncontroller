@@ -46,15 +46,18 @@ var items = [
 ];
 */
 
-var shuffleSequence = seq("welcome", "preload", startsWith("Test"));
+//var shuffleSequence = seq("welcome", "preload", startsWith("Test"));
+var shuffleSequence = seq("test");
 
 PennController.ResetPrefix(null);
 
 PennController.AddHost("http://files.lab.florianschwarz.net/ibexfiles/PennController/SampleTrials/");
 
+var score = 0;
+
 var items = [
 
-    ["welcome", "PennController",PennController(
+    /*["welcome", "PennController",PennController(
         newText("testdsd", "waf")
             .print()
         ,
@@ -62,15 +65,53 @@ var items = [
             .print()
             .wait()
     )]
-    ,
+    ,*/
 
-    ["welcome", "PennController",PennController(
-        newButton("valPareso", "wouf")
+    ["test", "PennController",PennController(
+        newFunction("test function", function(){ score++; })
+            .call()
+        ,
+        newText("score", "")
+        ,
+        newAudio("test sentence", "fishRound.ogg")
+            .settings.once()
             .print()
             .wait()
         ,
+        newHtml("test html", "example_intro.html")
+            .settings.log()
+            .print()
+        ,
+        newButton("valPareso", "wouf")
+            .print()
+            //.wait()
+        ,
         newYoutube("testYT", "aFPtc8BVdJk")
             .print()
+        ,
+        getButton("valPareso")
+            .wait()
+        ,
+        newFunction("new function", function(){ getText("score").settings.text("Score: "+score).run(); })
+            .call()
+        ,
+        getText("score")
+            .print()
+        ,
+        newFunction("test score", function(){ return score; })
+            .test.is(1)
+            .success(
+                newText("text 1", "It's 1!!")
+                    .print()
+            )
+            .failure(
+                newText("text not 1", "It's not 1...")
+                    .print()
+            )
+        ,
+        getYoutube("testYT")
+            .play()
+            .wait()
         ,
         newButton("valButton", "valdiate")
             .print()
@@ -91,7 +132,9 @@ var items = [
           .print()
         ,
         newVoiceRecorder("recorder")
+          .settings.once()
           .print()
+          .wait()
         ,
         newButton("validate", "Click here to continue")
           .print()

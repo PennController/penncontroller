@@ -61,19 +61,6 @@ class KeyInstr extends Instruction {
     // METHODS RETURNING NEW INSTRUCTIONS
     // ========================================
 
-    // Returns an instruction to save the key that was pressed
-    // Done immediately
-    log(comment) {
-        return this.newMeta(function(){
-            let ti = this;
-            this._logging = true;
-            Ctrlr.running.callbackBeforeFinish(function(){ 
-                Ctrlr.running.save('keypress', ti.origin.key, ti.origin.time, comment);
-            });
-            this.done();
-        });
-    }
-
     // Returns an instruction to wait for the keypress before proceeding
     // Done when key is pressed
     wait(what) {
@@ -120,6 +107,20 @@ class KeyInstr extends Instruction {
                 else
                    this.origin._pressed = this.origin.extend("_pressed", function(){ ti.done(); });
             }     
+        });
+    }
+}
+
+KeyInstr.prototype.settings = {
+    // Save the key that was pressed
+    log: function(comment) {
+        return this.newMeta(function(){
+            let ti = this;
+            this.origin._logging = true;
+            Ctrlr.running.callbackBeforeFinish(function(){ 
+                Ctrlr.running.save('keypress', ti.origin.key, ti.origin.time, comment);
+            });
+            this.origin.done();
         });
     }
 }

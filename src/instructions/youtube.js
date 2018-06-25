@@ -209,11 +209,11 @@ class YTInstr extends Instruction {
             this.origin.canPlay = true;
             // Listing the YT video as preloaded
             this.origin._setResource(this.iframe);
-            // If video not played yet, play it
-            if (this.hasBeenRun && event.target.getPlayerState() != YT.PlayerState.PLAYING)
+            // If video not played yet but should be playing, play it
+            if (this.origin.commandsQueue.indexOf("play") == 0 && event.target.getPlayerState() != YT.PlayerState.PLAYING)
                 this._play();
-            // If video already playing but not run yet, pause
-            else if (!this.hasBeenRun && event.target.getPlayerState() == YT.PlayerState.PLAYING)
+            // If video already playing but should not be playing yet, pause
+            else if (this.origin.commandsQueue.indexOf("play") != 0 && event.target.getPlayerState() == YT.PlayerState.PLAYING)
                 this._pause();
         }
 
@@ -236,13 +236,34 @@ class YTInstr extends Instruction {
     // Done when the video has been entirely played
     wait(what) {
         return this.newMeta(function(){
+            let ti = this;
             if (what == "first" && this.origin.hasPlayed)
                 this.done();
-            else {
-                let ti = this;
-                this.origin._ended = this.origin.extend("_ended", function(){ ti.done(); });
+            else if (what instanceof Instruction) {
+                // Test instructions have 'success'
+                if (what.hasOwnProperty("success")) {
+                    // Done only when success
+                    what.success = what.extend("success", function(arg){ if (!(arg instanceof Instruction)) ti.done(); });
+                    // Test 'what' whenever end
+                    this.origin._ended = this.origin.extend("_ended", function(){
+                        if (!ti.isDone) {
+                            // Resets for re-running the test each time
+                            what.hasBeenRun = false;
+                            what.isDone = false;
+                            what.run();
+                        }
+                    });
+                }
+                // If no 'success,' then invalid test
+                else {
+                    console.log("ERROR: invalid test passed to 'wait'");
+                    ti.done();
+                }
             }
-        })
+            // If no test instruction was passed, listen for next 'end'
+            else
+                this.origin._ended = this.origin.extend("_ended", function(){ ti.done(); });
+        });
     }
 
     // Returns an instruction to pause the video

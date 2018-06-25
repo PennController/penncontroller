@@ -1,10 +1,12 @@
-- defaultText instead of text.defaults
-- fix video automatically starting when first thing on first trial(?)
 - fix voicerecorder with Chrome
-- add .record to VoiceRecorder element (add something that tells signals recording is on)
-- add .wait for VoiceRecorder (upon second press on red button)
-- add .settings.once for VoiceRecorder (disable recorder after first recording's done)
-- add a way to record fields from an HTML element 
+    > certificate problem, fixing requires installing a certificate (tell Alex)
+
+- make 'defaults' local
+    > use something like PennController.GlobalDefaults() for global defaults?
+        (no way of telling from within defaultX whether it is called by PennController() or globally)
+    > create 'header' and 'footer'
+        can put defaults in header
+
 - add the drag'n'drop element (but what/when to log?)
 - add a way of dynamically manipulating variables (counter design)
 
@@ -37,8 +39,6 @@ DEVELOPMENT:
         }
     });
 
-
-- Add a drag'n'drop function (and record the associated events)
 
 - Fix what happens when no host and no zip provided
 
@@ -81,7 +81,7 @@ DEVELOPMENT:
 
 
 
-IN PROGRESS
+IN PROGRESS     OBSOLETE
 - Add a SHUFFLE method to ComplexInstr (already implemented in selector)        < not sure it's needed
     can pass indexes/instructions as parameters
     e.g.    t( t("image1.png").id("i1"), t("image2.png").id("i2"),   t("<br>"),   t("image3.png").id("i3"), t("image4.png").id("i4") ).shuffle(t("i1"),t("i2"),t("i3"),t("i4"))
@@ -95,6 +95,30 @@ MAYBE
 
 - Add a first trial that measures latencies?
 
+
+// Below: beta 0.2
+
+DONE
+- add .test.is for function elements (tests return value)
+
+DONE
+- add .settings.once for Audio (and enable/disable)
+
+DONE
+- add .record to VoiceRecorder element (add something that tells signals recording is on)
+- add .wait for VoiceRecorder (upon second press on red button)
+- add .settings.once for VoiceRecorder (disable recorder after first recording's done)
+
+DONE
+- add a way to record fields from an HTML element 
+
+DONE
+- defaultText instead of text.defaults
+
+DONE
+- fix video automatically starting when first thing on first trial(?)
+
+// Below: beta 0.1
 
 DONE
 - Add support for HTML files to the PennController.instruction() function (chunk_includes)
