@@ -338,19 +338,28 @@ SelectorInstr.prototype.settings = {
     ,
     // Returns an instruction to disable the selector right after first selection
     once: function () {
-        let ti = this.origin;
-        ti._select = ti.extend("_select", function(){ ti.enabled = false; });
         return this.newMeta(function(){
+            let o = this.origin;
+            if (o.selectedInstruction)
+                o.enabled = false;
+            else
+                o._select = o.extend("_select", function(){ o.enabled = false; });
             this.done();
         });
     }
     ,
-    // Returns an instruction to enable/disable the selector
-    enable: function (active) {
-        if (typeof(active)=="undefined")
-            active = true;
+    // Returns an instruction to enable the selector
+    enable: function () {
         return this.newMeta(function(){
-            this.origin.enabled = active;
+            this.origin.enabled = true;
+            this.done();
+        });
+    }
+    ,
+    // Returns an instruction to disable the selector
+    disable: function () {
+        return this.newMeta(function(){
+            this.origin.enabled = false;
             this.done();
         });
     }
