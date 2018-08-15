@@ -1,234 +1,197 @@
-var shuffleSequence = seq("test");
+// This tells Ibex you will send the results early
+var manualSendResults = true;
+var showProgressBar = true;
+var shuffleSequence = seq("consent","instructions","start","Practice","preexpt",randomize("experiment"),
+                            "send","feedback","confirmation","final");
+// rshuffle(startsWith("experiment")),rshuffle(startsWith("experiment"))
+PennController.ResetPrefix(null);
 
-// Preloading two zip files
-PennController.PreloadZip("http://files.lab.florianschwarz.net/ibexfiles/PsEntAliens/Images.zip",
-                          "http://files.lab.florianschwarz.net/ibexfiles/PsEntAliens/StopSentences.zip");
 
-// Much quicker to type T than to type PennController.instruction each time
-var t = PennController.instruction;
-
-// Disabling autopreload for test purposes
-/*PennController.AutoPreload({
-                                images: false,
-                                audio: false
-});*/
-
-// Setting items is standard
 var items = [
-
-  // The only difference is you call PennController instead of giving an options object
-  ["test", "PennController", PennController(
-
-      /*t("23.wav")
-      ,*/
-      t("23.wav")
-        .wait()
-      ,
-      sometext = t("Some text")
-      // Linebreaks before and after commas to clearly signal instructions steps
-      ,
-      bakeryImage = t("http://files.lab.florianschwarz.net/ibexfiles/Pictures/bakery.png")
-                      .click( t(
-                                  goodjob = t("Good job!")
-                                    .j.css({position: "relative", left: "50px", top: "-75px", background: "yellow"})
-                                  ,
-                                  t.timer(1500, goodjob.remove())
-                                )
-                      )
-                      .preload()
-      ,
-      pressf = t("Press F")
-      ,
-      key = t.key("F").save()
-      ,
-      t.clear()
-      ,
-      //t("http://files.lab.florianschwarz.net/ibexfiles/PSEnt/Audio/kid_Also_baseball_cap.wav")
-      //  .wait()
-      //,
-      scaleLine = t(
-                      t("text left"),
-                      scale = t.radioButtons('radios',5).save(),
-                      t("text right")
-                  )
-      ,
-      /*t.audio("http://files.lab.florianschwarz.net/ibexfiles/LucyCate/LDSF/duck.mp3")
-        .wait()
-        .save()
-      ,*/
-      pressforj = t("Press F or J")
-      ,
-      t.key("FJ").save("F or J")
-      ,
-      pressforj.remove()
-      ,
-      keyvalidation = t("Now press any key")
-      ,
-      t.key().when(
-          scale.selected([0,4]),
-          t(
-            warning = t("<p>Select an end button before pressing a key.</p>")
-              .move(scaleLine)
-              .j.css({color: "red", "font-weight": "bold"})
-            ,
-            scale.click( warning.remove() )
-          )
-      )
-      ,
-      keyvalidation.remove()
-      ,
-      t("Click here to end").click()
-
-  )],
-
-
-  ["test", "PennController", PennController(
-
-      sentence = t("These four aliens had to leave their home planet. "+
-                   "While in transit on Planet XR, nothing happened to their color. "+
-                   "Then they moved on to Planet PH.")
-      ,
-      /*t(
-          //blue = t("alien_blue.png").j.css({width: "20px", height: "100px"}),
-          blue = t("alien_blue.png").resize("20px", "100px"),
-          //red = t("alien_red.png").j.css({width: "20px", height: "100px"})
-          red = t("alien_red.png").resize("20px", "100px")
-      )
-      ,*/
-      t(
-          firstRow = t(   
-                          t("F").j.css("font-weight","bold")
-                          , 
-                          t("J").j.css("font-weight","bold")
-                      ).hide()
-          ,
-          secondRow = t(  
-                          blueA = t("alien_blue.png").resize("20px", "100px")
-                          ,
-                          redA = t("alien_red.png").resize("20px", "100px")
-                      )
-      )
-      ,
-      sel = t.selector(blueA, redA)
-              .shuffle()
-              .enable(false)
-      ,
-      pressspace = t("Press space")
-      ,
-      t.key(" ")
-        .save()
-      ,
-      t(150)
-      ,
-      sentence.remove()
-      ,
-      pressspace.remove()
-      ,
-      t(550)
-      ,
-      audio = t("23.wav")
-          .wait()
-      ,
-      firstRow.hide(false)
-      ,
-      forj = t("Press F or J")
-      ,
-      sel
-        .enable()
-        .keys("FJ")
-        .clickable(false)
-        .once()
-        .wait()
-      ,
-      forj.remove()
-      ,
-      firstRow.hide()
-      ,
-      t(1000)
-      ,
-      t("Press any key")
-      ,
-      t.key()
-
-  )],
-
-
-
-  ["test", "PennController", PennController(
-
-
-      /*t(
-          blue = t("alien_blue.png").resize("20px", "100px"),
-          //red = t("alien_red.png").j.css({width: "20px", height: "100px"})
-          red = t("alien_red.png").resize("20px", "100px")
-      )
-      ,*/
-
-      slc = t.selector(
-          blue = t("alien_blue.png").resize("20px", "100px"),
-          red = t("alien_red.png").resize("20px", "100px")
-      )
-          .enable(false)
-          .shuffle()
-          .keys("FJ")
-          .clickable(false)
-          .once()
-      ,
-      sentence = t("These four aliens had to leave their home planet. "+
-                   "While in transit on Planet XR, nothing happened to their color. "+
-                   "Then they moved on to Planet PH.")
-      ,
-      /*t(
-          //blue = t("alien_blue.png").j.css({width: "20px", height: "100px"}),
-          blue = t("alien_blue.png").resize("20px", "100px"),
-          //red = t("alien_red.png").j.css({width: "20px", height: "100px"})
-          red = t("alien_red.png").resize("20px", "100px")
-      )
-      ,*/
-      pressspace = t("Press space")
-      ,
-      t.key(" ")
-        .save()
-      ,
-      t(150)
-      ,
-      sentence.remove()
-      ,
-      pressspace.remove()
-      ,
-      t(550)
-      ,
-      audio = t("23.wav")
-          .wait()
-      ,
-      t("Press F or J")
-      ,
-      slc
-        .enable(true)
-        .wait()
-      ,
-      console.log(slc)
-      ,
-      t(1000)
-      ,
-      t("Press any key")
-      ,
-      t.key()
-
-  )],
-
-
-  ["test", "PennController", PennController(
-
-      sometext = t("This is another test")
-      ,
-      t(
-          key = t("Click here").click()
-          , 
-          t(" (clicking here will have no effect)").click()
-      )
-      .validation("all")
-
-  )]
-      
+    /*
+    ["consent", "PennController", PennController(
+        newVar("test", 0)
+            .settings.global(),
+        newCanvas("myCanvas", 400, 100)
+            .settings.add(0, 0, newText("left", "Waf waf").settings.selector(newSelector("words")) )
+            .settings.add(200, 0, newText("right", "Wouf wouf").settings.selector(getSelector("words")) )
+            .print()
+        ,
+        newText("text", getVar("test"))
+            .print()
+        ,
+        newButton("continue", "Continue")
+            .print()
+            .wait()
+            .store("test")
+        ,
+        getText("text")
+            .settings.text( getVar("test").set(v=>v+1) )
+        ,
+        getButton("continue")
+            .wait()
+    )]
+    ,
+    ["consent", "PennController", PennController(
+        //newVar("test", "waf"),
+        newCanvas("myCanvas", 400, 100)
+            .settings.add(0, 0, newText("left", "Waf waf").settings.selector(newSelector("words")) )
+            .settings.add(200, 0, newText("right", "Wouf wouf").settings.selector(getSelector("words")) )
+            .print()
+        ,
+        newText("text", "")
+            .settings.text( getVar("test").set(v=>v+1) )
+            .print()
+        ,
+        newButton("continue", "Continue")
+            .print()
+            .wait()
+    )]
+    ,
+    */
+    ["consent", "PennController", PennController(
+        newHtml("consent", "IbexConsentProlific.html")
+            .print()
+        ,
+        newButton("consent btn", "I consent to take this experiment")
+            .print()
+            .wait( getHtml("consent").test.complete().failure( getHtml("consent").warn() ) )
+    )]
+    , 
+    ["instructions", "PennController", PennController(
+        newHtml("instructions form", "IbexInstructions-Unmarked.html")
+            .print()
+        ,
+        newButton("continue to expt", "Click to start the experiment.")
+            .print()
+            .wait( getHtml("instructions form").test.complete().failure( getHtml("instructions form").warn() ) )
+    )]
+	,
+   ["start", "PennController", PennController(
+        newText("start message", "Let's start with a couple of practice items!")
+            .settings.bold() 
+			.settings.center()
+            .print()	
+        ,
+        newButton("continue to practice", "Continue to the practice items.")
+            .print()
+            .wait()			
+    )]	
+    ,
+   ["preexpt", "PennController", PennController(
+        newText("pre experiment", "The actual experiment is about to begin. Please turn off any distractions and complete the experiment in one sitting.")
+            .settings.bold() // Boldface
+			.settings.center()
+            .print()			
+        ,
+        newButton("continue to critical", "Take the experiment.")
+            .print()
+            .wait()				
+    )]	
+    ,
+    ["send", "__SendResults__", {}]
+	,
+    ["feedback", "PennController", PennController(
+        newHtml("feedback form", "IbexFeedbackPreConfirmationProlific.html")
+            .print()
+        ,
+        newButton("continue to confirm", "Click here to confirm your participation!")
+			.settings.bold()
+			.print()
+            .wait()				
+    )]
+	,
+    ["confirmation", "PennController", PennController(
+        newHtml("confirmation form", "IbexConfirmationProlific.html")
+            .print()
+        ,
+        newButton("continue final", "Click to confirm that your answers went through.") // To debriefing, on Sona.
+            .print()
+            .wait()						
+    )]
+	,	
+// Debriefing (Sona only)
+//    ["debriefing", "PennController", PennController(
+//       newHtml("confirmation form", "IbexDebriefing.html")
+//            .print()
+//		,
+ //       newButton("continue to confirm", "Click to confirm that your answers went through.")
+	//		.settings.bold()
+		//	.print()
+          //  .wait()
+//    )]                     
+//,
+   ["final", "PennController", PennController(
+        newText("final message", "The results were successfully sent to the server. Thanks!")
+            .settings.bold() // Boldface
+			.settings.center()
+            .print()			
+    )]
+	
 ];
+
+PennController.GetTable( "datasource_however.txt" ).setLabel("Expt");
+
+PennController.FeedItems( PennController.GetTable( "datasource_however.txt" ).filter("Expt","Practice"),
+    (item) => PennController(
+	    newText("background", "Imagine that you're at the gym, and you happen to overhear the following bit of someone's conversation:")
+			.settings.center()
+            .print()		
+        ,
+		newText("stimuli", item.StimUnmarked)
+			.print()
+		,
+        //	INSTRUCTIONS
+	    //,
+        newText("question", "To me, this sentence sounds:")
+ 			.settings.center()
+            .print()	
+        ,
+        newScale("answer", 9)
+			.settings.center()		
+            .settings.before( newText("labelLeft", "Completely unnatural").settings.bold() )  // Text on the left
+            .settings.after( newText("labelRight", "Completely natural").settings.bold() ) // Text on the right		
+            .print()
+            .wait() // This waits for a selection before validation
+		,	
+        newButton("validate", "Next question.")
+			.settings.center()	
+            .print()	
+            .wait()
+	)
+);
+
+PennController.FeedItems( PennController.GetTable( "datasource_however.txt" ).filter("Expt","experiment"),
+    (item) => PennController(
+	    newText("background", "Imagine that you're at the gym, and you happen to overhear the following bit of someone's conversation:")
+			.settings.center()
+            .print()		
+        ,
+		newText("stimuli", item.StimUnmarked)
+			.print()
+		,
+	    //	INSTRUCTIONS
+		//,
+        newText("question", "To me, this sentence sounds:")
+ 			.settings.center()
+            .print()	
+        ,
+        newScale("answer", 9)
+			.settings.center()		
+            .settings.before( newText("labelLeft", "Completely unnatural").settings.bold() )  // Text on the left
+            .settings.after( newText("labelRight", "Completely natural").settings.bold() ) // Text on the right		
+            .print()
+            .wait() // This waits for a selection before validation
+		,	
+        newButton("validate", "Next question.")
+			.settings.center()	
+            .print()
+            .wait()
+	)
+);
+
+
+
+
+
+

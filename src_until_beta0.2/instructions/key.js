@@ -144,6 +144,9 @@ KeyInstr.prototype.test = {
                 else
                     return this.failure();
             }
+            // A key was pressed ('key' is not null): success
+            else
+                return this.success();
         });
         // What happens if success
         istr.success = function(successInstruction){

@@ -1,50 +1,53 @@
+BETA 0.3
+    * Proceeded to complete engine overhaul
+    * Default prefix is now 'Elements' (e.g. PennController.Elements.newText("myText", "hello") )
+    * Fixed ResetPrefix (was testing type with "text" insteand of "string")
+    * New format for saved lines (now [ElementType, ElementName, Parameter, Value, EventTime, Comments])
+    * Default commands are now specific to a trial
+    * Printed elements are now all embedded in a container DIV and assigned classes based on their type and their name
+    * Trials can now be run multiple times (when their labels appear more than once in shuffleSequence)
+    * GetTable().setLabel, GetTable().setItem and GetTable().setGroup now return the table
+    * Settings commands 'before' and 'after' now inherit blocking from the commands they execute
+    * Scale buttons now save option's index if no label was specified
+    * Fixed timer.settings.callback (froze)
+    * Fixed key.test.pressed()
+    + PennController._AddElementType for developers to design their own element types like text, audio, etc.
+    + PennController._AddStandardCommands for developers to add commands to all elements of all types
+    + Added PennController.Header and PennController.Footer
+    + Added .noHeader and .noFooter methods for PennController
+    + Added .log method for PennController, to add columns (previously known as .logAppend, which now adds *lines*)
+    + Added .setOption  method for PennController
+    + Added new element type: Var
+    + Added new element type: Tooltip
+    + Added Settings command .slider for Scale elements
+    + Added Settings commands .horizontal and .vertical for Scale elements
+    + Added Test command .ended for Timer elements
+    + Added Action command .stop for Timer elements
+    + Added Test command .clicked for Button elements
+    + Added Settings command .length for TextInput elements
+    + Added Test command .complete and Action command .warn for Html elements
+    + Added Settings command .once for Youtube elements
+    + Added Test commands .ended and .clicked for Youtube elements
+    + Added Test command .printed as Standard
+    + Added Settings commands .hidden and .visible as Standard
+    + Added Settings command .settings.selector as Standard (added by Selector)
+    + Added Action command .setVar as Standard (added by Var)
+    + Added options to .settings.log for TextInput, including possibility to record every single key press
+
 - fix voicerecorder with Chrome
     > certificate problem, fixing requires installing a certificate (tell Alex)
 
-- make 'defaults' local
-    > use something like PennController.GlobalDefaults() for global defaults?
-        (no way of telling from within defaultX whether it is called by PennController() or globally)
-    > create 'header' and 'footer'
-        can put defaults in header
-
 - add the drag'n'drop element (but what/when to log?)
-- add a way of dynamically manipulating variables (counter design)
 
 
 - PRIORITY NOTES:                                                               [ Not happened in a while... ]
     >   Conflict between AUDIO and IFRAME??? > Sometimes
             >> MAYBE NOT DUE TO IFRAME, BUT PROBLEM MORE GENERALLY...?
 
-DEVELOPMENT:
-
-    PennController.AddInstruction({
-        name: "VoiceRecorder",
-        _init: function(Instruction, Abort) {
-            class VoiceRecorder extends Instruction {
-                constructor(time){
-                    if (super(time)==Abort)
-                        return Abort;
-                    this.time = time;
-                }
-                run(){
-                    if (super.run()==Abort)
-                        return Abort;
-                    mediaRecorder.start();
-                }
-            }
-            let caller = function(time) { 
-                return new VoiceRecorder(time); 
-            };
-            return caller;
-        }
-    });
-
-
 - Fix what happens when no host and no zip provided
 
 - Add a VIDEO Instruction
 
-- Add a Tooltip Instruction
 
 - Mouse
     > Save mouse location on click events
@@ -63,8 +66,6 @@ DEVELOPMENT:
 
 - Add some way to LOOP instructions
     > In particular, trigger an instruction EACH TIME a key is pressed (t.key("FJ").whenever( t("imgBeach").hide() )
-
-- Add 'controls' for YT (and Audio?)
 
 - Write the Screen Instruction to prevent added elements from showing up
     > play with the _addElementTo function
@@ -94,6 +95,51 @@ MAYBE
     Each instruction is done after DELAY after it was run (if not already done)
 
 - Add a first trial that measures latencies?
+
+
+
+// Below beta 0.3
+DONE
+- add a way of dynamically manipulating variables (counter design)
+
+DONE (partly, limitations)
+- Add 'controls' for YT (and Audio?)
+
+DONE
+- Add a Tooltip Instruction
+
+DONE
+- add youtube.settings.once
+- add youtube.test.ended
+- add button.test.clicked
+
+DONE
+- make 'defaults' local
+    > use something like PennController.GlobalDefaults() for global defaults?
+        (no way of telling from within defaultX whether it is called by PennController() or globally)
+    > create 'header' and 'footer'
+        can put defaults in header
+
+DONE
+- GetTable().setLabel, GetTable().setItem and GetTable().setGroup now return the table
+
+DONE
+- Fixed ResetPrefix (was testing type with "text" insteand of "string")
+
+DONE
+- added timer.test.ended
+
+DONE
+- scale buttons now save index if no label specified
+
+DONE
+- key.pressed() now works
+
+DONE
+- implemented timer.stop
+
+DONE
+- fixed timer.settings.callback (kept being frozen)
 
 
 // Below: beta 0.2

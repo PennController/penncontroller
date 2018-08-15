@@ -1,43 +1,25 @@
-// The controller object itself
-import "./controller.js";
+import "./utils.js";                    // bunch of utility functions
+import "./pennengine.js";               // defines PennEngine [local]
+import "./penncontroller.js";           // defines PennController and calls define_ibex_controller
+import "./elements.js";                 // constructor for element types [fed with PennEngine]
+import "./zip.js";                      // adds the PreloadZip global command [imports jszip and jszip-utils]
+import "./tables.js";                   // defines FeedItems    [imports jquery-csv]
 
-// The preloaders
-import "./preload/preload.js";
-import "./preload/preloadZip.js";       //  Uses JSZip
+window.PennController = PennController; // PennController is the only object to be exported front-end
 
-// This defines the Instruction class
-// It should always be imported
-import "./instructions/instruction.js";
-// List of specific instructions to import
-import "./instructions/audio.js";
-import "./instructions/button.js";
-import "./instructions/canvas.js";
-import "./instructions/clear.js";
-//import "./instructions/complex.js";   // Obsolete since beta 0.1
-import "./instructions/end.js";
-import "./instructions/function.js";
-import "./instructions/html.js";
-import "./instructions/if.js";
-import "./instructions/image.js";
-import "./instructions/key.js";
-import "./instructions/radio.js";
-import "./instructions/save.js";
-//import "./instructions/screen.js";    // TBI(?)
-import "./instructions/selector.js";
-import "./instructions/text.js";
-import "./instructions/textInput.js";
-import "./instructions/timer.js";
-//import "./instructions/tooltip.js";   // TBI
-import "./instructions/voice.js";       // Uses JSZip
-import "./instructions/youtube.js";     // Uses code from Google
-
-
-// Table handling
-import "./tables.js";                   // Uses jQuery-CSV extension
-
-
-// IBEX controller
-import "./define_ibex_controller";
-
-// Export PennController as a global object
-window.PennController = PennController;
+// import "./elements/PennElement_audio.js";
+// import "./elements/PennElement_button.js";
+// import "./elements/PennElement_canvas.js";
+// import "./elements/PennElement_function.js";
+// import "./elements/PennElement_html.js";
+// import "./elements/PennElement_image.js";
+// import "./elements/PennElement_key.js";
+// import "./elements/PennElement_scale.js";
+// import "./elements/PennElement_selector.js";
+// import "./elements/PennElement_text.js";
+// import "./elements/PennElement_textinput.js";
+// import "./elements/PennElement_timer.js";
+// import "./elements/PennElement_tooltip.js";
+// import "./elements/PennElement_var.js";
+// import "./elements/PennElement_voicerecorder.js";
+// import "./elements/PennElement_youtube.js";

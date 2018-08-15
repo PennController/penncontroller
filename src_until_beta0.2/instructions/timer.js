@@ -64,15 +64,13 @@ class TimerInstr extends Instruction {
 
     // Returns an instruction that prematurely stops the timer
     // Done immediately
-    stop(done) {
-        let ti = this, instr = this.newMeta(function() { ti.done });
-        instr.run = function(){ 
-            clearInterval(ti.origin.timer);
-            // If DONE is true, the (origin) timer instruction is considered done upon stopping
-            if (done)
-                ti.origin.done();
-        }
-        return instr;
+    stop() {
+        return this.newMeta(function(){
+            let origin = this.origin;
+            clearTimeout(origin.timer);
+            origin._elapsed();
+            this.done();
+        });
     }
 
     // Returns an instruction to sait until the timer has elapsed
@@ -110,12 +108,13 @@ class TimerInstr extends Instruction {
     }
 }
 
+// SETTINGS 'instructions'
 TimerInstr.prototype.settings = {
     callback: function(instructionOrFunction){
         return this.newMeta(function(){
             let timerCleared = function(){
                 if (instructionOrFunction instanceof Function)
-                    callback();
+                    instructionOrFunction.call();
                 else if (instructionOrFunction instanceof Instruction && !instructionOrFunction.hasBeenRun)
                     instructionOrFunction.run();
             };
@@ -123,6 +122,7 @@ TimerInstr.prototype.settings = {
                 timerCleared();
             else
                 this.origin._elapsed = this.origin.extend("_elapsed", timerCleared);
+            this.done();
         });
     }
     ,
@@ -133,6 +133,45 @@ TimerInstr.prototype.settings = {
             this.origin.step = value;
             this.done(); 
         });
+    }
+}
+
+// TEST 'instructions'
+TimerInstr.prototype.test = {
+    // Tests whether the timer has ended
+    ended: function () {
+        let o = this.origin, arg = arguments;
+        let istr = this.newMeta(function(){
+            if (o.timer.cleared)
+                return this.success();
+            else
+                return this.failure();
+        });
+        // What happens if success
+        istr.success = function(successInstruction){
+            if (successInstruction instanceof Instruction){
+                istr._then = successInstruction;
+                successInstruction.done = successInstruction.extend("done", function(){ istr.done() });
+            }
+            else if (istr._then instanceof Instruction)
+                istr._then.run();
+            else
+                istr.done();
+            return istr;
+        };
+        // What happens if failure
+        istr.failure = function(failureInstruction){
+            if (failureInstruction instanceof Instruction){
+                istr._fail = failureInstruction;
+                failureInstruction.done = failureInstruction.extend("done", function(){ istr.done() });
+            }
+            else if (istr._fail instanceof Instruction)
+                istr._fail.run();
+            else
+                istr.done();
+            return istr;
+        };
+        return istr;
     }
 }
 

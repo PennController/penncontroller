@@ -74,7 +74,10 @@ class RadioInstr extends Instruction {
                     value = i;
                 let input = $("<input>").attr({name: ti._id, value: value, type: ti._type});
                 input.click(function(){
-                    ti._clicked($(this).attr("value"));
+                    if ($(this).attr("value"))
+                        ti._clicked($(this).attr("value"));
+                    else
+                        ti._clicked(i);
                 });
                 tr.append($("<td>").append(input));
                 trLabels.append($("<td>").html(label));

@@ -107,7 +107,7 @@ PennController.AddHost = function() {
 
 // This allows the users to call the instruction methods as global functions
 PennController.ResetPrefix = function(prefix) {
-    if (typeof(prefix)=="text"){
+    if (typeof(prefix)=="string"){
         if (window[prefix])
             return console.log("ERROR: prefix string already used for another JS object");
         window[prefix] = {};

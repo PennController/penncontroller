@@ -60,6 +60,123 @@ var items = [
     ,*/
 
     ["test", "PennController",PennController(
+        newButton("centeredButton", "Click me!")
+            .print()
+            .wait()
+            .settings.bold()
+        ,
+        newTextInput("age", "")
+            .settings.before("How old are you? ")
+            .print()
+            .wait()
+        ,
+        newText("nativeSwahili", "Are you a native speaker of Swahili?")
+            .print()
+        ,
+        newButton("yesSwahili", "Yes")
+        ,
+        newButton("noSwahili", "No")
+            .settings.before( getButton("yesSwahili") )
+            .print()
+        ,
+        newSelector("yesnoSwahili")
+            .settings.add( getButton("yesSwahili") , getButton("noSwahili") )
+            .wait()
+        ,
+        getSelector("yesnoSwahili")
+            .test.selected( getButton("yesSwahili") )
+            .failure( end() ) // Ends the trial prematurely
+        ,
+        newText("other languages", "If you speak any other language(s), please list up to two (one per line)")
+            .print()
+        ,
+        newTextInput("languageList", "")
+            .settings.lines(2)
+            .settings.log()
+            .print()
+        ,
+        newButton("finish", "Send")
+            .print()
+            .wait()
+            ,
+        newTextInput("haiku", "hatsu shigure\nsaru mo komino o\nhoshige nari")
+            .settings.lines(3)
+            .print()
+        ,
+        newTextInput("feedback", "Leave your feedback comments here.")
+            .settings.log()
+            .settings.lines(0)
+            .settings.size(400, 200)
+            .print()
+        ,
+        newButton("send", "Send")
+            .print()
+            .wait()
+        ,
+        newButton("validation", "Validate")
+            .print()
+            .wait()
+        ,
+        newText("start", "Ready... go!")
+            .print()
+        ,
+        newButton("click", "Click me!")
+            .print()
+        ,
+        newTimer("hurry", 1000)
+            //.settings.callback( getButton("click").remove() )
+            .start()
+        ,
+        getButton("click")
+            .wait()
+        ,
+        newText("success", "You're quick!")
+            .print()
+        ,
+        newTimer("infinite", 0)
+            .wait()
+        ,
+        newScale("score",   "Terrible", "Bad", "Good", "Terrific")
+            .settings.before("The last movie I saw was ")
+            .settings.radio()
+            .settings.labels("top")
+            .print()
+            .wait()
+        ,       
+        newScale("score scale", 5)
+            .settings.before("Score: ")
+            .print()
+            .wait()
+        ,
+        newText("score text", "Score: ")
+        ,
+        newFunction("score in text", function () {
+            let values = getScale("score scale").values;
+            getText("score text").settings.text("Score: " + values[values.length-1] + " / 5" ).run()
+        })
+            .call()
+        ,
+        getText("score text")
+            .print()
+        ,
+        newFunction("timestampMultipleOfThree", () => Date.now() % 3 )
+        ,
+        newText("missed", "Bad luck, try again!")
+            .settings.color("red")
+            .settings.bold()
+        ,
+        newButton("myButton", "Click me")
+            .print()
+            .wait(
+                getFunction("timestampMultipleOfThree")
+                    .testNot.is()
+                    .success( getText("missed").remove() )
+                    .failure( getText("missed").print() )
+            )
+        ,
+        getText("missed")
+            .remove()
+        ,
         newImage("square", "1fishSquareTank.png")
         ,
         newImage("round", "2fishRoundTank.png")
