@@ -147,9 +147,9 @@ PennController._AddElementType("Selector", function(PennEngine) {
                 let resolved = false;
                 let oldSelect = this.select;
                 this.select = element => {
-                    oldSelect.apply(this, [element]);
                     if (this.disabled || resolved)
                         return;
+                    oldSelect.apply(this, [element]);
                     if (test instanceof Object && test._runPromises && test.success)
                         test._runPromises().then(value=>{   // If a valid test command was provided
                             if (value=="success"){

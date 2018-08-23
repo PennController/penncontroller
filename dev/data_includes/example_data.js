@@ -1,11 +1,210 @@
-// This tells Ibex you will send the results early
-//var manualSendResults = true;
-var showProgressBar = true;
-var shuffleSequence = seq("label", "consent","instructions","start",/*"Practice-good","Practice-intermed", "Practice-bad","preexpt",randomize("experiment"),
-                            "send","feedback","confirmation","final"*/);
-// rshuffle(startsWith("experiment")),rshuffle(startsWith("experiment"))
+PennController.ResetPrefix(null);
+var shuffleSequence = seq("trial");
+
+var items = [
+  ["trial", "PennController", PennController(
+    defaultImage
+        .settings.size(300, 300)
+        .settings.selector("picture choice")
+    ,
+    newSelector("picture choice")
+        .settings.log()
+    ,
+    newButton("start", "Start")
+        .print()
+        .wait()
+    ,
+    newCanvas("pictures", 700, 300)
+        .settings.add( 0, 0, newImage("leftImage", "http://files.lab.florianschwarz.net/ibexfiles/PennController/SampleTrials/green1.png"))
+        .settings.add(400, 0, newImage("rightImage", "http://files.lab.florianschwarz.net/ibexfiles/PennController/SampleTrials/green2.png"))
+        .print()
+    ,
+    // newAudio("sentence", "http://files.lab.florianschwarz.net/ibexfiles/PennController/SampleTrials/fishRound.ogg")
+    //     .play()
+    newAudio("sentence", "http://files.lab.florianschwarz.net/ibexfiles/IbexTutorial/face.mp3")
+        .play()
+    ,
+    getSelector("picture choice")
+        .wait()
+    ,
+    getAudio("sentence")
+        .stop()
+  )]
+];
+
+// var manualSendResults = true;
+// var shuffleSequence = seq("consent", "description", randomize("rating"), randomize("input"), "feedback", "send", "exit");
+// PennController.ResetPrefix(null);
+
+// var items = [
+//     // Note that we define this item first, because it defines the Var element we will refer to later
+//     ["consent", "PennController", PennController(
+//         newHtml("consent form", "consent.html")
+//             .print()
+//         ,
+//         newTextInput("id")
+//             .settings.log()
+//             .settings.before( newText("before", "Please enter your unique participant ID") )
+//             .print()
+//         ,
+//         newText("warning", "Please enter your ID first")
+//             .settings.color("red")
+//             .settings.bold()
+//         ,
+//         newButton("consent button", "By clicking this button I indicate my consent")
+//             .print()
+//             .wait(  // Make sure the TextInput has been filled
+//                 getTextInput("id")
+//                     .testNot.text("")
+//                     .failure( getText("warning").print() )
+//             )
+//         ,   // Create a Var element before going to the next screen
+//         newVar("ParticipantID")
+//             .settings.global()          // Make it globally accessible
+//             .set( getTextInput("id") )  // And save the text from TextInput
+//     )                   // Now we can save the ID
+//     .log( "ParticipantID", getVar("ParticipantID") )
+//     ]
+//     ,
+//     ["send", "__SendResults__", {}]
+//     ,
+//     ["exit", "PennController", PennController(
+//         newHtml("exit", "exit.html")
+//             .print()
+//         ,
+//         newTimer("dummy", 10)
+//             .wait() // This will wait forever
+//     )]
+//     ,
+//     ["feedback", "PennController", PennController(
+//         newTextInput("feedback", "Type any comment you have here")
+//             .settings.lines(0)
+//             .print()
+//         ,
+//         newButton("validate", "Validate")
+//             .print()
+//             .wait()
+//     )
+//     .log( "ParticipantID", getVar("ParticipantID") )
+//     ]
+//     ,
+//     ["description", "PennController", PennController(
+//         newHtml("description form", "description.html")
+//             .print()
+//         ,
+//         newButton("start", "Start the experiment")
+//             .print()
+//             .wait()
+//     )
+//     .log( "ParticipantID", getVar("ParticipantID") )
+//     ]
+// ];
+
+// PennController.FeedItems( PennController.GetTable("rating.csv") ,
+//     item => PennController(
+//         newText("A's line", item.A)
+//             .print()
+//         ,
+//         newText("B's line", item.B)
+//             .print()
+//         ,
+//         newText("question", "How natural do you find B's answer?")
+//             .settings.italic()
+//             .settings.center()
+//             .print()
+//         ,
+//         newScale("answer",    "Unnatural", "So-so...", "Natural")
+//             .settings.log() // We want to collect data here
+//             .settings.radio()
+//             .settings.labels("bottom")
+//             .settings.center()
+//             .print()
+//             .wait()
+//         ,
+//         newButton("validate score", "Click here to validate")
+//             .settings.center()
+//             .print()
+//             .wait()
+//     )
+//     .log( "Group", item.Group )
+//     .log( "Item" , item.Item  )
+//     .log( "ParticipantID", getVar("ParticipantID") )
+// );
+
+// PennController.FeedItems( PennController.GetTable("input.csv") ,
+//         item => PennController(
+//         newText("warning input", "Please enter some text before validating")
+//             .settings.bold()
+//             .settings.italic()
+//             .settings.color("red")
+//         ,
+//         newText("Instruction", "Please fill the box below to create a sentence that you find natural.")
+//             .settings.italic()
+//             .print()
+//         ,
+//         newTextInput("alternative")
+//             .settings.log() // We want to collect data here
+//             .settings.before( newText("before", item.Sentence) )
+//             .print()
+//         ,
+//         newButton("validate input", "Click here to validate")
+//             .settings.center()
+//             .print()
+//             .wait(
+//                 getTextInput("alternative")
+//                     .testNot.text("")
+//                     .failure( getText("warning input").print() )
+//             )
+//     ) // No 'Group' and 'Item' for input trials with the two-table method (see previous page)
+//     .log( "ParticipantID", getVar("ParticipantID") )
+// );
+
+/*
+var shuffleSequence = seq("trial");
 PennController.ResetPrefix(null);
 
+PennController.AddHost("http://files.lab.florianschwarz.net/ibexfiles/PennController/SampleTrials/");
+
+var items = [
+    ["trial", "PennController", PennController(
+        defaultImage
+            .settings.size(100, 100)
+        ,
+        newText("question", "Which patch do you find greener?")
+            .print()
+        ,
+        newImage("patch1", "green1.png")
+        ,
+        newImage("patch2", "green2.png")
+        ,
+        newCanvas("patches", 250, 100)
+            .settings.add(  0, 0, getImage("patch1"))
+            .settings.add(150, 0, getImage("patch2"))
+            .print()
+        ,
+        newSelector("patchSelection")
+            .settings.add(getImage("patch1"), getImage("patch2"))
+            .settings.once() // The first selection is definitive
+            .wait()
+       ,
+       newText("press a key", "Please press any key to continue.")
+            .print()
+       ,
+       newKey("any", "")
+            .wait()
+    )]
+];*/
+
+
+// This tells Ibex you will send the results early
+//var manualSendResults = true;
+// var showProgressBar = true;
+// var shuffleSequence = seq("label", "consent","instructions","start",/*"Practice-good","Practice-intermed", "Practice-bad","preexpt",randomize("experiment"),
+//                             "send","feedback","confirmation","final"*/);
+// // rshuffle(startsWith("experiment")),rshuffle(startsWith("experiment"))
+// PennController.ResetPrefix(null);
+
+/*
 
 // Adds .settings.keys to all element types (but only effective for Button)
 // PennController._AddStandardCommands(function(PennEngine){
@@ -403,8 +602,4 @@ PennController.FeedItems( PennController.GetTable( "datasource-however.csv" ).fi
 	)
 );
 
-
-
-
-
-
+*/
