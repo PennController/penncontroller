@@ -1,5 +1,5 @@
 import { lazyPromiseFromArrayOfLazyPromises } from "./utils.js";
-import { PennEngine } from "./pennengine.js";
+import { PennEngine } from "./engine.js";
 
 PennController.Elements = {};       // Will add newX/getX/defaultX commands for each element type (see _AddElementType)
 

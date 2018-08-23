@@ -1,4 +1,4 @@
-import { PennEngine } from './pennengine.js';
+import { PennEngine } from './engine.js';
 import { lazyPromiseFromArrayOfLazyPromises, minsecStringFromMilliseconds } from './utils.js';
 
 const PRELOADDELAY = 60000;

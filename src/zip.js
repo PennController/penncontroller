@@ -1,7 +1,7 @@
 import * as JSZip from 'jszip';
 import { getBinaryContent } from 'jszip-utils';
 import { hexFromArrayBuffer, getMimetype } from './utils.js';
-import { PennEngine } from "./pennengine.js";
+import { PennEngine } from "./engine.js";
 import { saveAs } from 'file-saver';
 
 let _URLsToLoad = [];

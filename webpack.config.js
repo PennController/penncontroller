@@ -8,7 +8,7 @@ var config = {
   },
   plugins: [
     new webpack.ProvidePlugin({
-      PennController: [path.resolve(__dirname, 'src/penncontroller.js'), 'PennController']
+      PennController: [path.resolve(__dirname, 'src/controller.js'), 'PennController']
     }),
     new webpack.BannerPlugin(fs.readFileSync('./src/banner', 'utf8')),
   ]
@@ -16,7 +16,7 @@ var config = {
 
 module.exports = (env, argv) => {
   if (argv.mode === 'development') {
-    config.entry = './src/index_dev.js';
+    config.entry = './src/index_core.js';
     config.devtool = 'inline-source-map';
     config.output = {
       filename: 'PennController.js',
@@ -24,9 +24,12 @@ module.exports = (env, argv) => {
     };
   }
   if (argv.mode === 'production') {
-    config.entry = './src/index_prod.js';
+    config.entry = {
+      PennCore: './src/index_core.js',
+      PennController: './src/index_full.js'
+    }
     config.output = {
-      filename: 'PennController.js',
+      filename: '[name].js',
       path: path.resolve(__dirname, 'dist')
     };
   }
