@@ -20,12 +20,12 @@ PennController._AddElementType("Timer", function(PennEngine) {
         this.start = ()=>{                  // Starts the timer
             if (this.instance)
                 clearTimeout(this.instance);// Clear any previous running
-            this.events.push(["Event","Start",Date.now(),"NULL"]);
+            this.events.push(["Start","Start",Date.now(),"NULL"]);
             this.instance = setTimeout(()=>this.done(), this.duration);
             this.running = true;
         };
         this.done = ()=>{                   // Called when finished running
-            this.events.push(["Event","End",Date.now(),"NULL"]);
+            this.events.push(["End","End",Date.now(),"NULL"]);
             this.elapsed = true;
             this.running = false;
         };
@@ -34,8 +34,10 @@ PennController._AddElementType("Timer", function(PennEngine) {
 
     // This is executed at the end of a trial
     this.end = function(){
-        if (this.instance)
+        if (this.instance){
             clearTimeout(this.instance);                 // Clear any unfinished timer
+            this.events.push(["End","NA","Never","Had to halt the timer at the end of the trial"]);
+        }
         if (this.log)
             for (let e in this.events)                   // Save events
                 PennEngine.controllers.running.save(this.type, this.id, ...this.events[e]);

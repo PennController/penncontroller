@@ -142,7 +142,7 @@ PennController._AddElementType("Scale", function(PennEngine) {
                 this.buttons = buttons;                             // Array of values/labels
         }
         else                                                        // No argument
-            throw Error("Invalid parameters for scale "+id+" in PennController #"+PennEngine.controllers.underConstruction.id);
+            console.error("Invalid parameters for scale "+id+" in PennController #"+PennEngine.controllers.underConstruction.id);
     };
 
     this.uponCreation = function(resolve){
@@ -166,9 +166,21 @@ PennController._AddElementType("Scale", function(PennEngine) {
 
     // This is executed at the end of a trial
     this.end = function(){
-        if (this.log)
-            for (let c in this.choices)                     // Save any choice if logging
-                PennEngine.controllers.running.save(this.type, this.id, ...this.choices[c]);
+        if (this.log && this.log instanceof Array){
+            if (!this.choices.length)
+                PennEngine.controllers.running.save(this.type, this.id, "Choice", "NA", "Never", "No selection happened");
+            else if (this.choices.length==1)
+                PennEngine.controllers.running.save(this.type, this.id, ...this.choices[0]);
+            else if (this.log.indexOf("all")>-1)
+                for (let c in this.choices)                     // Save any choice if logging
+                    PennEngine.controllers.running.save(this.type, this.id, ...this.choices[c]);
+            else {
+                if (this.log.indexOf("first")>-1)
+                    PennEngine.controllers.running.save(this.type, this.id, ...this.choices[0]);
+                if (this.log.indexOf("last")>-1)
+                    PennEngine.controllers.running.save(this.type, this.id, ...this.choices[this.choices.length-1]);
+            }
+        }
     };
 
     this.value = function(){                                // Value is last choice
@@ -243,7 +255,10 @@ PennController._AddElementType("Scale", function(PennEngine) {
             resolve();
         },
         log: function(resolve,  ...what){
-            this.log = true;
+            if (what.length)
+                this.log = what;
+            else
+                this.log = ["last"];
             resolve();
         },
         once: function(resolve){

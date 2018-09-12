@@ -1,4 +1,5 @@
 import { lazyPromiseFromArrayOfLazyPromises } from "./utils.js";
+import { PennController } from "./controller.js";
 import { PennEngine } from "./engine.js";
 
 PennController.Elements = {};       // Will add newX/getX/defaultX commands for each element type (see _AddElementType)
@@ -273,7 +274,7 @@ let standardCommands = {
         },
         hidden: function(resolve){
             if (this.hasOwnProperty("jQueryElement") && this.jQueryElement instanceof jQuery)
-                this.jQueryElement.css("visibility", "hidden");
+                this.jQueryElement.css({visibility: "hidden"/*, "pointer-events": "none"*/});
             else
                 console.warn("No jQuery instance to hide for element ", this.id);
             resolve();
@@ -314,7 +315,7 @@ let standardCommands = {
         },
         visible: function(resolve){
             if (this.hasOwnProperty("jQueryElement") && this.jQueryElement instanceof jQuery)
-                this.jQueryElement.css("visibility", "visible");
+                this.jQueryElement.css({visibility: "visible"/*, "pointer-events": "auto"*/});
             else
                 console.warn("No jQuery instance to make visible for element ", this.id);
             resolve();
@@ -377,12 +378,10 @@ PennController.Elements.end = function(){
 let elementTypes = {};
 PennController._AddElementType = function(name, Type) {
     if (elementTypes.hasOwnProperty(name))
-        throw Error("Element type "+name+" defined more than once");
+        console.error("Element type "+name+" defined more than once");
     elementTypes[name] = Type;
     function getType(T){                            // Makes sure type is set when calling new/get/default
         let type = new T(PennEngine);               // type defines a template type of PennElement (see, e.g., elements/text.js)
-
-        // assert(typeof(name)=="string", "Creation of new element type requires a name");
 
         if (!type.hasOwnProperty("actions"))
             type.actions = {};
@@ -477,7 +476,7 @@ PennController._AddElementType = function(name, Type) {
         if (element && element.type == name)
             return new PennElementCommands(element, type);      // Return the command API
         else
-            throw Error("No "+name+" element named "+id+" found for controller #"+controller.id);
+            console.error("No "+name+" element named "+id+" found for controller #"+controller.id);
     };
     // 'default'        Use a getter method to run setType when called
     Object.defineProperty(PennController.Elements, "default"+name, {

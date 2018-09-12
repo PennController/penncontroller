@@ -29,7 +29,10 @@ class Controller {
         this.elements[id] = element;
     }
     _getElement(id){                // Returns element from the list
-        return this.elements[id];
+        if (this.elements[id])
+            return this.elements[id];
+        else
+            return console.warn("No element named "+id+" found for current controller");
     }
     //  PUBLIC METHODS  (return the instance)
     logAppend(parameter, value, comments) { // Adds a line to the results file
@@ -133,7 +136,7 @@ PennController.CheckPreloaded = function(...rest) {
     let oldModify = window.modifyRunningOrder;          // Trick: use Ibex's modifyRunningOrder to probe sequence of trials
     window.modifyRunningOrder = function (ro){
         if (oldModify instanceof Function)
-            ro = oldModify.apply(this, [ro]);
+            ro = oldModify.call(this, ro);
         for (let i = 0; i < ro.length; i++){            // Add all the PennController elements' resources to this controller
             let item = ro[i];                           // after all the elements have been created 
             let elements = item.filter(e=>{

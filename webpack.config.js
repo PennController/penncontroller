@@ -1,16 +1,18 @@
 const webpack = require('webpack');
 const path = require('path');
 const fs = require("fs");
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 var config = {
   resolve: {
     extensions: ['.js']
   },
   plugins: [
-    new webpack.ProvidePlugin({
-      PennController: [path.resolve(__dirname, 'src/controller.js'), 'PennController']
+    new webpack.BannerPlugin({
+      banner: fs.readFileSync('./src/banner', 'utf8'),
+      exclude: /.*PennElement.*/
     }),
-    new webpack.BannerPlugin(fs.readFileSync('./src/banner', 'utf8')),
+    new BundleAnalyzerPlugin()
   ]
 };
 
@@ -25,13 +27,17 @@ module.exports = (env, argv) => {
   }
   if (argv.mode === 'production') {
     config.entry = {
-      PennCore: './src/index_core.js',
+      'Components/PennCore': './src/index_core.js',
       PennController: './src/index_full.js'
-    }
+    };
     config.output = {
       filename: '[name].js',
       path: path.resolve(__dirname, 'dist')
     };
+    fs.readdirSync('./src/elements/').forEach(file => {
+      let name = 'Components/'+file.replace(/\.[^.]+$/,'');
+      config.entry[name] = './src/elements/'+file;
+    });
   }
   return config;
 };

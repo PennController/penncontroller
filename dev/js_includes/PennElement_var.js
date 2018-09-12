@@ -51,11 +51,21 @@ PennController._AddElementType("Var", function(PennEngine) {
             this.value = running.value;
         else if (this.scope=="local")
             this.value = this.initialValue;
+        this.values = [];
         resolve();
     };
 
     this.end = function(){
-        // Nothing
+        if (this.log && this.log instanceof Array){
+            if (this.log.indexOf("final")>-1)
+                PennEngine.controllers.running.save(this.type, this.id, "Final", this.value, Date.now(), "Value at the end of the trial");
+            if (this.log.indexOf("set")>-1){
+                for (let v in this.values)
+                    PennEngine.controllers.running.save(this.type, this.id, ...this.values[v]);
+                if (!this.values.length)
+                    PennEngine.controllers.running.save(this.type, this.id, "Set", "NA", "Never", "The Var element was never set during the trial");
+            }
+        }
     };
 
     this.value = function(){
@@ -70,6 +80,7 @@ PennController._AddElementType("Var", function(PennEngine) {
                 this.value = value.apply(this, [this.value]);
             else
                 this.value = value;
+            this.values.push(["Set", this.value, Date.now(), "NULL"]);
             resolve();
         }
     };
@@ -80,6 +91,13 @@ PennController._AddElementType("Var", function(PennEngine) {
             for (c in PennEngine.controllers.list)
                 if (PennEngine.controllers.list[c][this.id] == this)
                     PennEngine.controllers.list[c][this.id] = null;
+            resolve();
+        },
+        log: function(resolve, ...what){
+            if (what.length)
+                this.log = what;
+            else
+                this.log = ["final"];
             resolve();
         },
         global: function(resolve){

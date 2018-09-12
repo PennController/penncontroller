@@ -82,7 +82,6 @@ PennController._AddElementType("TextInput", function(PennEngine) {
                 let first = [].concat(this.types[0]);               // Create a copy, do not modify original
                 first[0] = "First";
                 first[1] = csv_url_encode(first[1]);
-                console.log("End of textInput, save first",first);
                 PennEngine.controllers.running.save(this.type, this.id, ...first);
             }
             if (this.log.indexOf("last")>-1 && this.types.length){

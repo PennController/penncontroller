@@ -29,7 +29,7 @@ PennController._AddElementType("VoiceRecorder", function(PennEngine) {
     // This controller MUST be manually added to items and specify a URL to a PHP file for uploading the archive
     PennController.InitiateRecorder = function(saveURL, message) {
         if (!typeof(url)=="string" || !saveURL.match(/^http.+/i))
-            throw Error("VoiceRecorder's save URL is incorrect", saveURL);
+            console.error("VoiceRecorder's save URL is incorrect", saveURL);
         uploadURL = saveURL;                                    // Assign a URL
         initiated = true;                                       // Indicate that recorder has been initiated
         let controller = PennEngine.controllers.new();          // Create a new controller
@@ -169,7 +169,7 @@ PennController._AddElementType("VoiceRecorder", function(PennEngine) {
 
     this.uponCreation = function(resolve){
         if (typeof(mediaRecorder)=="undefined")
-            throw Error("recorder not initiated. Make sure the sequence of items contains an InitiateRecorder PennController.");
+            console.error("recorder not initiated. Make sure the sequence of items contains an InitiateRecorder PennController.");
         this.log = false;
         this.recordings = [];
         this.recording = false;
@@ -283,17 +283,16 @@ PennController._AddElementType("VoiceRecorder", function(PennEngine) {
     }
     
     this.end = function(){
-        if (this.blob)
+        if (this.blob){
             audioStreams.push({
                 name: this.filename,
                 data: this.blob
             });
-        if (this.log){
+            PennEngine.controllers.running.save(this.type, this.id, "Filename", this.filename, Date.now(), "NULL");
+        }
+        if (this.log)
             for (let r in this.recordings)
                 PennEngine.controllers.running.save(this.type, this.id, ...this.recordings[r]);
-            if (this.blob)
-                PennEngine.controllers.running.save(this.type, this.id, "Filename", this.filename, Date.now(), "NULL");
-        }
     };
 
     this.value = function(){        // Value is blob of recording

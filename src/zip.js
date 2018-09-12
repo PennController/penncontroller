@@ -1,6 +1,8 @@
-import * as JSZip from 'jszip';
+//import * as JSZip from 'jszip';
+var JSZip = require("jszip");
 import { getBinaryContent } from 'jszip-utils';
 import { hexFromArrayBuffer, getMimetype } from './utils.js';
+import { PennController } from "./controller.js";
 import { PennEngine } from "./engine.js";
 import { saveAs } from 'file-saver';
 

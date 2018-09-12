@@ -105,9 +105,21 @@ PennController._AddElementType("Selector", function(PennEngine) {
     this.end = function(){
         this.elements = [];
         this.frame.remove();
-        if (this.log)
-            for (let s in this.selections)
-                PennEngine.controllers.running.save(this.type, this.id, ...this.selections[s]);
+        if (this.log && this.log instanceof Array){
+            if (!this.selections.length)
+                PennEngine.controllers.running.save(this.type, this.id, "Selection", "NA", "Never", "No selection happened");
+            else if (this.selections.length==1)
+                PennEngine.controllers.running.save(this.type, this.id, ...this.selections[0]);
+            else if (this.log.indexOf("all")>-1)
+                for (let s in this.selections)
+                    PennEngine.controllers.running.save(this.type, this.id, ...this.selections[s]);
+            else {
+                if (this.log.indexOf("first")>-1)
+                    PennEngine.controllers.running.save(this.type, this.id, ...this.selections[0]);
+                if (this.log.indexOf("last")>-1)
+                    PennEngine.controllers.running.save(this.type, this.id, ...this.selections[this.selections.length-1]);
+            }
+        }
     };
 
     this.value = function(){                                // Value is last selection
@@ -121,14 +133,16 @@ PennController._AddElementType("Selector", function(PennEngine) {
     
     this.actions = {
         select: function(resolve, elementCommand){
-            if (!(elementCommand._element && elementCommand._element.jQueryElement instanceof jQueryElement))
-                console.warn("Invalid element passed to select command for selector "+this.id+" in PennController #"+PennEngine.controllers.running.id);
-            else{
+            if (!isNaN(Number(elementCommand)) && Number(elementCommand) >= 0 && Number(elementCommand) < this.elements.length)
+                elementCommand = {_element: this.elements[Number(elementCommand)][0]};
+            if (elementCommand._element && elementCommand._element.jQueryElement instanceof jQuery){
                 let disabled = this.disabled;
-                this.disabled = true;
+                this.disabled = false;
                 this.select(elementCommand._element);
                 this.disabled = disabled;
             }
+            else
+                console.warn("Invalid element passed to select command for selector "+this.id+" in PennController #"+PennEngine.controllers.running.id);
             resolve();
         },
         shuffle: function(resolve, ...elements){
@@ -147,9 +161,9 @@ PennController._AddElementType("Selector", function(PennEngine) {
                 let resolved = false;
                 let oldSelect = this.select;
                 this.select = element => {
-                    if (this.disabled || resolved)
+                    let once = oldSelect.apply(this, [element]);
+                    if (resolved || (this.disable && !once))
                         return;
-                    oldSelect.apply(this, [element]);
                     if (test instanceof Object && test._runPromises && test.success)
                         test._runPromises().then(value=>{   // If a valid test command was provided
                             if (value=="success"){
@@ -235,11 +249,14 @@ PennController._AddElementType("Selector", function(PennEngine) {
             }
             resolve();
         },
-        log: function(resolve){
-            this.log = true;
+        log: function(resolve, ...what){
+            if (what.length)
+                this.log = what;
+            else
+                this.log = ["last"];
             resolve();
         },
-        once: function(resolve, what){
+        once: function(resolve){
             if (this.selections.length){
                 this.disabled = true;
                 this.elements.map(e=>e[0].jQueryElement.css("cursor",""));
@@ -252,6 +269,7 @@ PennController._AddElementType("Selector", function(PennEngine) {
                         return;
                     this.disabled = true;
                     this.elements.map(e=>e[0].jQueryElement.css("cursor",""));
+                    return "once";
                 };
             }
             resolve();
@@ -269,6 +287,14 @@ PennController._AddElementType("Selector", function(PennEngine) {
                 return this.selections[this.selections.length-1][1] == elementCommand._element.id;
             console.warn("Invalid element tested for selector "+this.id+" in PennController #"+PennEngine.controllers.running.id, elementCommand._element.id);
             return false;
+        },
+        index: function(elementCommand, index){
+            if (elementCommand == undefined || elementCommand._element == undefined)
+                return console.warn("Invalid element tested for selector "+this.id+" in PennController #"+PennEngine.controllers.running.id, elementCommand._element.id);
+            else if (Number(index) >= 0)
+                return ( this.elements.map(e=>e[0]).indexOf(elementCommand._element) == Number(index) );
+            else 
+                return ( this.elements.map(e=>e[0]).indexOf(elementCommand._element) >= 0 );
         }
     };
 

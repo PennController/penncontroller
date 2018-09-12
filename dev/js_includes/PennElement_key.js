@@ -14,6 +14,7 @@ PennController._AddElementType("Key", function(PennEngine) {
     // This is executed when 'newAudio' is executed in the trial (converted into a Promise, so call resolve)
     this.uponCreation = function(resolve){
         this.pressed = [];
+        this.pressedWait = [];
         this.log = false;
         PennEngine.controllers.running.safeBind($(document),"keydown",e=>{
             if (this.keys.length==0 || this.keys.match(RegExp(String.fromCharCode(e.which),"i")))
@@ -27,9 +28,32 @@ PennController._AddElementType("Key", function(PennEngine) {
 
     // This is executed at the end of a trial
     this.end = function(){
-        if (this.log)
-            for (let key in this.pressed)                   // Save any clicks if logging
-                PennEngine.controllers.running.save(this.type, this.id, ...this.pressed[key]);
+        if (this.log && this.log instanceof Array){
+            if (!this.pressed.length)
+                PennEngine.controllers.running.save(this.type, this.id, "Key", "NA", "Never", "NULL");
+            if (this.log.indexOf("all")>-1){
+                for (let key in this.pressed)                   // Save any clicks if logging
+                    PennEngine.controllers.running.save(this.type, this.id, ...this.pressed[key]);
+            }
+            else if (this.log.indexOf("wait")) {
+                let atleastone = false;
+                for (let key in this.pressed)
+                    if (this.pressed[key][3]=="Wait success"){
+                        PennEngine.controllers.running.save(this.type, this.id, ...this.pressed[key]);
+                        atleastone = true;
+                    }
+                if (!atleastone)
+                    PennEngine.controllers.running.save(this.type, this.id, "Key", "NA", "Never", "(failed keypresses happened)");
+            }
+            else if (this.pressed.length==1)
+                PennEngine.controllers.running.save(this.type, this.id, ...this.pressed[0]);
+            else {
+                if (this.log.indexOf("first")>-1)
+                    PennEngine.controllers.running.save(this.type, this.id, ...this.pressed[0]);
+                if (this.log.indexOf("last")>-1)
+                    PennEngine.controllers.running.save(this.type, this.id, ...this.pressed[this.pressed.length-1]);
+            }
+        }
     };
 
     this.value = function(){                                // Value is last key that was pressed
@@ -53,11 +77,13 @@ PennController._AddElementType("Key", function(PennEngine) {
                     if (test instanceof Object && test._runPromises && test.success)
                         test._runPromises().then(value=>{   // If a valid test command was provided
                             if (value=="success"){
-                                resolved = true; 
+                                this.pressed[this.pressed.length-1][3] = "Wait success";
+                                resolved = true;
                                 resolve();                  // resolve only if test is a success
                             }
                         });
-                    else{                                    // If no (valid) test command was provided
+                    else{                                   // If no (valid) test command was provided
+                        this.pressed[this.pressed.length-1][3] = "Wait failure";
                         resolved = true;
                         resolve();                          // resolve anyway  
                     }
@@ -68,7 +94,10 @@ PennController._AddElementType("Key", function(PennEngine) {
     
     this.settings = {
         log: function(resolve,  ...what){
-            this.log = true;
+            if (what.length)
+                this.log = what;
+            else
+                this.log = ["wait"];
             resolve();
         }
     };

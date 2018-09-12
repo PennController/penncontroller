@@ -23,7 +23,7 @@ PennController._AddElementType("Youtube", function(PennEngine) {
     // This is executed when Ibex runs the script in data_includes (not a promise, no need to resolve)
     this.immediate = function(id, code, showControls){
         if (!(code && typeof(code)=="string"))
-            throw Error("Invalid code for Youtube element "+id, code);
+            console.error("Invalid code for Youtube element "+id, code);
         if (showControls && !showControls.match(/^\W*no\W*controls?\W*$/i))
             showControls = 1;
         else
@@ -135,9 +135,35 @@ PennController._AddElementType("Youtube", function(PennEngine) {
         this.iframe.css("display", "none");
         if (this.jQueryDisable)
             this.jQueryDisable.remove();// Remove disabler from DOM
-        if (this.log)
-            for (let e in this.events)
-                PennEngine.controllers.running.save(this.type, this.id, ...this.events[e]);
+        if (this.log && this.log instanceof Array){
+            if (!this.events.length)
+                PennEngine.controllers.running.save(this.type, this.id, "play", "NA", "Never", "The video was never played during the trial");
+            else if (this.log.indexOf("all")>-1)
+                for (let e in this.events)
+                    PennEngine.controllers.running.save(this.type, this.id, ...this.events[e]);
+            else {
+                if (this.log.indexOf("play")>-1){
+                    let playEvents = this.events.filter(e=>e[0]=="Play");
+                    for (let line in playEvents)
+                        PennEngine.controllers.running.save(this.type, this.id, ...playEvents[line]);
+                }
+                if (this.log.indexOf("end")>-1){
+                    let endEvents = this.events.filter(e=>e[0]=="End");
+                    for (let line in endEvents)
+                        PennEngine.controllers.running.save(this.type, this.id, ...endEvents[line]);
+                }
+                if (this.log.indexOf("pause")>-1){
+                    let pauseEvents = this.events.filter(e=>e[0]=="Pause");
+                    for (let line in pauseEvents)
+                        PennEngine.controllers.running.save(this.type, this.id, ...pauseEvents[line]);
+                }
+                if (this.log.indexOf("buffer")>-1){
+                    let bufferEvents = this.events.filter(e=>e[0]=="Buffer");
+                    for (let line in bufferEvents)
+                        PennEngine.controllers.running.save(this.type, this.id, ...bufferEvents[line]);
+                }
+            }
+        }
     };
 
     this.value = function(){            // Value is whether the video was played
@@ -250,7 +276,10 @@ PennController._AddElementType("Youtube", function(PennEngine) {
             resolve();
         },
         log: function(resolve,  ...what){
-            this.log = true;
+            if (what.length)
+                this.log = what;
+            else
+                this.log = ["play"];
             resolve();
         },
         size: function(resolve, width, height){

@@ -23,9 +23,12 @@ PennController._AddElementType("Button", function(PennEngine) {
 
     // This is executed at the end of a trial
     this.end = function(){
-        if (this.log)
+        if (this.log){
+            if (!this.clicks.length)
+                PennEngine.controllers.running.save(this.type, this.id, "Click", "NA", "Never");
             for (let c in this.clicks)                      // Save any clicks if logging
                 PennEngine.controllers.running.save(this.type, this.id, ...this.clicks[c]);
+        }
     };
 
     this.value = function(){                                    // Value is timestamp of last click

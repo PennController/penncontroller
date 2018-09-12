@@ -1,4 +1,4 @@
-// AUDIO element just a small change
+// AUDIO element
 PennController._AddElementType("Audio", function(PennEngine) {
 
     // This is executed when Ibex runs the script in data_includes (not a promise, no need to resolve)
@@ -61,18 +61,30 @@ PennController._AddElementType("Audio", function(PennEngine) {
 
     // This is executed at the end of a trial
     this.end = function(){
-        if (this.whatToSave && this.whatToSave.indexOf("play")>-1)
+        if (this.whatToSave && this.whatToSave.indexOf("play")>-1){
+            if (!this.playEvents.length)
+                PennEngine.controllers.running.save(this.type, this.id, "play", "NA", "Never");
             for (let line in this.playEvents)
                 PennEngine.controllers.running.save(this.type, this.id, ...this.playEvents[line]);
-        if (this.whatToSave && this.whatToSave.indexOf("end")>-1)
-            for (let line in this.endEvents)
+        }
+        if (this.whatToSave && this.whatToSave.indexOf("end")>-1){
+            if (!this.endEvents.length)
+                PennEngine.controllers.running.save(this.type, this.id, "end", "NA", "Never");
+            for (let line in this.endEvents)    
                 PennEngine.controllers.running.save(this.type, this.id, ...this.endEvents[line]);
-        if (this.whatToSave && this.whatToSave.indexOf("pause")>-1)
+        }
+        if (this.whatToSave && this.whatToSave.indexOf("pause")>-1){
+            if (!this.pauseEvents.length)
+                PennEngine.controllers.running.save(this.type, this.id, "pause", "NA", "Never");
             for (let line in this.pauseEvents)
                 PennEngine.controllers.running.save(this.type, this.id, ...this.pauseEvents[line]);
-        if (this.whatToSave && this.whatToSave.indexOf("seek")>-1)
+        }
+        if (this.whatToSave && this.whatToSave.indexOf("seek")>-1){
+            if (!this.seekEvents.length)
+                PennEngine.controllers.running.save(this.type, this.id, "seek", "NA", "Never");
             for (let line in this.seekEvents)
                 PennEngine.controllers.running.save(this.type, this.id, ...this.seekEvents[line]);
+        }
         for (let line in this.bufferEvents)
             PennEngine.controllers.running.save(this.type, this.id, ...this.bufferEvents[line]);
         if (this.jQueryDisable)
