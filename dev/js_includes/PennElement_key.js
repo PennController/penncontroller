@@ -1,5 +1,5 @@
 // KEY element
-PennController._AddElementType("Key", function(PennEngine) {
+window.PennController._AddElementType("Key", function(PennEngine) {
 
     // This is executed when Ibex runs the script in data_includes (not a promise, no need to resolve)
     this.immediate = function(id, keys){

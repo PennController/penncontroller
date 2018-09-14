@@ -1,5 +1,5 @@
 // video element
-PennController._AddElementType("Video", function(PennEngine) {
+window.PennController._AddElementType("Video", function(PennEngine) {
 
     this.immediate = function(id, file){
         let addHostURLs = !file.match(/^http/i);
@@ -84,8 +84,9 @@ PennController._AddElementType("Video", function(PennEngine) {
             for (let line in this.seekEvents)
                 PennEngine.controllers.running.save(this.type, this.id, ...this.seekEvents[line]);
         }
-        for (let line in this.bufferEvents)
-            PennEngine.controllers.running.save(this.type, this.id, ...this.bufferEvents[line]);
+        if (this.bufferEvents)
+            for (let line in this.bufferEvents)
+                PennEngine.controllers.running.save(this.type, this.id, ...this.bufferEvents[line]);
         if (this.jQueryDisable)
             this.jQueryDisable.remove();// Remove disabler from DOM
     };

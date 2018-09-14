@@ -1,9 +1,9 @@
 // TOOLTIP element
-PennController._AddElementType("Tooltip", function(PennEngine) {
+window.PennController._AddElementType("Tooltip", function(PennEngine) {
 
     function remove(){                          // Special function to remove element from DOM
         this.jQueryElement.remove();
-        if (this.frame instanceof jQuery)
+        if (this.frame && this.frame instanceof jQuery)
             this.frame.remove();
     }
 
@@ -44,7 +44,8 @@ PennController._AddElementType("Tooltip", function(PennEngine) {
 
     // This is executed at the end of a trial
     this.end = function(){
-        remove.apply(this);                     // Remove element (and frame) from DOM
+        if (this.jQueryElement && this.jQueryElement instanceof jQuery)
+            remove.apply(this);                     // Remove element (and frame) from DOM
         if (this.log)
             for (let v in this.validations)     // Save any validation if logging
                 PennEngine.controllers.running.save(this.type, this.id, ...this.validations[v]);

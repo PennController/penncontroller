@@ -1,0 +1,17 @@
+Label,Group,Sentence,Color1,Color2
+rating,More,To me the color green is...,NA,NA
+rating,Less,To me the color green is...,NA,NA
+rating,More,To me the color purple is...,NA,NA
+rating,Less,To me the color purple is...,NA,NA
+rating,More,To me the color beige is...,NA,NA
+rating,Less,To me the color beige is...,NA,NA
+rating,More,To me the color orange is...,NA,NA
+rating,Less,To me the color orange is...,NA,NA
+picture,More,Which patch is greener?,green1.png,green2.png
+picture,Less,Which patch is less green?,green1.png,green2.png
+picture,More,Which patch is purpler?,purple1.png,purple2.png
+picture,Less,Which patch is less purple?,purple1.png,purple2.png
+picture,More,Which patch is beiger?,beige1.png,beige2.png
+picture,Less,Which patch is less beige?,beige1.png,beige2.png
+picture,More,Which patch is oranger?,orange1.png,orange2.png
+picture,Less,Which patch is less orange?,orange1.png,orange2.png

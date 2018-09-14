@@ -1,5 +1,5 @@
 // TIMER element
-PennController._AddElementType("Timer", function(PennEngine) {
+window.PennController._AddElementType("Timer", function(PennEngine) {
 
     // This is executed when Ibex runs the script in data_includes (not a promise, no need to resolve)
     this.immediate = function(id, duration){

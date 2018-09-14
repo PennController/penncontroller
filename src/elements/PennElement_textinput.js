@@ -1,5 +1,5 @@
 // TEXTINPUT element
-PennController._AddElementType("TextInput", function(PennEngine) {
+window.PennController._AddElementType("TextInput", function(PennEngine) {
 
     // This is executed when Ibex runs the script in data_includes (not a promise, no need to resolve)
     this.immediate = function(id, text){
@@ -54,6 +54,8 @@ PennController._AddElementType("TextInput", function(PennEngine) {
     }
 
     this.end = function(){
+        if (!this.log || !(this.log instanceof Array))
+            return;
         if (this.log.indexOf("all")>-1){                            // Special case: log all typing events
             let now = Date.now();
             PennEngine.controllers.running.save(this.type, this.id, "Final", csv_url_encode(this.jQueryElement.val()), now, "All saved, see documentation");

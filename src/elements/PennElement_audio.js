@@ -1,5 +1,5 @@
 // AUDIO element
-PennController._AddElementType("Audio", function(PennEngine) {
+window.PennController._AddElementType("Audio", function(PennEngine) {
 
     // This is executed when Ibex runs the script in data_includes (not a promise, no need to resolve)
     this.immediate = function(id, file){
@@ -85,8 +85,9 @@ PennController._AddElementType("Audio", function(PennEngine) {
             for (let line in this.seekEvents)
                 PennEngine.controllers.running.save(this.type, this.id, ...this.seekEvents[line]);
         }
-        for (let line in this.bufferEvents)
-            PennEngine.controllers.running.save(this.type, this.id, ...this.bufferEvents[line]);
+        if (this.bufferEvents)
+            for (let line in this.bufferEvents)
+                PennEngine.controllers.running.save(this.type, this.id, ...this.bufferEvents[line]);
         if (this.jQueryDisable)
             this.jQueryDisable.remove();// Remove disabler from DOM
     };

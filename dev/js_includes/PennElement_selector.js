@@ -1,6 +1,5 @@
-
 // SELECTOR element
-PennController._AddElementType("Selector", function(PennEngine) {
+window.PennController._AddElementType("Selector", function(PennEngine) {
 
     function shuffle(resolve, ...elementCommands){
         let elementsToShuffle = [];
@@ -104,7 +103,8 @@ PennController._AddElementType("Selector", function(PennEngine) {
 
     this.end = function(){
         this.elements = [];
-        this.frame.remove();
+        if (this.frame && this.frame instanceof jQuery)
+            this.frame.remove();
         if (this.log && this.log instanceof Array){
             if (!this.selections.length)
                 PennEngine.controllers.running.save(this.type, this.id, "Selection", "NA", "Never", "No selection happened");
@@ -125,7 +125,7 @@ PennController._AddElementType("Selector", function(PennEngine) {
     this.value = function(){                                // Value is last selection
         if (this.selections.length){
             let selectedElement = this.selections[this.selections.length-1][1];
-            return PennController.Elements["get"+selectedElement.type](selectedElement.id);
+            return window.PennController.Elements["get"+selectedElement.type](selectedElement.id);
         }
         else
             return null;
@@ -218,7 +218,7 @@ PennController._AddElementType("Selector", function(PennEngine) {
             this.elements.map(element=>element[0].jQueryElement.css("cursor", ""));
             resolve();
         },
-        disableClicks: function(resolve, what){
+        disableClicks: function(resolve){
             this.noClick = true;
             this.elements.map(element=>element[0].jQueryElement.css("cursor", ""));
             resolve();
@@ -301,7 +301,7 @@ PennController._AddElementType("Selector", function(PennEngine) {
 });
 
 // Add a .settings.selector command to all elements
-PennController._AddStandardCommands(function(PennEngine){
+window.PennController._AddStandardCommands(function(PennEngine){
     this.settings = {
         selector: async function(resolve, selectorRef){
             var selector;

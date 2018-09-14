@@ -1,5 +1,5 @@
 // HTML element
-PennController._AddElementType("Html", function(PennEngine) {
+window.PennController._AddElementType("Html", function(PennEngine) {
 
     // Imported from Form.js
     function alertOrAddError(name, error) {

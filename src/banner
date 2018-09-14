@@ -1,7 +1,7 @@
 This software is licensed under a BSD license; see the LICENSE file for details.
 
  - Version beta 0.4
- - Last Update:  2018, September 12
+ - Last Update:  2018, September 13
  - Major changes in beta 0.4:
     * Fixed a bug with FeedItems in group designs, no longer relies on latin squares (setItems now obsolete)
     * Fixed 'invalid format' bug with FeedItems(PennController.defaultTable)
@@ -16,4 +16,5 @@ This software is licensed under a BSD license; see the LICENSE file for details.
     + Added log entries to report even when no element-specific event happen
     + Added element type Video
     + Added test command .index for Selector
+    + Added settings command .callback for Scale
     + Added options for scale.settings.log (last, first, etc.)

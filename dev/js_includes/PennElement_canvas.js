@@ -1,5 +1,5 @@
 // CANVAS element
-PennController._AddElementType("Canvas", function(PennEngine) {
+window.PennController._AddElementType("Canvas", function(PennEngine) {
 
     this.immediate = function(id, width, height){
         this.width = width;

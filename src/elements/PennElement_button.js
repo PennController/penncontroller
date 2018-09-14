@@ -1,5 +1,5 @@
 // BUTTON element
-PennController._AddElementType("Button", function(PennEngine) {
+window.PennController._AddElementType("Button", function(PennEngine) {
 
     // This is executed when Ibex runs the script in data_includes (not a promise, no need to resolve)
     this.immediate = function(id, text){

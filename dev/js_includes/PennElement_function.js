@@ -1,5 +1,5 @@
 // FUNCTION element
-PennController._AddElementType("Function", function(PennEngine) {
+window.PennController._AddElementType("Function", function(PennEngine) {
 
     this.immediate = function(id, func){
         this.function = func;

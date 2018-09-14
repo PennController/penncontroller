@@ -1,5 +1,5 @@
 // TEXT element
-PennController._AddElementType("Text", function(PennEngine) {
+window.PennController._AddElementType("Text", function(PennEngine) {
 
     this.immediate = function(id, text){
         this.initialText = text;                                        // Keep track of this for reset

@@ -1,5 +1,5 @@
 // YOUTUBE element
-PennController._AddElementType("Youtube", function(PennEngine) {
+window.PennController._AddElementType("Youtube", function(PennEngine) {
 
     const MutationObserver =
         window.MutationObserver || window.WebKitMutationObserver || window.MozMutationObserver;
@@ -128,7 +128,7 @@ PennController._AddElementType("Youtube", function(PennEngine) {
     };
 
     this.end = function(){
-        if (this.observer instanceof MutationObserver)
+        if (this.observer && this.observer instanceof MutationObserver)
             this.observer.disconnect();
         if (this.player && this.player.getPlayerState()==YT.PlayerState.PLAYING)
             this.player.pauseVideo();

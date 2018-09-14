@@ -1,5 +1,5 @@
 // VOICERECORDER element
-PennController._AddElementType("VoiceRecorder", function(PennEngine) {
+window.PennController._AddElementType("VoiceRecorder", function(PennEngine) {
 
     // ====== INTERNAL SETTINGS AND FUNCTIONS ====== //
     //
@@ -27,7 +27,7 @@ PennController._AddElementType("VoiceRecorder", function(PennEngine) {
     let statusElement;              // The top-right DOM element indicating whether it is currently recording
 
     // This controller MUST be manually added to items and specify a URL to a PHP file for uploading the archive
-    PennController.InitiateRecorder = function(saveURL, message) {
+    window.PennController.InitiateRecorder = function(saveURL, message) {
         if (!typeof(url)=="string" || !saveURL.match(/^http.+/i))
             console.error("VoiceRecorder's save URL is incorrect", saveURL);
         uploadURL = saveURL;                                    // Assign a URL
@@ -125,7 +125,7 @@ PennController._AddElementType("VoiceRecorder", function(PennEngine) {
                     compression: 'DEFLATE',
                     type: 'blob'
                 }).then(function(zc) {                  // Generation/Compression of zip is complete
-                    PennController.downloadVoiceRecordingsArchive = ()=>saveAs(zc, "VoiceRecordingsArchive.zip");
+                    window.PennController.downloadVoiceRecordingsArchive = ()=>saveAs(zc, "VoiceRecordingsArchive.zip");
                     let fileName = 'msr-' + (new Date).toISOString().replace(/:|\./g, '-') + '.zip';
                     var fileObj = new File([zc], fileName); // Create file object to upload with uniquename
                     var fd = new FormData();                // Submission-friendly format
@@ -396,7 +396,7 @@ PennController._AddElementType("VoiceRecorder", function(PennEngine) {
 });
 
 // Handler generating a HTML button to download the zip archive containing the voice recordings
-PennController.DownloadVoiceButton = function (text) {
+window.PennController.DownloadVoiceButton = function (text) {
     return "<button type=\"button\" onclick=\""+
            "if (PennController.hasOwnProperty('downloadVoiceRecordingsArchive'))"+
            "  PennController.downloadVoiceRecordingsArchive();"+

@@ -1,5 +1,5 @@
 // SCALE element
-PennController._AddElementType("Scale", function(PennEngine) {
+window.PennController._AddElementType("Scale", function(PennEngine) {
 
     function disable(){                                             // Disable the scale
         this.table.find("input").attr("disabled", true);
@@ -13,14 +13,24 @@ PennController._AddElementType("Scale", function(PennEngine) {
         this.disabled = false;
     }
 
-    function fixVerticalSliderAesthetics(){                         // Handle slider's rotation after table added to page
-        if (this.scaleType=="slider"&&this.orientation=="vertical"){
+    function fixAesthetics(){                                       // Handle slider's rotation after table added to page
+        if (this.scaleType=="slider"&&this.orientation=="vertical"){    // (and fixed width)
             let slider = this.table.find("input");
             this.table.css({"table-layout": "fixed",                // Table's height = slider's width (= height after rotation)
                             height: slider.width(),                 // Subtract half the slider's width from table's widths
                             width: this.table.width()-slider.width()+slider.height()+10+"px"});
             slider.parent().css("width", slider.height());          // Fix the slider's cell's width (slider's height ~> width)
             slider.css("margin-left", -0.5*(slider.width()-slider.height())+"px");  // Re-positioning the slider
+        }
+        else if (this.width=="auto"){
+            let maxWidth = 0, n = 0;
+            this.table.find("td").each(function(){
+                n++;
+                let width = $(this).outerWidth();
+                if (width>maxWidth)
+                    maxWidth = width;
+            });
+            this.table.css({"table-layout": "fixed", width: (n/this.table.find("tr").length)*(maxWidth+1)});
         }
     }
 
@@ -101,10 +111,14 @@ PennController._AddElementType("Scale", function(PennEngine) {
                 labelsRow.append(cell[1].css("text-align", "center"))
             });
             this.table.append(scaleRow);
-            if (this.labels == "top")
+            if (this.labels == "top"){
                 this.table.prepend(labelsRow);
-            else if (this.labels == "bottom")
+                this.jQueryElement.css("vertical-align", "bottom");
+            }
+            else if (this.labels == "bottom"){
                 this.table.append(labelsRow);
+                this.jQueryElement.css("vertical-align", "top");
+            }
             if (slider)                                             // If slider, scale TDs are void
                 scaleRow.after($("<tr>").append(
                     $("<td>")
@@ -129,9 +143,11 @@ PennController._AddElementType("Scale", function(PennEngine) {
                 );
                 buttonLabelCells.map(cell=>cell[0].css("width", 0));// Make sure scale TDs width is 0 (they are empty)
                 if (this.jQueryElement.parent().length)             // If element already displayed:
-                    fixVerticalSliderAesthetics.apply(this);        //  apply fixes that require being added to the page
+                    fixAesthetics.apply(this);                      // apply fixes that require being added to the page
             }
         }
+        if (this.width)
+            this.table.css({"table-layout": "fixed", width: this.width});
     }
 
     this.immediate = function(id, ...buttons){
@@ -156,6 +172,7 @@ PennController._AddElementType("Scale", function(PennEngine) {
         this.scaleType = "radio";
         this.defaultValue = null;
         this.orientation = "horizontal";
+        this.width = null;
         this.choice = value=>{                                      // (Re)set upon creation, since it can be modified during runtime
             if (this.disabled)
                 return;                                             // Store the value + timestamp
@@ -194,7 +211,7 @@ PennController._AddElementType("Scale", function(PennEngine) {
         print: function(resolve, where){
             buildScale.apply(this);                         // (Re)Build the scale when printing
             let afterPrint = ()=>{
-                fixVerticalSliderAesthetics.apply(this);    // Need table on the page to calculate widths and heights
+                fixAesthetics.apply(this);                  // Need table on the page to calculate widths and heights
                 resolve();
             };                                              // Standard print, then afterPrint resolves
             PennEngine.elements.standardCommands.actions.print.apply(this, [afterPrint, where]);
@@ -229,6 +246,17 @@ PennController._AddElementType("Scale", function(PennEngine) {
         button: function(resolve){
             this.scaleType = "buttons";
             buildScale.apply(this);                         // Rebuild the scale as a button scale
+            resolve();
+        },
+        callback: function(resolve, ...elementCommands){
+            let originalChoice = this.choice;
+            this.choice = async function(value) {
+                originalChoice.apply(this, [value]);
+                if (this.disabled)
+                    return;
+                for (let c in elementCommands)
+                    await elementCommands[c]._runPromises();
+            };
             resolve();
         },
         default: function(resolve, value){
@@ -278,6 +306,10 @@ PennController._AddElementType("Scale", function(PennEngine) {
             buildScale.apply(this);                      // Rebuild the scale as a radio scale
             resolve();
         },
+        size: function(resolve, width, height){
+            this.width = width;
+            PennEngine.elements.standardCommands.settings.size.apply(this, [resolve, width, height]);
+        },
         slider: function(resolve, value){                // Rebuild the scale as a slider scale
             this.scaleType = "slider";
             buildScale.apply(this);
@@ -290,17 +322,15 @@ PennController._AddElementType("Scale", function(PennEngine) {
     };
 
     this.test = {
-        selected: function(resolve, value){
+        selected: function(value){
             if (!this.choices.length)
                 return false;
             else if (value == undefined)
                 return true;
             else if (value == this.choices[this.choices.length-1][1])
                 return true;
-            else {
-                let inButtons = this.buttons.indexOf(value);
-                return inButtons>-1 && value == this.buttons[inButtons];
-            }
+            else
+                return false;
         }  
     };
 

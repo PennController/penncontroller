@@ -1,5 +1,5 @@
 // IMAGE element
-PennController._AddElementType("Image", function(PennEngine) {
+window.PennController._AddElementType("Image", function(PennEngine) {
 
     this.immediate = function(id, file){
         let addHostURLs = !file.match(/^http/i);

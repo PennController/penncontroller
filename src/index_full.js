@@ -5,8 +5,7 @@ import "./elements.js";                 // constructor for element types [fed wi
 import "./zip.js";                      // adds the PreloadZip global command [imports jszip and jszip-utils]
 import "./tables.js";                   // defines FeedItems    [imports jquery-csv]
 
-window.PennController = PennController; // PennController is the only object to be exported front-end
-
+// ELEMENTS
 import "./elements/PennElement_audio.js";
 import "./elements/PennElement_button.js";
 import "./elements/PennElement_canvas.js";

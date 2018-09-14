@@ -331,3 +331,5 @@ define_ibex_controller({
         htmlDescription: null
     }
 });
+
+window.PennController = PennController; // Export the object globally

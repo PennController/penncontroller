@@ -1001,3 +1001,267 @@
 # Design number was non-random = 166
 #
 [false,166,["Controller name","Item number","Element number","Type","Group","PennElementType","PennElementName","Parameter","Value","EventTime","Comments"],[[[0,"PennController"],[1,0],[2,0],[3,"waf"],[4,"NULL"],[5,"PennController"],[6,0],[7,"_Trial_"],[8,"Start"],[9,1536591380372],[10,"NULL"]],[[0,"PennController"],[1,0],[2,0],[3,"waf"],[4,"NULL"],[5,"Selector"],[6,"image"],[7,"Selection"],[8,"bananaCover"],[9,1536591381855],[10,"NULL"]],[[0,"PennController"],[1,0],[2,0],[3,"waf"],[4,"NULL"],[5,"Selector"],[6,"image"],[7,"Selection"],[8,"appleCover"],[9,1536591382403],[10,"NULL"]],[[0,"PennController"],[1,0],[2,0],[3,"waf"],[4,"NULL"],[5,"Selector"],[6,"image"],[7,"Selection"],[8,"bananaCover"],[9,1536591382829],[10,"NULL"]],[[0,"PennController"],[1,0],[2,0],[3,"waf"],[4,"NULL"],[5,"Selector"],[6,"image"],[7,"Selection"],[8,"appleCover"],[9,1536591383230],[10,"NULL"]],[[0,"PennController"],[1,0],[2,0],[3,"waf"],[4,"NULL"],[5,"PennController"],[6,0],[7,"_Trial_"],[8,"End"],[9,1536591383786],[10,"NULL"]]],"QMRwAeHm+FFNySMY2pKuIw",true]
+#
+# Results on Wednesday September 12 2018 20:19:46 UTC.
+# USER AGENT: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:62.0) Gecko/20100101 Firefox/62.0
+# Design number was non-random = 167
+#
+[false,167,["Controller name","Item number","Element number","Type","Group","PennElementType","PennElementName","Parameter","Value","EventTime","Comments"],[[[0,"PennController"],[1,0],[2,0],[3,"trial"],[4,"NULL"],[5,"PennController"],[6,0],[7,"_Trial_"],[8,"Start"],[9,1536783581323],[10,"NULL"]],[[0,"PennController"],[1,0],[2,0],[3,"trial"],[4,"NULL"],[5,"PennController"],[6,0],[7,"_Trial_"],[8,"End"],[9,1536783586809],[10,"NULL"]]],"QMRwAeHm+FFNySMY2pKuIw",true]
+#
+# Results on Wednesday September 12 2018 20:20:30 UTC.
+# USER AGENT: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:62.0) Gecko/20100101 Firefox/62.0
+# Design number was non-random = 168
+#
+[false,168,["Controller name","Item number","Element number","Type","Group","PennElementType","PennElementName","Parameter","Value","EventTime","Comments"],[[[0,"PennController"],[1,0],[2,0],[3,"trial"],[4,"NULL"],[5,"PennController"],[6,0],[7,"_Trial_"],[8,"Start"],[9,1536783603073],[10,"NULL"]],[[0,"PennController"],[1,0],[2,0],[3,"trial"],[4,"NULL"],[5,"PennController"],[6,0],[7,"_Trial_"],[8,"End"],[9,1536783630608],[10,"NULL"]]],"QMRwAeHm+FFNySMY2pKuIw",true]
+#
+# Results on Wednesday September 12 2018 21:05:47 UTC.
+# USER AGENT: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:62.0) Gecko/20100101 Firefox/62.0
+# Design number was non-random = 169
+#
+[false,169,["Controller name","Item number","Element number","Type","Group","PennElementType","PennElementName","Parameter","Value","EventTime","Comments"],[[[0,"PennController"],[1,0],[2,0],[3,"trial"],[4,"NULL"],[5,"PennController"],[6,0],[7,"_Trial_"],[8,"Start"],[9,1536786344848],[10,"NULL"]],[[0,"PennController"],[1,0],[2,0],[3,"trial"],[4,"NULL"],[5,"PennController"],[6,0],[7,"_Trial_"],[8,"End"],[9,1536786347068],[10,"NULL"]]],"QMRwAeHm+FFNySMY2pKuIw",true]
+#
+# Results on Wednesday September 12 2018 21:06:10 UTC.
+# USER AGENT: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:62.0) Gecko/20100101 Firefox/62.0
+# Design number was non-random = 170
+#
+[false,170,["Controller name","Item number","Element number","Type","Group","PennElementType","PennElementName","Parameter","Value","EventTime","Comments"],[[[0,"PennController"],[1,0],[2,0],[3,"trial"],[4,"NULL"],[5,"PennController"],[6,0],[7,"_Trial_"],[8,"Start"],[9,1536786348236],[10,"NULL"]],[[0,"PennController"],[1,0],[2,0],[3,"trial"],[4,"NULL"],[5,"PennController"],[6,0],[7,"_Trial_"],[8,"End"],[9,1536786370319],[10,"NULL"]]],"QMRwAeHm+FFNySMY2pKuIw",true]
+#
+# Results on Wednesday September 12 2018 21:06:16 UTC.
+# USER AGENT: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:62.0) Gecko/20100101 Firefox/62.0
+# Design number was non-random = 170
+#
+[false,170,["Controller name","Item number","Element number","Type","Group","PennElementType","PennElementName","Parameter","Value","EventTime","Comments"],[[[0,"PennController"],[1,0],[2,0],[3,"trial"],[4,"NULL"],[5,"PennController"],[6,0],[7,"_Trial_"],[8,"Start"],[9,1536786373830],[10,"NULL"]],[[0,"PennController"],[1,0],[2,0],[3,"trial"],[4,"NULL"],[5,"PennController"],[6,0],[7,"_Trial_"],[8,"End"],[9,1536786376326],[10,"NULL"]]],"QMRwAeHm+FFNySMY2pKuIw",true]
+#
+# Results on Wednesday September 12 2018 21:10:27 UTC.
+# USER AGENT: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:62.0) Gecko/20100101 Firefox/62.0
+# Design number was non-random = 172
+#
+[false,172,["Controller name","Item number","Element number","Type","Group","PennElementType","PennElementName","Parameter","Value","EventTime","Comments"],[[[0,"PennController"],[1,0],[2,0],[3,"trial"],[4,"NULL"],[5,"PennController"],[6,0],[7,"_Trial_"],[8,"Start"],[9,1536786625539],[10,"NULL"]],[[0,"PennController"],[1,0],[2,0],[3,"trial"],[4,"NULL"],[5,"PennController"],[6,0],[7,"_Trial_"],[8,"End"],[9,1536786627776],[10,"NULL"]]],"QMRwAeHm+FFNySMY2pKuIw",true]
+#
+# Results on Wednesday September 12 2018 21:45:49 UTC.
+# USER AGENT: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:62.0) Gecko/20100101 Firefox/62.0
+# Design number was non-random = 173
+#
+[false,173,["Controller name","Item number","Element number","Type","Group","PennElementType","PennElementName","Parameter","Value","EventTime","Comments"],[[[0,"PennController"],[1,0],[2,0],[3,"trial"],[4,"NULL"],[5,"PennController"],[6,0],[7,"_Trial_"],[8,"Start"],[9,1536788745810],[10,"NULL"]],[[0,"PennController"],[1,0],[2,0],[3,"trial"],[4,"NULL"],[5,"PennController"],[6,0],[7,"_Trial_"],[8,"End"],[9,1536788749129],[10,"NULL"]]],"QMRwAeHm+FFNySMY2pKuIw",true]
+#
+# Results on Wednesday September 12 2018 21:45:54 UTC.
+# USER AGENT: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:62.0) Gecko/20100101 Firefox/62.0
+# Design number was non-random = 174
+#
+[false,174,["Controller name","Item number","Element number","Type","Group","PennElementType","PennElementName","Parameter","Value","EventTime","Comments"],[[[0,"PennController"],[1,0],[2,0],[3,"trial"],[4,"NULL"],[5,"PennController"],[6,0],[7,"_Trial_"],[8,"Start"],[9,1536788750770],[10,"NULL"]],[[0,"PennController"],[1,0],[2,0],[3,"trial"],[4,"NULL"],[5,"PennController"],[6,0],[7,"_Trial_"],[8,"End"],[9,1536788754088],[10,"NULL"]]],"QMRwAeHm+FFNySMY2pKuIw",true]
+#
+# Results on Wednesday September 12 2018 21:46:22 UTC.
+# USER AGENT: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:62.0) Gecko/20100101 Firefox/62.0
+# Design number was non-random = 175
+#
+[false,175,["Controller name","Item number","Element number","Type","Group","PennElementType","PennElementName","Parameter","Value","EventTime","Comments"],[[[0,"PennController"],[1,0],[2,0],[3,"trial"],[4,"NULL"],[5,"PennController"],[6,0],[7,"_Trial_"],[8,"Start"],[9,1536788776590],[10,"NULL"]],[[0,"PennController"],[1,0],[2,0],[3,"trial"],[4,"NULL"],[5,"PennController"],[6,0],[7,"_Trial_"],[8,"End"],[9,1536788782209],[10,"NULL"]]],"QMRwAeHm+FFNySMY2pKuIw",true]
+#
+# Results on Wednesday September 12 2018 21:46:27 UTC.
+# USER AGENT: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:62.0) Gecko/20100101 Firefox/62.0
+# Design number was non-random = 176
+#
+[false,176,["Controller name","Item number","Element number","Type","Group","PennElementType","PennElementName","Parameter","Value","EventTime","Comments"],[[[0,"PennController"],[1,0],[2,0],[3,"trial"],[4,"NULL"],[5,"PennController"],[6,0],[7,"_Trial_"],[8,"Start"],[9,1536788784517],[10,"NULL"]],[[0,"PennController"],[1,0],[2,0],[3,"trial"],[4,"NULL"],[5,"PennController"],[6,0],[7,"_Trial_"],[8,"End"],[9,1536788787839],[10,"NULL"]]],"QMRwAeHm+FFNySMY2pKuIw",true]
+#
+# Results on Wednesday September 12 2018 22:05:19 UTC.
+# USER AGENT: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:62.0) Gecko/20100101 Firefox/62.0
+# Design number was non-random = 177
+#
+[false,177,["Controller name","Item number","Element number","Type","Group","PennElementType","PennElementName","Parameter","Value","EventTime","Comments"],[[[0,"PennController"],[1,0],[2,0],[3,"trial"],[4,"NULL"],[5,"PennController"],[6,0],[7,"_Trial_"],[8,"Start"],[9,1536789917975],[10,"NULL"]],[[0,"PennController"],[1,0],[2,0],[3,"trial"],[4,"NULL"],[5,"PennController"],[6,0],[7,"_Trial_"],[8,"End"],[9,1536789919409],[10,"NULL"]]],"QMRwAeHm+FFNySMY2pKuIw",true]
+#
+# Results on Wednesday September 12 2018 22:05:59 UTC.
+# USER AGENT: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:62.0) Gecko/20100101 Firefox/62.0
+# Design number was non-random = 178
+#
+[false,178,["Controller name","Item number","Element number","Type","Group","PennElementType","PennElementName","Parameter","Value","EventTime","Comments"],[[[0,"PennController"],[1,0],[2,0],[3,"trial"],[4,"NULL"],[5,"PennController"],[6,0],[7,"_Trial_"],[8,"Start"],[9,1536789958383],[10,"NULL"]],[[0,"PennController"],[1,0],[2,0],[3,"trial"],[4,"NULL"],[5,"PennController"],[6,0],[7,"_Trial_"],[8,"End"],[9,1536789959861],[10,"NULL"]]],"QMRwAeHm+FFNySMY2pKuIw",true]
+#
+# Results on Wednesday September 12 2018 22:06:57 UTC.
+# USER AGENT: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:62.0) Gecko/20100101 Firefox/62.0
+# Design number was non-random = 179
+#
+[false,179,["Controller name","Item number","Element number","Type","Group","PennElementType","PennElementName","Parameter","Value","EventTime","Comments"],[[[0,"PennController"],[1,0],[2,0],[3,"trial"],[4,"NULL"],[5,"PennController"],[6,0],[7,"_Trial_"],[8,"Start"],[9,1536790014473],[10,"NULL"]],[[0,"PennController"],[1,0],[2,0],[3,"trial"],[4,"NULL"],[5,"PennController"],[6,0],[7,"_Trial_"],[8,"End"],[9,1536790017508],[10,"NULL"]]],"QMRwAeHm+FFNySMY2pKuIw",true]
+#
+# Results on Wednesday September 12 2018 22:30:42 UTC.
+# USER AGENT: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:62.0) Gecko/20100101 Firefox/62.0
+# Design number was non-random = 180
+#
+[false,180,["Controller name","Item number","Element number","Type","Group","PennElementType","PennElementName","Parameter","Value","EventTime","Comments"],[[[0,"PennController"],[1,0],[2,0],[3,"trial"],[4,"NULL"],[5,"PennController"],[6,0],[7,"_Trial_"],[8,"Start"],[9,1536791429318],[10,"NULL"]],[[0,"PennController"],[1,0],[2,0],[3,"trial"],[4,"NULL"],[5,"PennController"],[6,0],[7,"_Trial_"],[8,"End"],[9,1536791442303],[10,"NULL"]]],"QMRwAeHm+FFNySMY2pKuIw",true]
+#
+# Results on Wednesday September 12 2018 22:54:24 UTC.
+# USER AGENT: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:62.0) Gecko/20100101 Firefox/62.0
+# Design number was non-random = 181
+#
+[false,181,["Controller name","Item number","Element number","Type","Group","PennElementType","PennElementName","Parameter","Value","EventTime","Comments"],[[[0,"PennController"],[1,0],[2,0],[3,"trial"],[4,"NULL"],[5,"PennController"],[6,0],[7,"_Trial_"],[8,"Start"],[9,1536792861706],[10,"NULL"]],[[0,"PennController"],[1,0],[2,0],[3,"trial"],[4,"NULL"],[5,"PennController"],[6,0],[7,"_Trial_"],[8,"End"],[9,1536792864957],[10,"NULL"]]],"QMRwAeHm+FFNySMY2pKuIw",true]
+#
+# Results on Thursday September 13 2018 18:23:33 UTC.
+# USER AGENT: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:62.0) Gecko/20100101 Firefox/62.0
+# Design number was non-random = 182
+#
+[false,182,["Controller name","Item number","Element number","Type","Group","PennElementType","PennElementName","Parameter","Value","EventTime","Comments"],[[[0,"PennController"],[1,0],[2,0],[3,"trial"],[4,"NULL"],[5,"PennController"],[6,0],[7,"_Trial_"],[8,"Start"],[9,1536863009389],[10,"NULL"]],[[0,"PennController"],[1,0],[2,0],[3,"trial"],[4,"NULL"],[5,"PennController"],[6,0],[7,"_Trial_"],[8,"End"],[9,1536863013732],[10,"NULL"]]],"QMRwAeHm+FFNySMY2pKuIw",true]
+#
+# Results on Thursday September 13 2018 18:23:35 UTC.
+# USER AGENT: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:62.0) Gecko/20100101 Firefox/62.0
+# Design number was non-random = 183
+#
+[false,183,["Controller name","Item number","Element number","Type","Group","PennElementType","PennElementName","Parameter","Value","EventTime","Comments"],[[[0,"PennController"],[1,0],[2,0],[3,"trial"],[4,"NULL"],[5,"PennController"],[6,0],[7,"_Trial_"],[8,"Start"],[9,1536863015315],[10,"NULL"]],[[0,"PennController"],[1,0],[2,0],[3,"trial"],[4,"NULL"],[5,"PennController"],[6,0],[7,"_Trial_"],[8,"End"],[9,1536863015938],[10,"NULL"]]],"QMRwAeHm+FFNySMY2pKuIw",true]
+#
+# Results on Thursday September 13 2018 18:23:57 UTC.
+# USER AGENT: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:62.0) Gecko/20100101 Firefox/62.0
+# Design number was non-random = 184
+#
+[false,184,["Controller name","Item number","Element number","Type","Group","PennElementType","PennElementName","Parameter","Value","EventTime","Comments"],[[[0,"PennController"],[1,0],[2,0],[3,"trial"],[4,"NULL"],[5,"PennController"],[6,0],[7,"_Trial_"],[8,"Start"],[9,1536863032391],[10,"NULL"]],[[0,"PennController"],[1,0],[2,0],[3,"trial"],[4,"NULL"],[5,"PennController"],[6,0],[7,"_Trial_"],[8,"End"],[9,1536863037498],[10,"NULL"]]],"QMRwAeHm+FFNySMY2pKuIw",true]
+#
+# Results on Thursday September 13 2018 18:49:31 UTC.
+# USER AGENT: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:62.0) Gecko/20100101 Firefox/62.0
+# Design number was non-random = 185
+#
+[false,185,["Controller name","Item number","Element number","Type","Group","PennElementType","PennElementName","Parameter","Value","EventTime","Comments"],[[[0,"PennController"],[1,0],[2,0],[3,"trial"],[4,"NULL"],[5,"PennController"],[6,0],[7,"_Trial_"],[8,"Start"],[9,1536864568127],[10,"NULL"]],[[0,"PennController"],[1,0],[2,0],[3,"trial"],[4,"NULL"],[5,"PennController"],[6,0],[7,"_Trial_"],[8,"End"],[9,1536864570994],[10,"NULL"]]],"ol/RBGch9Fcj1X/Et1WNuQ",true]
+#
+# Results on Thursday September 13 2018 18:52:13 UTC.
+# USER AGENT: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:62.0) Gecko/20100101 Firefox/62.0
+# Design number was non-random = 186
+#
+[false,186,["Controller name","Item number","Element number","Type","Group","PennElementType","PennElementName","Parameter","Value","EventTime","Comments"],[[[0,"PennController"],[1,0],[2,0],[3,"trial"],[4,"NULL"],[5,"PennController"],[6,0],[7,"_Trial_"],[8,"Start"],[9,1536864727558],[10,"NULL"]],[[0,"PennController"],[1,0],[2,0],[3,"trial"],[4,"NULL"],[5,"PennController"],[6,0],[7,"_Trial_"],[8,"End"],[9,1536864733748],[10,"NULL"]]],"ol/RBGch9Fcj1X/Et1WNuQ",true]
+#
+# Results on Thursday September 13 2018 18:53:21 UTC.
+# USER AGENT: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:62.0) Gecko/20100101 Firefox/62.0
+# Design number was non-random = 187
+#
+[false,187,["Controller name","Item number","Element number","Type","Group","PennElementType","PennElementName","Parameter","Value","EventTime","Comments"],[[[0,"PennController"],[1,0],[2,0],[3,"trial"],[4,"NULL"],[5,"PennController"],[6,0],[7,"_Trial_"],[8,"Start"],[9,1536864799125],[10,"NULL"]],[[0,"PennController"],[1,0],[2,0],[3,"trial"],[4,"NULL"],[5,"PennController"],[6,0],[7,"_Trial_"],[8,"End"],[9,1536864801339],[10,"NULL"]]],"ol/RBGch9Fcj1X/Et1WNuQ",true]
+#
+# Results on Thursday September 13 2018 19:08:39 UTC.
+# USER AGENT: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:62.0) Gecko/20100101 Firefox/62.0
+# Design number was non-random = 188
+#
+[false,188,["Controller name","Item number","Element number","Type","Group","PennElementType","PennElementName","Parameter","Value","EventTime","Comments"],[[[0,"PennController"],[1,0],[2,0],[3,"trial"],[4,"NULL"],[5,"PennController"],[6,0],[7,"_Trial_"],[8,"Start"],[9,1536865712455],[10,"NULL"]],[[0,"PennController"],[1,0],[2,0],[3,"trial"],[4,"NULL"],[5,"PennController"],[6,0],[7,"_Trial_"],[8,"End"],[9,1536865719582],[10,"NULL"]]],"ol/RBGch9Fcj1X/Et1WNuQ",true]
+#
+# Results on Thursday September 13 2018 19:08:43 UTC.
+# USER AGENT: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:62.0) Gecko/20100101 Firefox/62.0
+# Design number was non-random = 189
+#
+[false,189,["Controller name","Item number","Element number","Type","Group","PennElementType","PennElementName","Parameter","Value","EventTime","Comments"],[[[0,"PennController"],[1,0],[2,0],[3,"trial"],[4,"NULL"],[5,"PennController"],[6,0],[7,"_Trial_"],[8,"Start"],[9,1536865721447],[10,"NULL"]],[[0,"PennController"],[1,0],[2,0],[3,"trial"],[4,"NULL"],[5,"PennController"],[6,0],[7,"_Trial_"],[8,"End"],[9,1536865723348],[10,"NULL"]]],"ol/RBGch9Fcj1X/Et1WNuQ",true]
+#
+# Results on Thursday September 13 2018 19:26:29 UTC.
+# USER AGENT: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:62.0) Gecko/20100101 Firefox/62.0
+# Design number was non-random = 190
+#
+[false,190,["Controller name","Item number","Element number","Type","Group","PennElementType","PennElementName","Parameter","Value","EventTime","Comments"],[[[0,"PennController"],[1,0],[2,0],[3,"trial"],[4,"NULL"],[5,"PennController"],[6,0],[7,"_Trial_"],[8,"Start"],[9,1536866784212],[10,"NULL"]],[[0,"PennController"],[1,0],[2,0],[3,"trial"],[4,"NULL"],[5,"PennController"],[6,0],[7,"_Trial_"],[8,"End"],[9,1536866789659],[10,"NULL"]]],"ol/RBGch9Fcj1X/Et1WNuQ",true]
+#
+# Results on Thursday September 13 2018 19:26:36 UTC.
+# USER AGENT: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:62.0) Gecko/20100101 Firefox/62.0
+# Design number was non-random = 191
+#
+[false,191,["Controller name","Item number","Element number","Type","Group","PennElementType","PennElementName","Parameter","Value","EventTime","Comments"],[[[0,"PennController"],[1,0],[2,0],[3,"trial"],[4,"NULL"],[5,"PennController"],[6,0],[7,"_Trial_"],[8,"Start"],[9,1536866790507],[10,"NULL"]],[[0,"PennController"],[1,0],[2,0],[3,"trial"],[4,"NULL"],[5,"PennController"],[6,0],[7,"_Trial_"],[8,"End"],[9,1536866796781],[10,"NULL"]]],"ol/RBGch9Fcj1X/Et1WNuQ",true]
+#
+# Results on Thursday September 13 2018 19:46:03 UTC.
+# USER AGENT: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:62.0) Gecko/20100101 Firefox/62.0
+# Design number was non-random = 192
+#
+[false,192,["Controller name","Item number","Element number","Type","Group","PennElementType","PennElementName","Parameter","Value","EventTime","Comments"],[[[0,"PennController"],[1,0],[2,0],[3,"trial"],[4,"NULL"],[5,"PennController"],[6,0],[7,"_Trial_"],[8,"Start"],[9,1536867959189],[10,"NULL"]],[[0,"PennController"],[1,0],[2,0],[3,"trial"],[4,"NULL"],[5,"PennController"],[6,0],[7,"_Trial_"],[8,"End"],[9,1536867963501],[10,"NULL"]]],"ol/RBGch9Fcj1X/Et1WNuQ",true]
+#
+# Results on Thursday September 13 2018 19:46:06 UTC.
+# USER AGENT: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:62.0) Gecko/20100101 Firefox/62.0
+# Design number was non-random = 193
+#
+[false,193,["Controller name","Item number","Element number","Type","Group","PennElementType","PennElementName","Parameter","Value","EventTime","Comments"],[[[0,"PennController"],[1,0],[2,0],[3,"trial"],[4,"NULL"],[5,"PennController"],[6,0],[7,"_Trial_"],[8,"Start"],[9,1536867964474],[10,"NULL"]],[[0,"PennController"],[1,0],[2,0],[3,"trial"],[4,"NULL"],[5,"PennController"],[6,0],[7,"_Trial_"],[8,"End"],[9,1536867966073],[10,"NULL"]]],"ol/RBGch9Fcj1X/Et1WNuQ",true]
+#
+# Results on Thursday September 13 2018 19:49:09 UTC.
+# USER AGENT: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:62.0) Gecko/20100101 Firefox/62.0
+# Design number was non-random = 194
+#
+[false,194,["Controller name","Item number","Element number","Type","Group","PennElementType","PennElementName","Parameter","Value","EventTime","Comments"],[[[0,"PennController"],[1,0],[2,0],[3,"trial"],[4,"NULL"],[5,"PennController"],[6,0],[7,"_Trial_"],[8,"Start"],[9,1536868146366],[10,"NULL"]],[[0,"PennController"],[1,0],[2,0],[3,"trial"],[4,"NULL"],[5,"PennController"],[6,0],[7,"_Trial_"],[8,"End"],[9,1536868149577],[10,"NULL"]]],"ol/RBGch9Fcj1X/Et1WNuQ",true]
+#
+# Results on Thursday September 13 2018 19:49:11 UTC.
+# USER AGENT: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:62.0) Gecko/20100101 Firefox/62.0
+# Design number was non-random = 195
+#
+[false,195,["Controller name","Item number","Element number","Type","Group","PennElementType","PennElementName","Parameter","Value","EventTime","Comments"],[[[0,"PennController"],[1,0],[2,0],[3,"trial"],[4,"NULL"],[5,"PennController"],[6,0],[7,"_Trial_"],[8,"Start"],[9,1536868150238],[10,"NULL"]],[[0,"PennController"],[1,0],[2,0],[3,"trial"],[4,"NULL"],[5,"PennController"],[6,0],[7,"_Trial_"],[8,"End"],[9,1536868151677],[10,"NULL"]]],"ol/RBGch9Fcj1X/Et1WNuQ",true]
+#
+# Results on Thursday September 13 2018 19:59:00 UTC.
+# USER AGENT: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:62.0) Gecko/20100101 Firefox/62.0
+# Design number was non-random = 196
+#
+[false,196,["Controller name","Item number","Element number","Type","Group","PennElementType","PennElementName","Parameter","Value","EventTime","Comments"],[[[0,"PennController"],[1,0],[2,0],[3,"trial"],[4,"NULL"],[5,"PennController"],[6,0],[7,"_Trial_"],[8,"Start"],[9,1536868730525],[10,"NULL"]],[[0,"PennController"],[1,0],[2,0],[3,"trial"],[4,"NULL"],[5,"PennController"],[6,0],[7,"_Trial_"],[8,"End"],[9,1536868740389],[10,"NULL"]]],"ol/RBGch9Fcj1X/Et1WNuQ",true]
+#
+# Results on Thursday September 13 2018 20:07:53 UTC.
+# USER AGENT: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:62.0) Gecko/20100101 Firefox/62.0
+# Design number was non-random = 197
+#
+[false,197,["Controller name","Item number","Element number","Type","Group","PennElementType","PennElementName","Parameter","Value","EventTime","Comments"],[[[0,"PennController"],[1,0],[2,0],[3,"trial"],[4,"NULL"],[5,"PennController"],[6,0],[7,"_Trial_"],[8,"Start"],[9,1536869272339],[10,"NULL"]],[[0,"PennController"],[1,0],[2,0],[3,"trial"],[4,"NULL"],[5,"PennController"],[6,0],[7,"_Trial_"],[8,"End"],[9,1536869273879],[10,"NULL"]]],"ol/RBGch9Fcj1X/Et1WNuQ",true]
+#
+# Results on Thursday September 13 2018 20:07:58 UTC.
+# USER AGENT: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:62.0) Gecko/20100101 Firefox/62.0
+# Design number was non-random = 198
+#
+[false,198,["Controller name","Item number","Element number","Type","Group","PennElementType","PennElementName","Parameter","Value","EventTime","Comments"],[[[0,"PennController"],[1,0],[2,0],[3,"trial"],[4,"NULL"],[5,"PennController"],[6,0],[7,"_Trial_"],[8,"Start"],[9,1536869274865],[10,"NULL"]],[[0,"PennController"],[1,0],[2,0],[3,"trial"],[4,"NULL"],[5,"PennController"],[6,0],[7,"_Trial_"],[8,"End"],[9,1536869278450],[10,"NULL"]]],"ol/RBGch9Fcj1X/Et1WNuQ",true]
+#
+# Results on Thursday September 13 2018 20:09:14 UTC.
+# USER AGENT: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:62.0) Gecko/20100101 Firefox/62.0
+# Design number was non-random = 199
+#
+[false,199,["Controller name","Item number","Element number","Type","Group","PennElementType","PennElementName","Parameter","Value","EventTime","Comments"],[[[0,"PennController"],[1,0],[2,0],[3,"trial"],[4,"NULL"],[5,"PennController"],[6,0],[7,"_Trial_"],[8,"Start"],[9,1536869345946],[10,"NULL"]],[[0,"PennController"],[1,0],[2,0],[3,"trial"],[4,"NULL"],[5,"PennController"],[6,0],[7,"_Trial_"],[8,"End"],[9,1536869354618],[10,"NULL"]]],"ol/RBGch9Fcj1X/Et1WNuQ",true]
+#
+# Results on Thursday September 13 2018 20:10:19 UTC.
+# USER AGENT: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:62.0) Gecko/20100101 Firefox/62.0
+# Design number was non-random = 200
+#
+[false,200,["Controller name","Item number","Element number","Type","Group","PennElementType","PennElementName","Parameter","Value","EventTime","Comments"],[[[0,"PennController"],[1,0],[2,0],[3,"trial"],[4,"NULL"],[5,"PennController"],[6,0],[7,"_Trial_"],[8,"Start"],[9,1536869417416],[10,"NULL"]],[[0,"PennController"],[1,0],[2,0],[3,"trial"],[4,"NULL"],[5,"PennController"],[6,0],[7,"_Trial_"],[8,"End"],[9,1536869419069],[10,"NULL"]]],"ol/RBGch9Fcj1X/Et1WNuQ",true]
+#
+# Results on Thursday September 13 2018 20:10:25 UTC.
+# USER AGENT: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:62.0) Gecko/20100101 Firefox/62.0
+# Design number was non-random = 201
+#
+[false,201,["Controller name","Item number","Element number","Type","Group","PennElementType","PennElementName","Parameter","Value","EventTime","Comments"],[[[0,"PennController"],[1,0],[2,0],[3,"trial"],[4,"NULL"],[5,"PennController"],[6,0],[7,"_Trial_"],[8,"Start"],[9,1536869420124],[10,"NULL"]],[[0,"PennController"],[1,0],[2,0],[3,"trial"],[4,"NULL"],[5,"PennController"],[6,0],[7,"_Trial_"],[8,"End"],[9,1536869425343],[10,"NULL"]]],"ol/RBGch9Fcj1X/Et1WNuQ",true]
+#
+# Results on Thursday September 13 2018 21:34:38 UTC.
+# USER AGENT: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:62.0) Gecko/20100101 Firefox/62.0
+# Design number was non-random = 202
+#
+[false,202,["Controller name","Item number","Element number","Type","Group","PennElementType","PennElementName","Parameter","Value","EventTime","Comments"],[[[0,"PennController"],[1,0],[2,0],[3,"trial"],[4,"NULL"],[5,"PennController"],[6,0],[7,"_Trial_"],[8,"Start"],[9,1536874470763],[10,"NULL"]],[[0,"PennController"],[1,0],[2,0],[3,"trial"],[4,"NULL"],[5,"PennController"],[6,0],[7,"_Trial_"],[8,"End"],[9,1536874474919],[10,"NULL"]],[[0,"PennController"],[1,1],[2,0],[3,"trial"],[4,"NULL"],[5,"PennController"],[6,1],[7,"_Trial_"],[8,"Start"],[9,1536874474923],[10,"NULL"]],[[0,"PennController"],[1,1],[2,0],[3,"trial"],[4,"NULL"],[5,"PennController"],[6,1],[7,"_Trial_"],[8,"End"],[9,1536874478011],[10,"NULL"]]],"QMRwAeHm+FFNySMY2pKuIw",true]
+#
+# Results on Thursday September 13 2018 21:34:46 UTC.
+# USER AGENT: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:62.0) Gecko/20100101 Firefox/62.0
+# Design number was non-random = 203
+#
+[false,203,["Controller name","Item number","Element number","Type","Group","PennElementType","PennElementName","Parameter","Value","EventTime","Comments"],[[[0,"PennController"],[1,0],[2,0],[3,"trial"],[4,"NULL"],[5,"PennController"],[6,0],[7,"_Trial_"],[8,"Start"],[9,1536874484928],[10,"NULL"]],[[0,"PennController"],[1,0],[2,0],[3,"trial"],[4,"NULL"],[5,"PennController"],[6,0],[7,"_Trial_"],[8,"End"],[9,1536874485583],[10,"NULL"]],[[0,"PennController"],[1,1],[2,0],[3,"trial"],[4,"NULL"],[5,"PennController"],[6,1],[7,"_Trial_"],[8,"Start"],[9,1536874485591],[10,"NULL"]],[[0,"PennController"],[1,1],[2,0],[3,"trial"],[4,"NULL"],[5,"PennController"],[6,1],[7,"_Trial_"],[8,"End"],[9,1536874486712],[10,"NULL"]]],"QMRwAeHm+FFNySMY2pKuIw",true]
+#
+# Results on Thursday September 13 2018 21:38:04 UTC.
+# USER AGENT: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:62.0) Gecko/20100101 Firefox/62.0
+# Design number was non-random = 204
+#
+[false,204,["Controller name","Item number","Element number","Type","Group","PennElementType","PennElementName","Parameter","Value","EventTime","Comments"],[[[0,"PennController"],[1,0],[2,0],[3,"trial"],[4,"NULL"],[5,"PennController"],[6,0],[7,"_Trial_"],[8,"Start"],[9,1536874680353],[10,"NULL"]],[[0,"PennController"],[1,0],[2,0],[3,"trial"],[4,"NULL"],[5,"PennController"],[6,0],[7,"_Trial_"],[8,"End"],[9,1536874680989],[10,"NULL"]],[[0,"PennController"],[1,1],[2,0],[3,"trial"],[4,"NULL"],[5,"PennController"],[6,1],[7,"_Trial_"],[8,"Start"],[9,1536874680993],[10,"NULL"]],[[0,"PennController"],[1,1],[2,0],[3,"trial"],[4,"NULL"],[5,"PennController"],[6,1],[7,"_Trial_"],[8,"End"],[9,1536874682036],[10,"NULL"]],[[0,"PennController"],[1,2],[2,0],[3,"trial"],[4,"NULL"],[5,"PennController"],[6,2],[7,"_Trial_"],[8,"Start"],[9,1536874682039],[10,"NULL"]],[[0,"PennController"],[1,2],[2,0],[3,"trial"],[4,"NULL"],[5,"PennController"],[6,2],[7,"_Trial_"],[8,"End"],[9,1536874682738],[10,"NULL"]],[[0,"PennController"],[1,3],[2,0],[3,"trial"],[4,"NULL"],[5,"PennController"],[6,3],[7,"_Trial_"],[8,"Start"],[9,1536874682740],[10,"NULL"]],[[0,"PennController"],[1,3],[2,0],[3,"trial"],[4,"NULL"],[5,"PennController"],[6,3],[7,"_Trial_"],[8,"End"],[9,1536874684115],[10,"NULL"]]],"QMRwAeHm+FFNySMY2pKuIw",true]
+#
+# Results on Thursday September 13 2018 21:42:24 UTC.
+# USER AGENT: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:62.0) Gecko/20100101 Firefox/62.0
+# Design number was non-random = 205
+#
+[false,205,["Controller name","Item number","Element number","Type","Group","PennElementType","PennElementName","Parameter","Value","EventTime","Comments"],[[[0,"PennController"],[1,0],[2,0],[3,"picture"],[4,"NULL"],[5,"PennController"],[6,0],[7,"_Trial_"],[8,"Start"],[9,1536874938758],[10,"NULL"]],[[0,"PennController"],[1,0],[2,0],[3,"picture"],[4,"NULL"],[5,"PennController"],[6,0],[7,"_Trial_"],[8,"End"],[9,1536874939519],[10,"NULL"]],[[0,"PennController"],[1,2],[2,0],[3,"picture"],[4,"NULL"],[5,"PennController"],[6,2],[7,"_Trial_"],[8,"Start"],[9,1536874939524],[10,"NULL"]],[[0,"PennController"],[1,2],[2,0],[3,"picture"],[4,"NULL"],[5,"PennController"],[6,2],[7,"_Trial_"],[8,"End"],[9,1536874940293],[10,"NULL"]],[[0,"PennController"],[1,1],[2,0],[3,"rating"],[4,"NULL"],[5,"PennController"],[6,1],[7,"_Trial_"],[8,"Start"],[9,1536874940297],[10,"NULL"]],[[0,"PennController"],[1,1],[2,0],[3,"rating"],[4,"NULL"],[5,"PennController"],[6,1],[7,"_Trial_"],[8,"End"],[9,1536874943868],[10,"NULL"]],[[0,"PennController"],[1,3],[2,0],[3,"rating"],[4,"NULL"],[5,"PennController"],[6,3],[7,"_Trial_"],[8,"Start"],[9,1536874943873],[10,"NULL"]],[[0,"PennController"],[1,3],[2,0],[3,"rating"],[4,"NULL"],[5,"PennController"],[6,3],[7,"_Trial_"],[8,"End"],[9,1536874944900],[10,"NULL"]]],"QMRwAeHm+FFNySMY2pKuIw",true]
+#
+# Results on Thursday September 13 2018 21:55:48 UTC.
+# USER AGENT: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:62.0) Gecko/20100101 Firefox/62.0
+# Design number was non-random = 206
+#
+[false,206,["Controller name","Item number","Element number","Type","Group","PennElementType","PennElementName","Parameter","Value","EventTime","Comments"],[[[0,"PennController"],[1,0],[2,0],[3,"rating"],[4,"NULL"],[5,"PennController"],[6,0],[7,"_Trial_"],[8,"Start"],[9,1536875744980],[10,"NULL"]],[[0,"PennController"],[1,0],[2,0],[3,"rating"],[4,"NULL"],[5,"PennController"],[6,0],[7,"_Trial_"],[8,"End"],[9,1536875747421],[10,"NULL"]],[[0,"PennController"],[1,1],[2,0],[3,"rating"],[4,"NULL"],[5,"PennController"],[6,1],[7,"_Trial_"],[8,"Start"],[9,1536875747426],[10,"NULL"]],[[0,"PennController"],[1,1],[2,0],[3,"rating"],[4,"NULL"],[5,"PennController"],[6,1],[7,"_Trial_"],[8,"End"],[9,1536875748287],[10,"NULL"]]],"QMRwAeHm+FFNySMY2pKuIw",true]
+#
+# Results on Thursday September 13 2018 22:18:06 UTC.
+# USER AGENT: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:62.0) Gecko/20100101 Firefox/62.0
+# Design number was non-random = 207
+#
+[false,207,["Controller name","Item number","Element number","Type","Group","PennElementType","PennElementName","Parameter","Value","EventTime","Comments"],[[[0,"PennController"],[1,2],[2,0],[3,"picture"],[4,"NULL"],[5,"PennController"],[6,2],[7,"_Trial_"],[8,"Start"],[9,1536877084115],[10,"NULL"]],[[0,"PennController"],[1,2],[2,0],[3,"picture"],[4,"NULL"],[5,"PennController"],[6,2],[7,"_Trial_"],[8,"End"],[9,1536877085172],[10,"NULL"]],[[0,"PennController"],[1,3],[2,0],[3,"picture"],[4,"NULL"],[5,"PennController"],[6,3],[7,"_Trial_"],[8,"Start"],[9,1536877085177],[10,"NULL"]],[[0,"PennController"],[1,3],[2,0],[3,"picture"],[4,"NULL"],[5,"PennController"],[6,3],[7,"_Trial_"],[8,"End"],[9,1536877086154],[10,"NULL"]],[[0,"PennController"],[1,0],[2,0],[3,"rating"],[4,"NULL"],[5,"PennController"],[6,0],[7,"_Trial_"],[8,"Start"],[9,1536877086156],[10,"NULL"]],[[0,"PennController"],[1,0],[2,0],[3,"rating"],[4,"NULL"],[5,"PennController"],[6,0],[7,"_Trial_"],[8,"End"],[9,1536877086156],[10,"NULL"]],[[0,"PennController"],[1,1],[2,0],[3,"rating"],[4,"NULL"],[5,"PennController"],[6,1],[7,"_Trial_"],[8,"Start"],[9,1536877086157],[10,"NULL"]],[[0,"PennController"],[1,1],[2,0],[3,"rating"],[4,"NULL"],[5,"PennController"],[6,1],[7,"_Trial_"],[8,"End"],[9,1536877086158],[10,"NULL"]]],"QMRwAeHm+FFNySMY2pKuIw",true]
+#
+# Results on Thursday September 13 2018 22:18:55 UTC.
+# USER AGENT: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:62.0) Gecko/20100101 Firefox/62.0
+# Design number was non-random = 208
+#
+[false,208,["Controller name","Item number","Element number","Type","Group","PennElementType","PennElementName","Parameter","Value","EventTime","Comments"],[[[0,"PennController"],[1,3],[2,0],[3,"picture"],[4,"NULL"],[5,"PennController"],[6,3],[7,"_Trial_"],[8,"Start"],[9,1536877117147],[10,"NULL"]],[[0,"PennController"],[1,3],[2,0],[3,"picture"],[4,"NULL"],[5,"PennController"],[6,3],[7,"_Trial_"],[8,"End"],[9,1536877134790],[10,"NULL"]],[[0,"PennController"],[1,2],[2,0],[3,"picture"],[4,"NULL"],[5,"PennController"],[6,2],[7,"_Trial_"],[8,"Start"],[9,1536877134797],[10,"NULL"]],[[0,"PennController"],[1,2],[2,0],[3,"picture"],[4,"NULL"],[5,"PennController"],[6,2],[7,"_Trial_"],[8,"End"],[9,1536877135329],[10,"NULL"]],[[0,"PennController"],[1,1],[2,0],[3,"rating"],[4,"NULL"],[5,"PennController"],[6,1],[7,"_Trial_"],[8,"Start"],[9,1536877135331],[10,"NULL"]],[[0,"PennController"],[1,1],[2,0],[3,"rating"],[4,"NULL"],[5,"PennController"],[6,1],[7,"_Trial_"],[8,"End"],[9,1536877135332],[10,"NULL"]],[[0,"PennController"],[1,0],[2,0],[3,"rating"],[4,"NULL"],[5,"PennController"],[6,0],[7,"_Trial_"],[8,"Start"],[9,1536877135334],[10,"NULL"]],[[0,"PennController"],[1,0],[2,0],[3,"rating"],[4,"NULL"],[5,"PennController"],[6,0],[7,"_Trial_"],[8,"End"],[9,1536877135335],[10,"NULL"]]],"QMRwAeHm+FFNySMY2pKuIw",true]
+#
+# Results on Thursday September 13 2018 22:19:26 UTC.
+# USER AGENT: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:62.0) Gecko/20100101 Firefox/62.0
+# Design number was non-random = 209
+#
+[false,209,["Controller name","Item number","Element number","Type","Group","PennElementType","PennElementName","Parameter","Value","EventTime","Comments"],[[[0,"PennController"],[1,2],[2,0],[3,"picture"],[4,"NULL"],[5,"PennController"],[6,2],[7,"_Trial_"],[8,"Start"],[9,1536877162957],[10,"NULL"]],[[0,"PennController"],[1,2],[2,0],[3,"picture"],[4,"NULL"],[5,"PennController"],[6,2],[7,"_Trial_"],[8,"End"],[9,1536877163563],[10,"NULL"]],[[0,"PennController"],[1,3],[2,0],[3,"picture"],[4,"NULL"],[5,"PennController"],[6,3],[7,"_Trial_"],[8,"Start"],[9,1536877163567],[10,"NULL"]],[[0,"PennController"],[1,3],[2,0],[3,"picture"],[4,"NULL"],[5,"PennController"],[6,3],[7,"_Trial_"],[8,"End"],[9,1536877164011],[10,"NULL"]],[[0,"PennController"],[1,1],[2,0],[3,"rating"],[4,"NULL"],[5,"PennController"],[6,1],[7,"_Trial_"],[8,"Start"],[9,1536877164014],[10,"NULL"]],[[0,"PennController"],[1,1],[2,0],[3,"rating"],[4,"NULL"],[5,"PennController"],[6,1],[7,"_Trial_"],[8,"End"],[9,1536877165694],[10,"NULL"]],[[0,"PennController"],[1,0],[2,0],[3,"rating"],[4,"NULL"],[5,"PennController"],[6,0],[7,"_Trial_"],[8,"Start"],[9,1536877165699],[10,"NULL"]],[[0,"PennController"],[1,0],[2,0],[3,"rating"],[4,"NULL"],[5,"PennController"],[6,0],[7,"_Trial_"],[8,"End"],[9,1536877166318],[10,"NULL"]]],"QMRwAeHm+FFNySMY2pKuIw",true]
+#
+# Results on Friday September 14 2018 01:47:29 UTC.
+# USER AGENT: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:62.0) Gecko/20100101 Firefox/62.0
+# Design number was non-random = 210
+#
+[false,210,["Controller name","Item number","Element number","Type","Group","PennElementType","PennElementName","Parameter","Value","EventTime","Comments"],[[[0,"PennController"],[1,0],[2,0],[3,"trial"],[4,"NULL"],[5,"PennController"],[6,0],[7,"_Trial_"],[8,"Start"],[9,1536889646264],[10,"NULL"]],[[0,"PennController"],[1,0],[2,0],[3,"trial"],[4,"NULL"],[5,"PennController"],[6,0],[7,"_Trial_"],[8,"End"],[9,1536889649561],[10,"NULL"]]],"QMRwAeHm+FFNySMY2pKuIw",true]
