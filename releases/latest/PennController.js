@@ -1,9 +1,9 @@
 /*!
  * This software is licensed under a BSD license; see the LICENSE file for details.
  * 
- *  - Version beta 1.0
+ *  - Version 1.0
  *  - Last Update:  2018, September 27
- *  - Major changes in beta 1.0:
+ *  - Major changes in version 1.0:
  *     * Reviseed the optional definition of shuffleSequence (now runs in passed order if undefined)
  *     * PennController now adds items to the items variable wihtout being embedded
  *     * Standard settings commands .after, .before, .center, .left and .right now update even after action .print
