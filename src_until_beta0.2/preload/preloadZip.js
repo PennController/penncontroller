@@ -35,7 +35,6 @@ function _preloadZip () {
                 _URLsToLoad.splice(index,1);
             // If all the ZIP archives have been unzipped, call the callbacks
             if (_URLsToLoad.length<=0) {
-                console.log(_unzippedResources);
                 for (let f in _zipCallbacks) {
                     if (_zipCallbacks[f] instanceof Function)
                         _zipCallbacks[f].call();
@@ -93,7 +92,7 @@ function _preloadZip () {
         let url = _URLsToLoad[u];
         let extension = url.match(/^https?:\/\/.+\.(zip)$/i);
         if (typeof(url) != "string" || !extension) {
-            console.log("Warning (Preload): entry #"+u+" is not a valid URL, ignoring it");
+            console.warn("Preload: entry #"+u+" is not a valid URL, ignoring it");
             continue;
         }
         else if (extension[1].toLowerCase() == "zip")
