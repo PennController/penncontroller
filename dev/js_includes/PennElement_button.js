@@ -9,7 +9,7 @@ window.PennController._AddElementType("Button", function(PennEngine) {
     // This is executed when 'newAudio' is executed in the trial (converted into a Promise, so call resolve)
     this.uponCreation = function(resolve){
         this.text = this.initialText;
-        this.jQueryElement = $("<button>").text(this.text);
+        this.jQueryElement = $("<button>").html(this.text);
         // Default settings
         this.clicks = [];
         this.hasClicked = false;

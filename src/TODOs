@@ -1,3 +1,4 @@
+
 KAJSA'S BUG [**FIXED**]:
     SOME ELEMENTS IN THE MIDDLE OF THE SPREADSHEET HAVE DIFFERENT LABELS
     IBEX'S INTERNAL MUNGGROUP + LATINSQUARE FUNCTIONS ARE SIMILAR TO FEEDITEMS:
@@ -15,9 +16,10 @@ BUG WITH FEEDITEMS DURING RUTGERS' WORKSHOP [**FIXED**]
     >> FIX IT!!
 
 KNOWN BUGS/ERRORS/ISSUES
+    - Sometimes templates do not work?
     - No support for OGG files on Safari 12
     - PennController does not work on Safari <12
-    - Chrome & Safari require an interaction before the first audio is played
+    - Chrome & Safari require an interaction before the first audio is played (newer versions)
 
 
 - fix voicerecorder with Chrome
@@ -79,6 +81,26 @@ MAYBE
     Each instruction is done after DELAY after it was run (if not already done)
 
 - Add a first trial that measures latencies?
+
+
+
+// Below release 1.0
+DONE
+    - Added options "left" and "right" to settings commands .labelsPosition
+DONE
+    - Added setting commands checkboxWarning, inputWarning and radioWarning to Html element
+DONE
+    - Add .settings.log as a default for printing (canvas, image and text)
+DONE
+    - Revise the optional definition of shuffleSequence (now runs in order defined)
+DONE
+    - Make PennController add items to the items variable wihtout being embedded (+ .label method)
+DONE
+    - Standard settings commands .after, .before, .center, .left and .right now update even after action .print
+DONE
+    - Add duration for sliders
+DONE
+    - Add scale.settings.label(index, element)  (better than label? revise settings.labels for settings.labelsPosition?)
 
 
 // Below beta 0.4

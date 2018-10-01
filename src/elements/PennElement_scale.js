@@ -44,9 +44,14 @@ window.PennController._AddElementType("Scale", function(PennEngine) {
             let buttonCell = $("<td>").addClass("PennController-"+this.type+"-scaleButton");
             let labelCell = $("<td>").addClass("PennController-"+this.type+"-label");
             let value = this.buttons[b];
-            labelCell.html(value);                                  // Add a label (null if value null at this point)
             if (!value)                                             // If the array's entry is void, use its index
                 value = b;
+            else if (value._runPromises){                           // If the value is an element command
+                value.print( labelCell )._runPromises();            // Print the element in the cell
+                value = value._element.id;                          // And use its label as value
+            }
+            else
+                labelCell.html(value);                              // Add a label (null if value null at this point)
             switch(type){
                 case "buttons":                                     // Button scale
                 buttonCell.html(value);
@@ -55,7 +60,7 @@ window.PennController._AddElementType("Scale", function(PennEngine) {
                 buttonCell.click(()=>{
                     if (this.disabled)                              // Only if enabled
                         return;
-                    this.choice(value);
+                    this.choice(this.buttons[b]);
                     this.table.find("td").css("border","");         // Remove frame from other buttons
                     buttonCell.css("border", "dotted 1px gray")     // Add a frame around the button
                 });
@@ -82,7 +87,7 @@ window.PennController._AddElementType("Scale", function(PennEngine) {
                 if (this.disabled)
                     input.attr("disabled", true);
                 buttonCell.append(input);
-                input.click(()=>this.choice(value));
+                input.click(()=>this.choice(this.buttons[b]||value));
                 break;
             }
             buttonLabelCells.push([buttonCell,labelCell]);
@@ -101,6 +106,7 @@ window.PennController._AddElementType("Scale", function(PennEngine) {
             }
             if (this.disabled)
                 slider.attr("disabled", true);
+            slider[0].oninput = ()=>{if (this.firstClick) return; this.firstClick = Date.now(); };
             slider[0].onchange = ()=>this.choice(slider[0].value);
         }
         if (!orientation || orientation == "horizontal"){           // HORIZONTAL SCALE
@@ -109,6 +115,12 @@ window.PennController._AddElementType("Scale", function(PennEngine) {
             buttonLabelCells.map(cell=>{                            // Add TDs in TRs
                 scaleRow.append(cell[0].css("text-align", "center"));
                 labelsRow.append(cell[1].css("text-align", "center"))
+                if (this.labels == "left"){
+                    cell[0].before(cell[1]);
+                }
+                else if (this.labels == "right"){
+                    cell[0].after(cell[1]);
+                }
             });
             this.table.append(scaleRow);
             if (this.labels == "top"){
@@ -176,7 +188,14 @@ window.PennController._AddElementType("Scale", function(PennEngine) {
         this.choice = value=>{                                      // (Re)set upon creation, since it can be modified during runtime
             if (this.disabled)
                 return;                                             // Store the value + timestamp
-            this.choices.push(["Choice", value, Date.now(), this.scaleType]);
+            if (value && value._runPromises)
+                value = value._element.id;
+            let duration = null;
+            if (this.scaleType=="slider"&&this.firstClick){
+                duration = Date.now() - this.firstClick;
+                this.firstClick = undefined;
+            }
+            this.choices.push(["Choice", value, Date.now(), duration]);
         };
         resolve();
     };
@@ -278,7 +297,28 @@ window.PennController._AddElementType("Scale", function(PennEngine) {
             this.orientation = "horizontal";
             resolve();
         },
-        labels: function(resolve, position){
+        label: function(resolve, index, value){
+            if (isNaN(Number(index)) || index<0 || index>=this.buttons.length)
+                return resolve();
+            this.buttons[index] = value;
+            if (this.jQueryElement.parent().length){    // If displayed, replace
+                let labels = this.table.find("td.PennController-"+this.type+"-label");
+                if (index < labels.length){
+                    let jqLabel = $(labels[index]);
+                    jqLabel.empty();
+                    if ( value._runPromises )
+                        value.print( jqLabel )._runPromises();
+                    else
+                        jqLabel.html( value );
+                }
+            }
+            resolve();
+        },
+        labels: function(resolve, position){            // Deprecated since 1.0
+            this.labels = position;                     // Replaced with labelsPosition
+            resolve();
+        },
+        labelsPosition: function(resolve, position){
             this.labels = position;
             resolve();
         },

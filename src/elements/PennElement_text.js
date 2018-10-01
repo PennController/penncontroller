@@ -15,6 +15,15 @@ window.PennController._AddElementType("Text", function(PennEngine) {
         return this.text;
     };
 
+    this.end = function(){
+        if (this.log){
+            if (!this.printTime)
+                PennEngine.controllers.running.save(this.type, this.id, "Print", "NA", "Never");
+            else
+                PennEngine.controllers.running.save(this.type, this.id, "Print", this.printTime, "NULL");
+        }
+    }
+
     this.settings = {
         text: function(resolve,  text){
             this.text = text;

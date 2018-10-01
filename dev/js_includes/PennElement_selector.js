@@ -194,10 +194,13 @@ window.PennController._AddElementType("Selector", function(PennEngine) {
                     this.elements.push([element]);        // Each member of this.elements is an array [2nd member = keys]
                     if (!this.noClick)
                         element.jQueryElement.css("cursor", "pointer");
-                    element.jQueryElement.click(()=>{
+                    let oldClick = element.jQueryElement[0].onclick;
+                    element.jQueryElement[0].onclick = (...args)=>{
+                        if (oldClick instanceof Function)
+                            oldClick.apply(element.jQueryElement[0], args);
                         if (!this.noClick)
                             this.select(element);
-                    });
+                    };
                 }
             }
             resolve();
@@ -326,10 +329,13 @@ window.PennController._AddStandardCommands(function(PennEngine){
                 selector.elements.push([this]);        // Each member of this.elements is an array [2nd member = keys]
                 if (!this.noClick)
                     this.jQueryElement.css("cursor", "pointer");
-                this.jQueryElement.click(()=>{
+                let oldClick = this.jQueryElement[0].onclick;
+                this.jQueryElement[0].onclick = (...args)=>{
+                    if (oldClick instanceof Function)
+                        oldClick.apply(this.jQueryElement[0], args);
                     if (!selector.noClick)
                         selector.select(this);
-                });
+                };
             }
             resolve();
         }

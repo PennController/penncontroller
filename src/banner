@@ -1,20 +1,14 @@
 This software is licensed under a BSD license; see the LICENSE file for details.
 
- - Version beta 0.4
- - Last Update:  2018, September 13
- - Major changes in beta 0.4:
-    * Fixed a bug with FeedItems in group designs, no longer relies on latin squares (setItems now obsolete)
-    * Fixed 'invalid format' bug with FeedItems(PennController.defaultTable)
-    * FeedItems no longer gets overridden by later definitions of 'items'
-    * FeedItems no longer generates items for non-running groups (preventing unnecessarily loading unused resources)
-    * Fixed a bug that made selector.select inoperative
-    * Fixed a bug that made selector.settings.once break selector.wait
-    + Can now upload CSV tables directly to chunk_includes
-    + Added a "Loading, please wait" message
-    + Added .label to FeedItems, to define constant string labels (useful when reusing spreadsheets)
-    + Added .setLabelColumn, .setGroupColumn and .setItemColumn to GetTable (setLabel, setGroup and setItem now deprecated)
-    + Added log entries to report even when no element-specific event happen
-    + Added element type Video
-    + Added test command .index for Selector
-    + Added settings command .callback for Scale
-    + Added options for scale.settings.log (last, first, etc.)
+ - Version 1.0
+ - Last Update:  2018, October 1
+ - Major changes in version 1.0:
+    * Revised the optional definition of shuffleSequence (now runs in passed order if undefined)
+    * PennController now adds items to the items variable without being embedded
+    * Standard settings commands .after, .before, .center, .left and .right now update even after action .print
+    * Settings command .labels for Scale is now deprecated, use .labelsPosition instead
+    + Added duration for sliders (as comments)
+    + Added options "left" and "right" to the settings command .labelsPosition for Scale elements
+    + Added Setting commands .checkboxWarning, .inputWarning and .radioWarning to Html elements
+    + Added .settings.log as a default for printing (canvas, image and text)
+    + Added getScale(id).settings.label(index, value) to (re)set the label of the index'th option

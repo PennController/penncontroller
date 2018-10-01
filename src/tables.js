@@ -1,5 +1,6 @@
 import "jquery-csv";
 import { PennController } from "./controller.js";
+import { PennEngine } from "./engine.js";
 
 var tables = {};                // Dictionary of named tables
 var defaultTable = {};          // A dummy object representing the default table handler
@@ -7,7 +8,7 @@ var defaultTable = {};          // A dummy object representing the default table
 // The TABLE class contains an 2x2 Array-Object and defines Item, Group and Label
 class Table {
     constructor(table) {
-        if (!(table instanceof Array) || table.length < 2 || Object.keys(table[0]).length < 2)
+        if (!(table instanceof Array) || table.length < 2 || !Object.keys(table[0]).length)
             return console.warn("Invalid format for table when creating new table");
         this.table = table;
         for (let col in table[0]) {
@@ -30,14 +31,14 @@ class Table {
         if (this.table[0].hasOwnProperty(col))
             this.group = col;
         else
-            console.warn("Error when setting table's item column: no column found with the name "+col);
+            console.warn("Error when setting table's group column: no column found with the name "+col);
         return this;
     }
     setLabel(col) {
         if (this.table[0].hasOwnProperty(col))
             this.label = col;
         else
-            console.warn("Error when setting table's item column: no column found with the name "+col);
+            console.warn("Error when setting table's label column: no column found with the name "+col);
         return this;
     }
     filter(...args) {
@@ -51,10 +52,12 @@ class Table {
                     if (this.table[row][args[0]].match(match))
                         returnTable.push(this.table[row]);
                 }
-                return (new Table(returnTable)).setItem(this.item).setGroup(this.group).setLabel(this.label);
+                if (!returnTable.length)
+                    console.error("Empty table with filter:", args[0], args[1]);
+                return (new Table(returnTable)).setGroup(this.group).setLabel(this.label);
             }
             else
-                return console.warn("No column named "+args[0]+" found in the table");
+                return console.error("No column named \u2018"+args[0]+"\u2019 found in the table for filtering");
         }
         else if (args.length && args[0] instanceof Function){
             let returnTable = [];
@@ -62,7 +65,9 @@ class Table {
                 if (args[0].call(this.table[row]))
                     returnTable.push(this.table[row]);
             }
-            return (new Table(returnTable)).setItem(this.item).setGroup(this.group).setLabel(this.label);
+            if (!returnTable.length)
+                    console.error("Empty table after filter:", args[0]);
+            return (new Table(returnTable)).setGroup(this.group).setLabel(this.label);
         }
     }
 }
@@ -106,7 +111,7 @@ class TableHandler {
 // Checks that the string 'table' is of the right format, and return a csv-formatted object
 function _checkTable(table){
     table = $.csv.toObjects(table);
-    if (Object.keys(table[0]).length > 1)                   // Check that there is more than one column
+    if (Object.keys(table[0]).length)                   // Check that there is at least one column
         return table;
     return console.warn("Format of table is invalid");
 }
@@ -133,10 +138,10 @@ PennController.GetTable = function(name) {
 
 
 
-let asyncFeedItems = [];                        // All FeedItems functions are executed after setup
+let asyncFeedItems = [];                        // All Template functions are executed after setup
 
 // The main function
-// PennController.FeedItems("table.csv",        // Optional, or reference to a Table object
+// PennController.Template("table.csv",         // Optional, or reference to a Table object
 //     (row) => PennController(                 // Or () => ["Message", {...}, "PennController", PennController(...)]
 //         p(row.text)
 //         ,
@@ -144,15 +149,19 @@ let asyncFeedItems = [];                        // All FeedItems functions are e
 //         ,
 //         p.key("FJ")
 //     )    
-PennController.FeedItems = function (tableName, func) {
+PennController.Template = function (tableName, func) {              // FeedItems deprecated since 1.0
 
-    let constantLabel;
-    let handler = {
-        label: function(text){
-            constantLabel = text;
-        }
-    };
-
+    let itemSoFar = null, controllerSoFar = null;                   // Keep track of when/where items are added (generated)
+    if (PennEngine.controllers.list.length>1) {                     // Last in list is still under construction
+        controllerSoFar = PennEngine.controllers.list[PennEngine.controllers.list.length-2];
+        for (let c = PennEngine.controllers.list.length-3; c > -1 && !controllerSoFar.addToItems; c--)
+            controllerSoFar = PennEngine.controllers.list[c];       // Last PennController with addToItems == true
+        if (!controllerSoFar.addToItems)
+            controllerSoFar = null;
+    }
+    if (window.items instanceof Array)
+        itemSoFar = window.items[window.items.length-1];            // (and) after a window.item
+    
     asyncFeedItems.push(function(){                                 // The code below will be executed after setup
         let table;
         if (tableName instanceof Function) {                        // No table name specified, try to automatically detect
@@ -205,12 +214,27 @@ PennController.FeedItems = function (tableName, func) {
         else
             return console.warn("Bad format for FeedItems' first argument (should be a PennController table, table name or function from rows to Ibex elements)");
 
+        let itemsBefore = [];
+        let itemsAfter = [];
+        if (window.items instanceof Array && window.items.length)
+            for (let i in window.items){                        // Feed itemsBefore and itemsAfter
+                if (itemSoFar!=null||controllerSoFar!=null)
+                    itemsBefore.push( window.items[i] );        // Still one preceding item to find
+                else
+                    itemsAfter.push( window.items[i] );         // All preceding items found
+                if (window.items[i].indexOf(controllerSoFar)>-1)
+                    controllerSoFar = null;                     // Found the (last) preceding PennController
+                if (itemSoFar instanceof Array && window.items[i] == itemSoFar)
+                    itemSoFar = null                            // Found the (last) preceding window.item
+            }
+
         let groups = [];
         if (table.group)
             for (let row in table.table)
                 if (groups.indexOf(table.table[row][table.group])<0)
                     groups.push(table.table[row][table.group]);
 
+        let itemsToAdd = [];
         for (let row in table.table) {                              // Going through the table
             if (table.group){                                       // GROUP DESIGN
                 let rowGroup = table.table[row][table.group];       // The group of this row
@@ -221,29 +245,36 @@ PennController.FeedItems = function (tableName, func) {
                 if (rowGroup != runningGroup)
                     continue;                                       // Ignore this row if not the right group
             }
+            let label = undefined;                                  // The label
             let content = func(table.table[row]);                   // Create each item's content by calling func on each row
-            if (!(content instanceof Array))                        // The PennController function returns an object
-                content = ["PennController", content];              // which is passed along with "PennController"
-            let item = ["Item-"+row];                               // Create the item itself
-            if (typeof(constantLabel)=="string" && constantLabel.length)
-                item[0] = constantLabel;                            // Use a constant string if defined
-            else if (table.label && table.table[row].hasOwnProperty(table.label))
-                item[0] = table.table[row][table.label];            // Use the label column if defined
-            else if (table.item && table.table[row].hasOwnProperty(table.item))
-                item[0] = "Item-"+table.table[row][table.item];     // Use the item column otherwise, if defined
+            if (!(content instanceof Array)){                       // The PennController function returns an object (must be PennController)
+                label = content.useLabel;                           // Use the (Penn)Controller's label
+                content.addToItems = false;                         // Adding it right here, right now
+                content = ["PennController", content];              // Pass it along with "PennController"
+            }
+            if (!label){
+                if (table.label && table.table[row].hasOwnProperty(table.label))
+                    label = table.table[row][table.label];            // Use the label column if defined
+                else if (table.item && table.table[row].hasOwnProperty(table.item))
+                    label = "Item-"+table.table[row][table.item];     // Use the item column otherwise, if defined
+                else
+                    label = "Item-"+row;
+            }
+            let item = [label];
             for (let c in content)
                 item.push(content[c]);                              // Add the elements
             
-            window.items.push(item);                                // Add the item
+            itemsToAdd.push(item);
         }
+        window.items = itemsBefore.concat(itemsToAdd).concat(itemsAfter);
     });
 
     if (!window.items)
         window.items = [];                                      // Create items so it can be fed later
 
-    return handler;
+    return;
 };
-
+PennController.FeedItems = (tableName, func) => PennController.Template(tableName, func);
 
 let loadingMessageElement;
 $(document).ready(function(){
@@ -255,34 +286,30 @@ $(document).ready(function(){
 });
 
 
-// $.each is called on items before sequence is created
-// Inject items with FeedItems then, no need to mess with latin-square designs
-let oldEach = window.$.each;
-window.$.each = function(a,c,e){
-    if (a==window.items){                                       // $.each is called on items after setup
-        for (let entry in window.CHUNKS_DICT) {                 // Convert any csv/tsv into a table
-            if (entry.match(/\.(html?|mp3)$/i))
-                continue;
-            let table = _checkTable(window.CHUNKS_DICT[entry]); // Try to interpret it as a CSV
-            if (table){                                         // Success: add it to the list and return
+// Inject items with Template before sequence is generated (no need to mess with latin-square designs)
+PennEngine.Prerun(()=>{
+    for (let entry in window.CHUNKS_DICT) {                 // Convert any csv/tsv into a table
+        if (entry.match(/\.(html?|mp3)$/i))
+            continue;
+        let table = _checkTable(window.CHUNKS_DICT[entry]); // Try to interpret it as a CSV
+        if (table){                                         // Success: add it to the list and return
+            table = new Table(table);
+            tables[entry] = table;
+        }
+        else {
+            table = $.csv.toObjects(window.CHUNKS_DICT[entry], {separator: "\t"});
+            if (Object.keys(table[0]).length > 1){              // Try to interpret it as a TSV
                 table = new Table(table);
                 tables[entry] = table;
             }
-            else {
-                table = $.csv.toObjects(window.CHUNKS_DICT[entry], {separator: "\t"});
-                if (Object.keys(table[0]).length > 1){              // Try to interpret it as a TSV
-                    table = new Table(table);
-                    tables[entry] = table;
-                }
-            }
         }
-        for (let i = 0; i < asyncFeedItems.length; i++)
-            asyncFeedItems[i].call();                           // Run FeedItems now that CHUNK_DICT is defined
-        if (loadingMessageElement)                              // Remove the loading message (but not before 500ms)
-            document.body.removeChild(loadingMessageElement);
     }
-    return oldEach.call(this, a, c, e);
-};
+    for (let i = 0; i < asyncFeedItems.length; i++)
+        asyncFeedItems[i].call();                           // Run FeedItems now that CHUNK_DICT is defined
+    if (loadingMessageElement)                              // Remove the loading message (but not before 500ms)
+        document.body.removeChild(loadingMessageElement);
+
+});
 
 Object.defineProperty(PennController, "defaultTable", {
     get: function(){

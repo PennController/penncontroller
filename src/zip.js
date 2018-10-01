@@ -86,7 +86,7 @@ function _preloadZip () {
         let url = _URLsToLoad[u];
         let extension = url.match(/^https?:\/\/.+\.(zip)$/i);
         if (typeof(url) != "string" || !extension) {
-            console.log("Warning (Preload): entry #"+u+" is not a valid URL, ignoring it");
+            console.warn("Preload: entry #"+u+" is not a valid URL, ignoring it");
             continue;
         }
         else if (extension[1].toLowerCase() == "zip")

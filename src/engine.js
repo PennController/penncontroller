@@ -1,3 +1,5 @@
+let preRunningFunctions = [];
+
 // Resources can be created from PennEngine.resources.fetch or when uploading ZIP files (see zip.js)
 class Resource {
     constructor(name, creation){
@@ -69,4 +71,25 @@ export var PennEngine = {
     URLs: []
     ,
     utils: {}
+    ,
+    Prerun: function(func){
+        preRunningFunctions.push(func);
+    }
 };
+
+
+// Run functions before sequence of items is generated
+// __SendResults__ is created right before the sequence gets generated from items
+let old_ibex_controller_set_properties = window.ibex_controller_set_properties;
+window.ibex_controller_set_properties = function (name, options) {
+
+    old_ibex_controller_set_properties(name, options);
+
+    if (name!="__SendResults__")                            // Make sure to run only upon SendResults' creation
+        return;
+
+    for (let f in preRunningFunctions)
+        if (preRunningFunctions[f] instanceof Function)
+            preRunningFunctions[f].call();
+
+}

@@ -101,7 +101,7 @@ window.PennController._AddElementType("Video", function(PennEngine) {
     this.actions = {
         // Every method is converted into a Promise (so need to resolve)
         play: function(resolve){
-            if (this.hasOwnProperty("video") && this.video instanceof video)
+            if (this.hasOwnProperty("video") && this.video.nodeName && this.video.nodeName == "VIDEO")
                 this.video.play();
             else
                 console.warn("No video to play for element ", this.id);

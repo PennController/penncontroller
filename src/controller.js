@@ -10,6 +10,8 @@ let footerController = null;
 class Controller {
     constructor(){
         this.id = PennEngine.controllers.list.length;
+        this.useLabel = false;                          // The label (used if generated outside 'items')
+        this.addToItems = true;                         // Whether this controller should be added to 'items'
         this.appendResultLine = [];                     // Columns ([header,value]) to add to each result row
         this.linesToSave = [];                          // What will be added to the results file at the end
         this.resources = [];                            // Resources used by the controller (see PennEngine.resources.fetch)
@@ -35,6 +37,10 @@ class Controller {
             return console.warn("No element named "+id+" found for current controller");
     }
     //  PUBLIC METHODS  (return the instance)
+    label(text){
+        this.useLabel = text;
+        return this;
+    }
     logAppend(parameter, value, comments) { // Adds a line to the results file
         this.linesToSave.push(["PennController", this.id,  parameter, value, Date.now(), comments]);
         return this;
@@ -68,6 +74,8 @@ PennEngine.controllers.new = ()=>new Controller();
 // The only object to be exported to the front end (see last line of index.js)
 export var PennController = function(...rest) {
     let controller = PennEngine.controllers.underConstruction;                      // To be returned
+    if (rest.length && typeof(rest[0])=="string")                                   // First parameter can be label
+        controller.useLabel = rest[0];
     let sequenceArray = [];                                                         // Build array of lazy promises out of rest
     function appendPromises( ...commands ){
         for (let c in commands)
@@ -160,6 +168,7 @@ PennController.CheckPreloaded = function(...rest) {
 PennController.Header = function(...rest){
     let controller = PennEngine.controllers.underConstruction;                      // To be returned
     controller.id = "Header";                                                       // Special controller
+    controller.addToItems = false;                                                  // Do no add to 'items'
     PennEngine.controllers.list.pop();                                              // Remove from the list
     controller.sequence = lazyPromiseFromArrayOfLazyPromises(
         rest.map( command=>lazyPromiseFromArrayOfLazyPromises(command._promises) )  // The sequence of commands to run
@@ -175,6 +184,7 @@ PennController.Header = function(...rest){
 PennController.Footer = function(...rest){
     let controller = PennEngine.controllers.underConstruction;                      // To be returned
     controller.id = "Footer";                                                       // Special controller
+    controller.addToItems = false;                                                  // Do no add to 'items'
     PennEngine.controllers.list.pop();                                              // Remove from the list
     controller.sequence = lazyPromiseFromArrayOfLazyPromises(
         rest.map( command=>lazyPromiseFromArrayOfLazyPromises(command._promises) )  // The sequence of commands to run
@@ -330,6 +340,29 @@ define_ibex_controller({
         countsForProgressBar: true,
         htmlDescription: null
     }
+});
+
+// Add the controllers that have not been added to 'items' yet
+PennEngine.Prerun(()=>{
+    let includedControllers = [];
+    if (window.items){
+        for (let i in window.items){                            // Go through the items
+            let item = window.items[i];
+            if (item.length>2)                                  // Sanity check
+                for (let c = 2; c < item.length; c += 2)
+                    includedControllers.push(item[c]);          // Add every controller (even non-PennController) / parameter object
+        }
+    }
+    else
+        window.items = [];
+    let activeControllers = PennEngine.controllers.list.slice(0, PennEngine.controllers.list.length-1);
+    for (let c in activeControllers){                       // Go through list of controllers (last one is void)
+        let controller = activeControllers[c];              // Add if to be added and not already there
+        if (controller.addToItems && includedControllers.indexOf(controller)<0)
+            window.items.push( [controller.useLabel||"unlabeled", "PennController", controller] );
+    }
+    if (!window.shuffleSequence)                            // Run in order defined if nothing specified
+        window.conf_shuffleSequence = window.seq(window.anyType);
 });
 
 window.PennController = PennController; // Export the object globally

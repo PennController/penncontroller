@@ -149,7 +149,11 @@ let standardCommands = {
                     this.jQueryContainer.remove();
                 this.jQueryElement.addClass("PennController-"+this.type);
                 this.jQueryElement.addClass("PennController-"+this.id);
-                let div = $("<div>").css("display", "inherit");     // (embed in a div first)
+                let div = $("<div>").css({                      // (embed in a div first)
+                    display: "inherit", 
+                    "min-width": this.jQueryElement.width(),
+                    "min-height": this.jQueryElement.height()
+                });
                 this.jQueryContainer = div;
                 if (typeof(this.jQueryAlignment)=="string")
                     div.css("text-align",this.jQueryAlignment);     // Handle horizontal alignement, if any
@@ -169,9 +173,9 @@ let standardCommands = {
                                 .addClass("PennController-after")
                                 .addClass("PennController-"+this.type+"-after")
                                 .addClass("PennController-"+this.id+"-after");
-                if (this.jQueryBefore && this.jQueryBefore.length)
+                //if (this.jQueryBefore && this.jQueryBefore.length)
                     this.jQueryElement.before( before );
-                if (this.jQueryAfter && this.jQueryAfter.length)
+                //if (this.jQueryAfter && this.jQueryAfter.length)
                     this.jQueryElement.after( after );
                 for (let e in this.jQueryBefore)
                     if (this.jQueryBefore[e] && this.jQueryBefore[e]._element)
@@ -182,6 +186,7 @@ let standardCommands = {
             }
             else
                 console.warn("No jQuery instance to print for element ", this.id);
+            this.printTime = Date.now();
             resolve();
         },
         // Removes the element from the page
@@ -206,22 +211,28 @@ let standardCommands = {
     ,
     settings: {
         after: function(resolve,  commands){
-            if (commands._element && commands._element.jQueryElement instanceof jQuery)
+            if (commands._element && commands._element.jQueryElement instanceof jQuery){
+                if (this.jQueryElement.parent().length)     // If this element already printed
+                    commands.print( this.jQueryContainer.find(".PennController-"+this.type+"-after") )
                 commands._runPromises().then(()=>{
                     this.jQueryAfter.push( commands );
                     resolve();
                 });
+            }
             else{
                 console.warn("Tried to add an invalid element after element named ", this.id);
                 resolve();
             }
         },
         before: function(resolve,  commands){
-            if (commands._element && commands._element.jQueryElement instanceof jQuery)
+            if (commands._element && commands._element.jQueryElement instanceof jQuery){
+                if (this.jQueryElement.parent().length)     // If this element already printed
+                    commands.print( this.jQueryContainer.find(".PennController-"+this.type+"-before") )
                 commands._runPromises().then(()=>{
                     this.jQueryBefore.push( commands );
                     resolve();
                 });
+            }
             else{
                 console.warn("Tried to add an invalid element before element named ", this.id);
                 resolve();
@@ -239,6 +250,8 @@ let standardCommands = {
             if (this.jQueryElement instanceof jQuery){
                 this.jQueryElement.css({"text-align":"center",margin:"auto"});
                 this.jQueryAlignment = "center";
+                if (this.jQueryElement.parent().length)    // If element already printed, update
+                    this.jQueryContainer.css("text-align", "center");
             }
             else
                 console.warm("Element named ",this.id," has not jQuery element to render as centered");
@@ -290,15 +303,23 @@ let standardCommands = {
             if (this.jQueryElement instanceof jQuery){
                 this.jQueryElement.css("text-align","left");
                 this.jQueryAlignment = "left";
+                if (this.jQueryElement.parent().length)    // If element already printed, update
+                    this.jQueryContainer.css("text-align", "left");
             }
             else
                 console.warm("Element named ",this.id," has not jQuery element to render as aligned to the left");
+            resolve();
+        },
+        log: function(resolve){
+            this.log = true;
             resolve();
         },
         right: function(resolve){
             if (this.jQueryElement instanceof jQuery){
                 this.jQueryElement.css("text-align","right");
                 this.jQueryAlignment = "right";
+                if (this.jQueryElement.parent().length)    // If element already printed, update
+                    this.jQueryContainer.css("text-align", "right");
             }
             else
                 console.warm("Element named ",this.id," has not jQuery element to render as aligned to the right");
@@ -449,6 +470,7 @@ PennController._AddElementType = function(name, Type) {
             type.immediate.apply(element, rest);                // Immediate initiation of the element
         controller._addElement(id, element);                    // Adding the element to the controller's dictionary
         let commands = new PennElementCommands(element, type);  // An instance of PennElementCommands bound to the element
+        commands._promises.push( ()=>new Promise(r=>{element.printTime=0; element.log=false; r();}) ); // Init universal properties
         commands._promises.push( ()=>new Promise(r=>type.uponCreation.apply(element, [r])) ); // First command (lazy Promise)
         if (controller.defaultCommands.hasOwnProperty(name))// If current controller has default commands for element's type
             for (let p in controller.defaultCommands[name]){// add them to the list of commands (=lazy promises)
@@ -524,7 +546,6 @@ PennController._AddStandardCommands = function(commandsConstructor){
                     console.warn("Standard "+type+" command "+name+" should be a function");
                 else
                     standardCommands[type][name] = command;
-                // console.log("Added standard "+type+" command named "+name, command);
             }
         }
         else

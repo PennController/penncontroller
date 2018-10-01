@@ -17,6 +17,15 @@ window.PennController._AddElementType("Image", function(PennEngine) {
         resolve();
     };
 
+    this.end = function(){
+        if (this.log){
+            if (!this.printTime)
+                PennEngine.controllers.running.save(this.type, this.id, "Print", "NA", "Never");
+            else
+                PennEngine.controllers.running.save(this.type, this.id, "Print", this.printTime, "NULL");
+        }
+    }
+    
     this.value = function(){                    // Value is whether it's displayed
         return this.jQueryElement.parent().length;
     };
