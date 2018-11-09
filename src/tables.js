@@ -8,7 +8,7 @@ var defaultTable = {};          // A dummy object representing the default table
 // The TABLE class contains an 2x2 Array-Object and defines Item, Group and Label
 class Table {
     constructor(table) {
-        if (!(table instanceof Array) || table.length < 2 || !Object.keys(table[0]).length)
+        if (!(table instanceof Array) || table.length < 1 || !Object.keys(table[0]).length)
             return console.warn("Invalid format for table when creating new table");
         this.table = table;
         for (let col in table[0]) {
@@ -54,7 +54,12 @@ class Table {
                 }
                 if (!returnTable.length)
                     console.error("Empty table with filter:", args[0], args[1]);
-                return (new Table(returnTable)).setGroup(this.group).setLabel(this.label);
+                returnTable = new Table(returnTable);
+                if (this.group)
+                    returnTable.setGroup(this.group);
+                    if (this.label)
+                    returnTable.setLabel(this.label);
+                return returnTable;
             }
             else
                 return console.error("No column named \u2018"+args[0]+"\u2019 found in the table for filtering");
@@ -62,7 +67,7 @@ class Table {
         else if (args.length && args[0] instanceof Function){
             let returnTable = [];
             for (let row = 0; row < this.table.length; row++){
-                if (args[0].call(this.table[row]))
+                if (args[0].call(this, this.table[row]))
                     returnTable.push(this.table[row]);
             }
             if (!returnTable.length)
@@ -110,9 +115,39 @@ class TableHandler {
 
 // Checks that the string 'table' is of the right format, and return a csv-formatted object
 function _checkTable(table){
-    table = $.csv.toObjects(table);
-    if (Object.keys(table[0]).length)                   // Check that there is at least one column
-        return table;
+    if (table.charCodeAt(0) === 0xFEFF)
+        table = table.slice(1);
+    let commaTable = [], tabTable = [];
+    try {
+        //commaTable = $.csv.toObjects(table, {separator: ","});
+        let tmpTable = $.csv.toArrays(table, {separator: ","});
+        let columns = tmpTable[0];
+        for (let r = 1; r<tmpTable.length; r++){
+            let obj = {};
+            columns.map((v,i)=>obj[v] = tmpTable[r][i]);
+            commaTable.push(obj);
+        }
+    }
+    catch(err){
+        commaTable.push({});
+    }
+    try {
+        //tabTable = $.csv.toObjects(table, {separator: "\t"});
+        let tmpTable = $.csv.toArrays(table, {separator: "\t"});
+        let columns = tmpTable[0];
+        for (let r = 1; r<tmpTable.length; r++){
+            let obj = {};
+            columns.map((v,i)=>obj[v] = tmpTable[r][i]);
+            tabTable.push(obj);
+        }
+    }
+    catch(err){
+        tabTable.push({});
+    }
+    if (Object.keys(commaTable[0]).length > Object.keys(tabTable[0]).length)
+        return commaTable;                              // Return comma-based table if more columns
+    else if (Object.keys(tabTable[0]).length)           // Check that there is at least one column
+        return tabTable;
     return console.warn("Format of table is invalid");
 }
 
@@ -151,18 +186,15 @@ let asyncFeedItems = [];                        // All Template functions are ex
 //     )    
 PennController.Template = function (tableName, func) {              // FeedItems deprecated since 1.0
 
-    let itemSoFar = null, controllerSoFar = null;                   // Keep track of when/where items are added (generated)
-    if (PennEngine.controllers.list.length>1) {                     // Last in list is still under construction
-        controllerSoFar = PennEngine.controllers.list[PennEngine.controllers.list.length-2];
-        for (let c = PennEngine.controllers.list.length-3; c > -1 && !controllerSoFar.addToItems; c--)
-            controllerSoFar = PennEngine.controllers.list[c];       // Last PennController with addToItems == true
-        if (!controllerSoFar.addToItems)
-            controllerSoFar = null;
-    }
-    if (window.items instanceof Array)
-        itemSoFar = window.items[window.items.length-1];            // (and) after a window.item
+    if (window.items)
+        for (let i in window.items)
+            if (PennEngine.tmpItems.indexOf(window.items[i])<0)
+                PennEngine.tmpItems.push(window.items[i]);
+    let templateItems = {PennTemplate: []};
+    PennEngine.tmpItems.push(templateItems);
     
     asyncFeedItems.push(function(){                                 // The code below will be executed after setup
+        let tmpItemsLength = PennEngine.tmpItems.length;            // Any PennController() in template pushes indesirably
         let table;
         if (tableName instanceof Function) {                        // No table name specified, try to automatically detect
             func = tableName;
@@ -214,20 +246,6 @@ PennController.Template = function (tableName, func) {              // FeedItems
         else
             return console.warn("Bad format for FeedItems' first argument (should be a PennController table, table name or function from rows to Ibex elements)");
 
-        let itemsBefore = [];
-        let itemsAfter = [];
-        if (window.items instanceof Array && window.items.length)
-            for (let i in window.items){                        // Feed itemsBefore and itemsAfter
-                if (itemSoFar!=null||controllerSoFar!=null)
-                    itemsBefore.push( window.items[i] );        // Still one preceding item to find
-                else
-                    itemsAfter.push( window.items[i] );         // All preceding items found
-                if (window.items[i].indexOf(controllerSoFar)>-1)
-                    controllerSoFar = null;                     // Found the (last) preceding PennController
-                if (itemSoFar instanceof Array && window.items[i] == itemSoFar)
-                    itemSoFar = null                            // Found the (last) preceding window.item
-            }
-
         let groups = [];
         if (table.group)
             for (let row in table.table)
@@ -266,7 +284,12 @@ PennController.Template = function (tableName, func) {              // FeedItems
             
             itemsToAdd.push(item);
         }
-        window.items = itemsBefore.concat(itemsToAdd).concat(itemsAfter);
+
+        templateItems.PennTemplate = itemsToAdd;
+
+        while (PennEngine.tmpItems.length>tmpItemsLength)          // Any PennController() in template pushes indesirably
+            PennEngine.tmpItems.pop();                             // PennTemplate contains items & will add them to window.items
+
     });
 
     if (!window.items)

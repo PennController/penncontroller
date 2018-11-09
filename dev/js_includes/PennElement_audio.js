@@ -54,7 +54,7 @@ window.PennController._AddElementType("Audio", function(PennEngine) {
                 height: this.jQueryElement.height()
             });
             this.jQueryElement.before(this.jQueryDisable);
-            this.jQueryElement.addClass("PennController-"+this.type+"-disabled");
+            this.jQueryElement.addClass("PennController-"+this.type.replace(/[\s_]/g,'')+"-disabled");
         };
         resolve();
     };
@@ -123,7 +123,7 @@ window.PennController._AddElementType("Audio", function(PennEngine) {
         },
         stop: function(resolve){
             this.audio.pause();
-            this.currentTime = 0;
+            this.audio.currentTime = 0;
             resolve();
         }
         ,
@@ -175,16 +175,17 @@ window.PennController._AddElementType("Audio", function(PennEngine) {
         once: function(resolve){
             if (this.hasPlayed){
                 this.disabled = true;
-                resolve();
+                this.printDisable();
             }
             else {  // Extend onend
                 let onended = this.audio.onended, t = this;
                 this.audio.onended = function(...rest){
                     onended.apply(this, rest);
                     t.disabled = true;
-                    resolve();
+                    t.printDisable();
                 };
             }
+            resolve();
         }
         ,
         log: function(resolve,  ...what){

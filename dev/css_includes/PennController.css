@@ -1,0 +1,16 @@
+td.Scale-scaleButton {
+    margin-left: 0;
+    padding-left: 0;
+    margin-right: 1em;
+    padding-right: 0;
+    border: 1px #9ea4b1 solid;
+    width: 6em;
+    height: 3em;
+    padding-top: 0.5em;
+    text-align: center;
+    color: blue;
+}
+
+td.Scale-scaleButton:hover {
+	text-decoration: underline;
+}

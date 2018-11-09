@@ -1,0 +1,9 @@
+Label,Item,Group,A,B,Sentence
+rating,drinks,either,A - Do you want either tea or coffee?,"B - I'll have both, thanks.",NA
+rating,drinks,any,A - Do you want any drink on the menu?,"B - I'll have all of them, thanks.",NA
+rating,oasis,either,A - Do you know either Wonderwall or Don't look back in anger by Oasis?,B - I know both songs.,NA
+rating,oasis,any,A - Do you know any song by Oasis?,B - I know all of their songs.,NA
+input,warm,either,NA,NA,"I thought the weather was warm, but it really is"
+input,warm,any,NA,NA,"I thought the weather was warm, but it really is"
+input,damp,either,NA,NA,"I thought the sponge was damp, but it really is"
+input,damp,any,NA,NA,"I thought the sponge was damp, but it really is"

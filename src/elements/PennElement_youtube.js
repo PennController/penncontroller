@@ -122,7 +122,7 @@ window.PennController._AddElementType("Youtube", function(PennEngine) {
                 height: this.jQueryElement.height()
             });
             this.jQueryElement.before(this.jQueryDisable);
-            this.jQueryElement.addClass("PennController-"+this.type+"-disabled");
+            this.jQueryElement.addClass("PennController-"+this.type.replace(/[\s_]/g,'')+"-disabled");
         };
         resolve();
     };
@@ -217,7 +217,7 @@ window.PennController._AddElementType("Youtube", function(PennEngine) {
             PennEngine.elements.standardCommands.actions.remove.apply(this, [resolve]);
         },
         stop: function(resolve){
-            this.player.playVideo();
+            this.player.pauseVideo();
             this.player.seekTo(0);
             resolve();
         },

@@ -5,9 +5,10 @@ const PRELOADDELAY = 60000;
 
 let headerController = null;
 let footerController = null;
+let preloaders = [];
 
 // Instances represent all the PennControllers,     ultimately passed for evaluation to define_ibex_controller
-class Controller {
+export class Controller {
     constructor(){
         this.id = PennEngine.controllers.list.length;
         this.useLabel = false;                          // The label (used if generated outside 'items')
@@ -34,7 +35,7 @@ class Controller {
         if (this.elements[id])
             return this.elements[id];
         else
-            return console.warn("No element named "+id+" found for current controller");
+            return console.warn("No element named '"+id+"' found for PennController #"+this.id);
     }
     //  PUBLIC METHODS  (return the instance)
     label(text){
@@ -61,6 +62,7 @@ class Controller {
     }
     setOption(option, value){
         this[option] = value;
+        return this;
     }
 }
 
@@ -74,20 +76,35 @@ PennEngine.controllers.new = ()=>new Controller();
 // The only object to be exported to the front end (see last line of index.js)
 export var PennController = function(...rest) {
     let controller = PennEngine.controllers.underConstruction;                      // To be returned
+    if (window.items)
+        for (let i in window.items)                                                 // Add any non-added items yet
+            if (PennEngine.tmpItems.indexOf(window.items[i])<0)
+                PennEngine.tmpItems.push(window.items[i]);
+    PennEngine.tmpItems.push(controller);                                           // Add this controller
     if (rest.length && typeof(rest[0])=="string")                                   // First parameter can be label
         controller.useLabel = rest[0];
     let sequenceArray = [];                                                         // Build array of lazy promises out of rest
     function appendPromises( ...commands ){
         for (let c in commands)
-            if (commands[c]._promises)                                              // Append command's promises
+            if (commands[c] && commands[c]._promises)                               // Append command's promises
                 this.push( lazyPromiseFromArrayOfLazyPromises(commands[c]._promises) );
-            else if (commands[c] instanceof Array)                                  // Probe the array for commands
+            else if (commands[c] && commands[c] instanceof Array)                   // Probe the array for commands
                 appendPromises.apply(this, commands[c]);
     };
     appendPromises.apply( sequenceArray , rest );                                   // Filter rest (can contain arrays itself)
     controller.sequence = lazyPromiseFromArrayOfLazyPromises( sequenceArray );      // Now make one big lazy promise out of that
     PennEngine.controllers.underConstruction = new Controller();                    // Create a new controller for next build
     return controller;                                                              // Return controller
+};
+
+// Whether to print debug information
+PennController.Debug = function (onOff) {
+    PennEngine.debug = onOff==undefined||onOff;
+};
+
+// Handler for definition of shuffleSequence
+PennController.Sequence = function(...seq) {
+    window.shuffleSequence = window.seq(...seq);
 };
 
 // A handler for retrieving parameters passed in the URL
@@ -115,17 +132,19 @@ PennController.AddHost = function(...rest) {
 // Creates an item checking that the resources (used by the items with matching labels, if specified) are preloaded
 PennController.CheckPreloaded = function(...rest) {
     let controller = new Controller();                  // Create a new controller
-    controller.id = "Preloader";
+    controller.id = "Preloader-"+preloaders.length;
     controller.runHeader = false;                       // Don't run header and footer
     controller.runFooter = false;
+    preloaders.push(controller);
     PennEngine.controllers.list.pop();                  // Remove it from PennEngine's list immediately (not a 'real' controller)
     controller.sequence = ()=>new Promise(r=>r());      // Not a 'real' controller: only record preloading
     controller.ignoreWhenCheckingPreload = true;        // In case this controller's label matches those to be checked
 
+    PennEngine.tmpItems.push(controller);               // Add the controller to the list
+
     if (rest.length && Number(rest[rest.length-1])>0){  // Custom delay
         controller.preloadDelay = Number(rest[rest.length-1]);
-        if (rest.length>1)                              // Label-filtering
-            rest.pop();
+        rest.pop();
     }
     
     let labelPredicates = [];                           // Build the list of label predicates (see IBEX shuffle.js)
@@ -139,31 +158,71 @@ PennController.CheckPreloaded = function(...rest) {
         }
     }
     else                                                // No predicate passed: all labels are in
-        labelPredicates = [anyType];
+        labelPredicates = [x=>true];
 
-    let oldModify = window.modifyRunningOrder;          // Trick: use Ibex's modifyRunningOrder to probe sequence of trials
-    window.modifyRunningOrder = function (ro){
-        if (oldModify instanceof Function)
-            ro = oldModify.call(this, ro);
-        for (let i = 0; i < ro.length; i++){            // Add all the PennController elements' resources to this controller
-            let item = ro[i];                           // after all the elements have been created 
-            let elements = item.filter(e=>{
-                let match = false;
-                for (let l in labelPredicates)          // Only keep elements whose label matches at least one predicate
-                    match = match || labelPredicates[l](e.type);
-                match = match && e.controller == "PennController";  // and elements that are PennController elements
-                match = match && !e.options.ignoreWhenCheckingPreload;  // and elements that are not CheckPreloaded themselves
-            })
-            for (let e in elements)
-                controller.resources = controller.resources.concat(
-                    element[e].resources.filter(r=>controller.resources.indexOf(r)<0)
-                );                                      // Add all the (not already added) resources to this controller
+    PennEngine.Prerun(                                  // Probe sequence of trials using modifyRunningOrder
+        ()=>{                                           // but user can manual define it, so use conf_...
+            let oldModify = window.conf_modifyRunningOrder;
+            window.conf_modifyRunningOrder = function (ro){
+                if (oldModify instanceof Function)
+                    ro = oldModify.call(this, ro);
+                for (let i = 0; i < ro.length; i++){    // Add all the PennController elements' resources to this controller
+                    let item = ro[i];                   // after all the elements have been created 
+                    let elements = item.filter(e=>{
+                        let match = false;               // Only keep elements whose label matches at least one predicate
+                        for (let l = 0; l < labelPredicates.length; l++)
+                            match = match || labelPredicates[l](e.type);
+                        match = match && e.controller == "PennController";  // and elements that are PennController elements
+                        match = match && !e.options.ignoreWhenCheckingPreload;  // and elements that are not CheckPreloaded themselves
+                        return match;
+                    });
+                    for (let e = 0; e < elements.length; e++)
+                        controller.resources = controller.resources.concat(
+                            elements[e].options.resources.filter(r=>controller.resources.indexOf(r)<0)
+                        );                              // Add all the (not already added) resources to this controller
+                }
+                return ro;
+            };
         }
-        return ro;
-    };
+    );
 
     return controller;
 };
+
+
+PennController.SendResults = function(label){
+    if (window.items == undefined)
+        window.items = [];
+    if (window.manualSendResults == undefined || window.manualSendResults != false)
+        window.manualSendResults = true;
+    let options = {};
+    let item = [label||"sendResults", "__SendResults__", options];
+    options.label = l=>{item[0]=l; return options;};
+    options.setOption = (name,value)=>{options[name] = value; return options;};
+    window.items.push(item);
+    return options;
+};
+
+
+PennController.SetCounter = function(...args){
+    if (window.items == undefined)
+        window.items = [];
+    let label = "setCounter", options = {};
+    if (args.length == 1 || args.length == 3)
+        label = args[0];
+    else if (args.length > 1){
+        if (args[0+args.length==3].match(/set/i))
+            options.set = args[1+args.length==3];
+        else if (args[0+args.length==3].match(/inc/i))
+            options.inc = args[1+args.length==3];
+    }
+    let item = [label, "__SetCounter__", options];
+    options.label = l=>{item[0]=l; return options};
+    options.setOption = (name,value)=>{options[name] = value; return options};
+    window.items.push(item);
+    return options;
+};
+
 
 PennController.Header = function(...rest){
     let controller = PennEngine.controllers.underConstruction;                      // To be returned
@@ -176,9 +235,16 @@ PennController.Header = function(...rest){
     for (let type in controller.defaultCommands)                                    // Indicate header origin of default commmands
         for (let c in controller.defaultCommands[type])
             controller.defaultCommands[type][c].push("header");
-    headerController = controller;
+    if (headerController){
+        headerController.resources = headerController.resources.concat(controller.resources);
+        $.extend(headerController.elements, controller.elements);
+        headerController.headerDefaultCommands = controller.headerDefaultCommands;  // Already inherited
+        headerController.sequence = lazyPromiseFromArrayOfLazyPromises( [ headerController.sequence , controller.sequence ] );
+    }
+    else
+        headerController = controller;
     PennEngine.controllers.underConstruction = new Controller();                    // Create a new controller for next build
-    return controller;                                                              // Return controller
+    return headerController;                                                        // Return Header controller
 };
 
 PennController.Footer = function(...rest){
@@ -189,9 +255,16 @@ PennController.Footer = function(...rest){
     controller.sequence = lazyPromiseFromArrayOfLazyPromises(
         rest.map( command=>lazyPromiseFromArrayOfLazyPromises(command._promises) )  // The sequence of commands to run
     );
-    footerController = controller;
+    if (footerController){
+        footerController.resources = footerController.resources.concat(controller.resources);
+        $.extend(footerController.elements, controller.elements);
+        footerController.headerDefaultCommands = controller.headerDefaultCommands;  // Already inherited
+        footerController.sequence = lazyPromiseFromArrayOfLazyPromises( [ footerController.sequence , controller.sequence ] );
+    }
+    else
+        footerController = controller;
     PennEngine.controllers.underConstruction = new Controller();                    // Create a new controller for next build
-    return controller;                                                              // Return controller
+    return footerController;                                                        // Return controller
 };
 
 // What happens when a controller is evaluated
@@ -209,10 +282,20 @@ define_ibex_controller({
             _t.finishedCallback = _t.options._finishedCallback;
 
             _t.id = _t.options.id;                      // This identifies the running controller in PennEngine's list
-            _t.runHeader = _t.options.runHeader==undefined|_t.options.runHeader;
-            _t.runFooter = _t.options.runFooter==undefined|_t.options.runFooter;
+            if (typeof(_t.id) == "string" && _t.id.match(/^Preloader-/))
+                _t.controller = preloaders[Number(_t.id.replace(/Preloader-/,''))];
+            else if (_t.id == "Header")
+                _t.controller = headerController;
+            else if (_t.id == "Footer")
+                _t.controller = footerController;
+            else if (Number(_t.id)>=0&&Number(_t.id)<PennEngine.controllers.list.length)
+                _t.controller = PennEngine.controllers.list[_t.id];
+            else
+                _t.controller = _t.options;
+            _t.runHeader = _t.controller.runHeader==undefined|_t.controller.runHeader;
+            _t.runFooter = _t.controller.runFooter==undefined|_t.controller.runFooter;
 
-            let preloadDelay = _t.options.preloadDelay;
+            let preloadDelay = _t.controller.preloadDelay;
 
             // SAVE
             let linesToSave = [];                       // This array will be passed to finishedCallback
@@ -228,35 +311,31 @@ define_ibex_controller({
                     ["Value", value],
                     ["EventTime", time]
                 ];
-                if (_t.options.appendResultLine instanceof Array)// If anything to append
-                    for (let c in _t.options.appendResultLine){
-                        let column = _t.options.appendResultLine[c];
+                if (_t.controller.appendResultLine instanceof Array)// If anything to append
+                    for (let c in _t.controller.appendResultLine){
+                        let column = _t.controller.appendResultLine[c];
                         if (!(column instanceof Array) || column.length != 2)
                             continue;                           // Only append pairs of param + value
-                        // if (column[1] instanceof Function)
-                        //     column[1] = column[1]();            // If function/promise value, run it
-                        // else if (column[1] && column[1].type=="Var")
-                        //     column[1] = column[1].value;        // If Var element, evaluate it
                         row.push(column);
                     }
                 row.push(["Comments", comments.join(',')]);     // If multiple arguments, add unnamed columns
                 linesToSave.push(row);
             };
-            for (let l in _t.options.linesToSave)       // Push what the user passed to logAppend
-                _t.save(_t.options.linesToSave[l]);
+            for (let l in _t.controller.linesToSave)       // Push what the user passed to logAppend
+                _t.save(_t.controller.linesToSave[l]);
 
             // HEADER AND FOOTER INHERITENCE
             if (_t.runHeader && headerController instanceof Controller){
-                _t.options.resources = _t.options.resources.concat(                     // Inherit header's resources
-                    headerController.resources.filter(r=>_t.options.resources.indexOf(r)<0)
+                _t.controller.resources = _t.controller.resources.concat(               // Inherit header's resources
+                    headerController.resources.filter(r=>_t.controller.resources.indexOf(r)<0)
                 );
-                $.extend(_t.options.elements, headerController.elements);               // Inherit header's elements
+                $.extend(_t.controller.elements, headerController.elements);            // Inherit header's elements
             }
             if (_t.runFooter && footerController instanceof Controller){
-                _t.options.resources = _t.options.resources.concat(                     // Inherit footer's resources
-                    footerController.resources.filter(r=>_t.options.resources.indexOf(r)<0)
+                _t.controller.resources = _t.controller.resources.concat(               // Inherit footer's resources
+                    footerController.resources.filter(r=>_t.controller.resources.indexOf(r)<0)
                 );
-                $.extend(_t.options.elements, footerController.elements);                       // Inherit footer's elements
+                $.extend(_t.controller.elements, footerController.elements);            // Inherit footer's elements
             }
 
             // END
@@ -271,16 +350,16 @@ define_ibex_controller({
                     await footerController.sequence();  // Run footer
                     _t.save("PennController", _t.id, "_Footer_", "End", Date.now(), "NULL");
                 }
-                for (let e in _t.options.elements)      // Call end on each element (when defined)
-                    _t.options.elements[e].end();
+                for (let e in _t.controller.elements)   // Call end on each element (when defined)
+                    _t.controller.elements[e].end();
                 _t.save("PennController", _t.id, "_Trial_", "End", Date.now(), "NULL");
                 linesToSave.sort((a,b)=>a[4][1]>b[4][1]);// sort the lines by time
                 linesToSave.map(line=>{
                     for (let e in line)
                         if (line[e][1] instanceof Function)
                             line[e][1] = line[e][1]();  // If function/promise value, run it
-                        else if (line[e][1] && line[e][1].type=="Var")
-                            line[e][1] = line[e][1].value;// If Var element, evaluate it
+                        else if (line[e][1] && line[e][1].type=="Var" && !line[e][1]._promises.length)
+                            line[e][1] = line[e][1].value;// If Var element, evaluate it (no command)
                 });
                 _t.finishedCallback(linesToSave);       // and then call finishedCallback
             };
@@ -293,16 +372,17 @@ define_ibex_controller({
                     return;
                 trialStarted = true;
                 if (failedToPreload){                   // Some resources failed to load
-                    for (let r in _t.options.resources.filter(r=>r.status!="ready"))
+                    for (let r in _t.controller.resources.filter(r=>r.status!="ready"))
                         _t.save(
                             "PennController",
                             _t.id,
                             "_PreloadFailed_",          // Save the name of the resources that failed to load
-                            csv_url_encode(_t.options.resources[r].name),
+                            csv_url_encode(_t.controller.resources[r].name),
                             Date.now(),
                             "NULL"
                         );
                 }
+                preloadElement.remove();                // Remove preload message
                 _t.save("PennController", _t.id, "_Trial_", "Start", Date.now(), "NULL");
                 // HEADER
                 if (_t.runHeader && headerController instanceof Controller){
@@ -310,24 +390,23 @@ define_ibex_controller({
                     await headerController.sequence();  // Run header
                     _t.save("PennController", _t.id, "_Header_", "End", Date.now(), "NULL");
                 }
-                preloadElement.remove();                // Remove preload message
-                _t.options.sequence().then(endTrial);   // Run the sequence of commands
+                _t.controller.sequence().then(endTrial); // Run the sequence of commands
             };
 
             // PRELOAD
             let preloadElement = $("<div><p>Please wait while the resources are preloading</p>"+
                                         "<p>This may take up to "+minsecStringFromMilliseconds(preloadDelay)+".</p></div>");
             _t.element.append(preloadElement);          // Add the preload message to the screen
-            for (let r in _t.options.resources){        // Go through the list of resources used in this trial
-                let resource = _t.options.resources[r], originalResolve = resource.resolve;
+            for (let r in _t.controller.resources){     // Go through the list of resources used in this trial
+                let resource = _t.controller.resources[r], originalResolve = resource.resolve;
                 if (resource.status!="ready")
                     resource.resolve = function(){      // Redefine each non-ready resource's resolve
                         originalResolve.apply(resource);
-                        if (_t.options.resources.filter(r=>r.status!="ready").length==0)
+                        if (_t.controller.resources.filter(r=>r.status!="ready").length==0)
                             startTrial();               // Start trial if no non-ready resource left
                     };
             }
-            if (_t.options.resources.filter(r=>r.status!="ready").length==0)
+            if (_t.controller.resources.filter(r=>r.status!="ready").length==0)
                 startTrial();                           // Start trial if no non-ready resource
             else                                        // Start trial after a delay if resources failed to load
                 setTimeout(function(){startTrial(true);}, preloadDelay);
@@ -342,27 +421,4 @@ define_ibex_controller({
     }
 });
 
-// Add the controllers that have not been added to 'items' yet
-PennEngine.Prerun(()=>{
-    let includedControllers = [];
-    if (window.items){
-        for (let i in window.items){                            // Go through the items
-            let item = window.items[i];
-            if (item.length>2)                                  // Sanity check
-                for (let c = 2; c < item.length; c += 2)
-                    includedControllers.push(item[c]);          // Add every controller (even non-PennController) / parameter object
-        }
-    }
-    else
-        window.items = [];
-    let activeControllers = PennEngine.controllers.list.slice(0, PennEngine.controllers.list.length-1);
-    for (let c in activeControllers){                       // Go through list of controllers (last one is void)
-        let controller = activeControllers[c];              // Add if to be added and not already there
-        if (controller.addToItems && includedControllers.indexOf(controller)<0)
-            window.items.push( [controller.useLabel||"unlabeled", "PennController", controller] );
-    }
-    if (!window.shuffleSequence)                            // Run in order defined if nothing specified
-        window.conf_shuffleSequence = window.seq(window.anyType);
-});
-
-window.PennController = PennController; // Export the object globally
+window.PennController = PennController;                 // Export the object globally

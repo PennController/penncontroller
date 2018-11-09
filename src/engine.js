@@ -1,4 +1,9 @@
-let preRunningFunctions = [];
+import { lazyPromiseFromArrayOfLazyPromises } from "./utils";
+
+let preRunningFunctions = [];       // Functions to be run before Ibex processes window.items
+let functionsDictionary = {
+    keypress: []
+};
 
 // Resources can be created from PennEngine.resources.fetch or when uploading ZIP files (see zip.js)
 class Resource {
@@ -16,6 +21,7 @@ class Resource {
     }
     resolve() {
         this.status = "ready";
+        console.log("Successfully preloaded "+this.name);
     }
 }
 
@@ -68,9 +74,31 @@ export var PennEngine = {
         list: [/*{nameEl1Ctrl1: {}, nameEl2Ctrl1: {}}, {nameEl1Ctrl2: {}, nameEl2Ctrl2: {}}*/]
     }
     ,
+    events: {                                   // Event handlers
+        keypress: f=> {                                // Keypress, triggered only when *new* keypress
+            let toAdd = [ f , PennEngine.controllers.running||PennEngine.controllers.underConstruction ];
+            functionsDictionary.keypress.push( toAdd );                 // Add the event function to the list
+            if (PennEngine.controllers.running){
+                let oldEndTrial = PennEngine.controllers._endTrial;
+                PennEngine.controllers.running._endTrial = async function(){
+                    await oldEndTrial.apply(PennEngine.controllers.running);
+                    toAdd[0] = ()=>{};                                  // Clear event at end of trial
+                };
+            }
+            else {
+                let oldSequence = PennEngine.controllers.underConstruction.sequence;
+                PennEngine.controllers.underConstruction.sequence = lazyPromiseFromArrayOfLazyPromises(
+                    [ oldSequence , r=>{ toAdd[0]=()=>{}; r(); } ]      // Clear event at end of trial
+                );
+            }
+        }
+    }
+    ,
     URLs: []
     ,
     utils: {}
+    ,
+    tmpItems: []        //  PennController() adds {PennController: id}, PennController.Template adds {PennTemplate: [...]}
     ,
     Prerun: function(func){
         preRunningFunctions.push(func);
@@ -88,6 +116,25 @@ window.ibex_controller_set_properties = function (name, options) {
     if (name!="__SendResults__")                            // Make sure to run only upon SendResults' creation
         return;
 
+    // Keypress events
+    let keysDown = {};                                      // Keep track of which keys are down
+    $(document).bind('keydown', e=>{
+        if (keysDown[e.keyCode])                            // If key already down, don't fire event
+            return;
+        keysDown[e.keyCode] = true;
+        if (PennEngine.controllers.running)                 // Fire event: run functions
+            for (let f = 0; f < functionsDictionary.keypress.length; f++)
+                if ( PennEngine.controllers.running == functionsDictionary.keypress[f][1] ||
+                     PennEngine.controllers.running.id == functionsDictionary.keypress[f][1]
+                    )
+                        functionsDictionary.keypress[f][0].apply(this, [e]);
+    });
+    $(document).bind('keyup', e=>{
+        if (keysDown[e.keyCode])                            // Keep track of which keys are no longer down
+            keysDown[e.keyCode] = false;
+    });
+
+    // Pre-running functions
     for (let f in preRunningFunctions)
         if (preRunningFunctions[f] instanceof Function)
             preRunningFunctions[f].call();

@@ -64,6 +64,16 @@ window.PennController._AddElementType("Button", function(PennEngine) {
     };
     
     this.settings = {
+        callback: function(resolve, ...elementCommands){
+            let originalClick = this.jQueryElement[0].onclick;
+            this.jQueryElement[0].onclick = async function () {
+                if (!this.disabled)
+                    for (let c in elementCommands)
+                        await elementCommands[c]._runPromises();
+                originalClick.apply(this);
+            };
+            resolve();
+        },
         log: function(resolve,  ...what){
             this.log = true;
             resolve();

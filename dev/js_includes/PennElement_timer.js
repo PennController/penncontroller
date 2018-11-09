@@ -52,6 +52,13 @@ window.PennController._AddElementType("Timer", function(PennEngine) {
             this.start();
             resolve();
         },
+        stop: function(resolve){
+            if (!this.instance)
+                return resolve();
+            clearTimeout(this.instance);
+            this.done();
+            resolve();
+        },
         wait: function(resolve, test){
             if (test == "first" && this.elapsed)            // If first and already elapsed, resolve already
                 resolve();

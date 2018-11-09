@@ -38,39 +38,39 @@ export function hexFromArrayBuffer (array) {
 // See https://en.wikipedia.org/wiki/List_of_file_signatures
 export function getMimetype (signature) {
     // IMAGE
-    if (signature.match(/^00000[12]00/))
+    if (signature.match(/^00000[12]00/i))
         return 'image/x-icon';
-    if (signature.match(/424D/))
+    if (signature.match(/424D/i))
         return 'image/bmp';
-    if (signature.match(/^89504E470D0A1A0A/))
+    if (signature.match(/^89504E470?D0?A1A0?A/i))   // For some reason 0 is sometimes dropped...
         return 'image/png';
-    if (signature.match(/^474946383[79]61/))
+    if (signature.match(/^474946383[79]61/i))
         return 'image/gif';
-    if (signature.match(/^52494646........574542505650/))   // Longest = 28 bytes
+    if (signature.match(/^52494646........574542505650/i))   // Longest = 28 bytes
         return 'image/webp';
-    if (signature.match(/^FFD8FF/))
+    if (signature.match(/^FFD8FF/i))
         return 'image/jpeg';
     // AUDIO/VIDEO
-    if (signature.match(/^2E736E64/))
+    if (signature.match(/^2E736E64/i))
         return 'audio/basic';
-    if (signature.match(/^464F524D........41494646/))
+    if (signature.match(/^464F524D........41494646/i))
         return 'audio/aiff';
-    if (signature.match(/^(fffb|494433)/))
+    if (signature.match(/^(fff[b3a2]|494433)/i))    //  b = mpeg-1 audio, 3 = mpeg-2, a = 1protected, 2 = 2protected
         return 'audio/mpeg';
-    if (signature.match(/^4F67675300/))
+    if (signature.match(/^4F67675300/i))
         return 'application/ogg';
-    if (signature.match(/^4D546864......06/))
+    if (signature.match(/^4D546864......06/i))
         return 'audio/midi';
-    if (signature.match(/^52494646........41564920/))
+    if (signature.match(/^52494646........41564920/i))
         return 'video/avi';
-    if (signature.match(/^52494646......(..)?57415645/))    // Apparently sometimes only 6 bytes in between...
+    if (signature.match(/^52494646.{4,8}57415645/i)) // Apparently sometimes less than 8 bytes in between...
         return 'audio/wave';
-    if (signature.match(/^1A45DFA3/))    // Could be sthg else than webm
+    if (signature.match(/^1A45DFA3/i))    // Could be sthg else than webm
         return 'video/webm';
     // OTHER
-    if (signature.match(/^25504446/))
+    if (signature.match(/^25504446/i))
         return 'application/pdf';
-    if (signature.match(/^504B0304/))
+    if (signature.match(/^504B0304/i))
         return 'application/zip';
     else
         return false;

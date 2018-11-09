@@ -1,6 +1,8 @@
 // SCALE element
 window.PennController._AddElementType("Scale", function(PennEngine) {
 
+    // SCALE-SPECIFIC FUNCTIONS & METHODS
+    //
     function disable(){                                             // Disable the scale
         this.table.find("input").attr("disabled", true);
         this.table.find("td").css("cursor", "");
@@ -13,14 +15,36 @@ window.PennController._AddElementType("Scale", function(PennEngine) {
         this.disabled = false;
     }
 
+    function selectIndex(index, simulate) {
+        switch(this.scaleType){
+            case "buttons":                                         // Button scale
+            this.table.find("td.PennController-"+this.type+"-scaleButton").css("outline","");
+            $(this.table.find("td.PennController-"+this.type+"-scaleButton")[index]).css("outline", "dotted 1px gray");
+            break;
+            case "slider":                                          // Slider is different (see below)
+            this.table.find("input[type=range]")[0].value = index;
+            break;
+            case "radio":
+            this.table.find(".PennController-"+this.type+"-scaleButton input[type=radio]").removeAttr("checked");
+            $(this.table.find(".PennController-"+this.type+"-scaleButton input[type=radio]")[index]).attr("checked", true);
+            break;
+        }
+        if (simulate)
+            this.choice(this.buttons[index]);
+    }
+
     function fixAesthetics(){                                       // Handle slider's rotation after table added to page
-        if (this.scaleType=="slider"&&this.orientation=="vertical"){    // (and fixed width)
+        if (this.scaleType=="slider"){                                 // (and fixed width)
             let slider = this.table.find("input");
-            this.table.css({"table-layout": "fixed",                // Table's height = slider's width (= height after rotation)
-                            height: slider.width(),                 // Subtract half the slider's width from table's widths
-                            width: this.table.width()-slider.width()+slider.height()+10+"px"});
-            slider.parent().css("width", slider.height());          // Fix the slider's cell's width (slider's height ~> width)
-            slider.css("margin-left", -0.5*(slider.width()-slider.height())+"px");  // Re-positioning the slider
+            if (this.orientation=="vertical"){
+                this.table.css({"table-layout": "fixed",                // Table's height = slider's width (= height after rotation)
+                                height: slider.outerWidth(),            // Subtract half the slider's width from table's widths
+                                width: this.table.width()-slider.width()+slider.height()+10+"px"});
+                slider.parent().css("width", slider.height());          // Fix the slider's cell's width (slider's height ~> width)
+                slider.css("margin-left", -0.5*(slider.width()-slider.height())+"px");  // Re-positioning the slider
+            }
+            else
+                this.table.css("height", slider.height());
         }
         else if (this.width=="auto"){
             let maxWidth = 0, n = 0;
@@ -41,33 +65,36 @@ window.PennController._AddElementType("Scale", function(PennEngine) {
         this.table.empty();                                 // First empty the table
         let buttonLabelCells = [];                          // [<td button> , <td label>]
         for (let b  = 0; b < this.buttons.length; b++){
-            let buttonCell = $("<td>").addClass("PennController-"+this.type+"-scaleButton");
-            let labelCell = $("<td>").addClass("PennController-"+this.type+"-label");
+            let buttonCell = $("<td>").addClass("PennController-"+this.type.replace(/[\s_]/g,'')+"-scaleButton");
+            let labelCell = $("<td>").addClass("PennController-"+this.type.replace(/[\s_]/g,'')+"-label");
             let value = this.buttons[b];
             if (!value)                                             // If the array's entry is void, use its index
                 value = b;
-            else if (value._runPromises){                           // If the value is an element command
-                value.print( labelCell )._runPromises();            // Print the element in the cell
-                value = value._element.id;                          // And use its label as value
-            }
+            else if (value._runPromises)                            // If the value is an element command
+                value.print( labelCell )._runPromises().then(()=>{  // Print the element in the cell
+                    value._element.jQueryContainer.css({display: "inline-block", width: "100%"});
+                });            
             else
                 labelCell.html(value);                              // Add a label (null if value null at this point)
             switch(type){
                 case "buttons":                                     // Button scale
-                buttonCell.html(value);
+                if (value._runPromises)
+                    value.print( buttonCell )._runPromises().then(()=>{
+                        value._element.jQueryContainer.css({display: "inline-block", width: "100%"});
+                    });
+                else
+                    buttonCell.html(value);
                 if (!this.disabled)
                     buttonCell.css("cursor", "pointer");            // Hand pointer when hover
                 buttonCell.click(()=>{
                     if (this.disabled)                              // Only if enabled
                         return;
                     this.choice(this.buttons[b]);
-                    this.table.find("td").css("border","");         // Remove frame from other buttons
-                    buttonCell.css("border", "dotted 1px gray")     // Add a frame around the button
+                    this.table.find("td").css("outline","");        // Remove frame from other buttons
+                    buttonCell.css("outline", "dotted 1px gray")    // Add a frame around the button
                 });
-                if (defaultValue == value || defaultValue == b){    
-                    buttonCell.css("border", "dotted 1px gray");    // Frame a button if a default value was specified
-                    this.choices.push(["Default", defaultValue, Date.now(), "button"]); // Log it
-                }
+                if (defaultValue == value || defaultValue == b)
+                    buttonCell.css("outline", "dotted 1px gray");   // Frame a button if a default value was specified
                 break;
                 case "slider":                                      // Slider is different (see below)
                 if (defaultValue == value || defaultValue == b)
@@ -80,10 +107,8 @@ window.PennController._AddElementType("Scale", function(PennEngine) {
                     value: value,
                     type: "radio"
                 });
-                if (defaultValue == value || defaultValue == b){    // If default value, check the radio
+                if (defaultValue == value || defaultValue == b)     // If default value, check the radio
                     input.attr("checked", true);
-                    this.choices.push(["Default", defaultValue, Date.now(), "radio"]); // Log
-                }
                 if (this.disabled)
                     input.attr("disabled", true);
                 buttonCell.append(input);
@@ -100,18 +125,16 @@ window.PennController._AddElementType("Scale", function(PennEngine) {
                 value: String((this.buttons.length-1)/2),           // Middle value by default
                 step: "1"
             });
-            if (useDefaultValueSlider != undefined){                // A valid default value was specified
+            if (useDefaultValueSlider != undefined)                 // A valid default value was specified
                 slider.attr("value", useDefaultValueSlider);
-                this.choices.push(["Default", defaultValue, Date.now(), "slider"]);
-            }
             if (this.disabled)
                 slider.attr("disabled", true);
             slider[0].oninput = ()=>{if (this.firstClick) return; this.firstClick = Date.now(); };
             slider[0].onchange = ()=>this.choice(slider[0].value);
         }
         if (!orientation || orientation == "horizontal"){           // HORIZONTAL SCALE
-            let scaleRow = $("<tr>").addClass("PennController-"+this.type+"-scale");
-            let labelsRow = $("<tr>").addClass("PennController-"+this.type+"-labels");
+            let scaleRow = $("<tr>").addClass("PennController-"+this.type.replace(/[\s_]/g,'')+"-scale");
+            let labelsRow = $("<tr>").addClass("PennController-"+this.type.replace(/[\s_]/g,'')+"-labels");
             buttonLabelCells.map(cell=>{                            // Add TDs in TRs
                 scaleRow.append(cell[0].css("text-align", "center"));
                 labelsRow.append(cell[1].css("text-align", "center"))
@@ -136,10 +159,10 @@ window.PennController._AddElementType("Scale", function(PennEngine) {
                     $("<td>")
                         .attr("colspan", buttonLabelCells.length)   // Slider's TD spans over all other TDs
                         .append(slider.css("width","100%"))         // Add slider's TD after (=below) empty TDs
-                ));
+                )).css("display", "none");
         }
         else{                                                       // VERTICAL SCALE
-            buttonLabelCells.map(cell=>{
+            buttonLabelCells.map((cell,i)=>{
                 let row = $("<tr>");
                 row.append(cell[0]);                                // Add TR+TD for each cell
                 if (this.labels == "top")
@@ -147,6 +170,8 @@ window.PennController._AddElementType("Scale", function(PennEngine) {
                 else if (this.labels == "bottom")                   //  before or after
                     row.append(cell[1]);
                 this.table.append(row);
+                if (slider&&i>0)
+                    row.css("display", "none");                     // Mask rows > 1 if slider
             });
             if (slider){                                            // If slider, scale TDs are empty
                 buttonLabelCells[0][0].after(                       // Add a TD after the first scale TD
@@ -161,15 +186,18 @@ window.PennController._AddElementType("Scale", function(PennEngine) {
         if (this.width)
             this.table.css({"table-layout": "fixed", width: this.width});
     }
+    //
+    // END SCALE-SPECIFIC FUNCTIONS & METHODS
+    
 
     this.immediate = function(id, ...buttons){
         if (buttons.length){
-            if (Number(buttons[0])>0)
-                this.buttons = new Array(Number(buttons[0]));       // Number: array of void values/labels
+            if (typeof(buttons[0])!="string" && Number(buttons[0])>0)
+                this.initialButtons = new Array(Number(buttons[0])); // Number: array of void values/labels
             else
-                this.buttons = buttons;                             // Array of values/labels
+                this.initialButtons = buttons;                       // Array of values/labels
         }
-        else                                                        // No argument
+        else                                                         // No argument
             console.error("Invalid parameters for scale "+id+" in PennController #"+PennEngine.controllers.underConstruction.id);
     };
 
@@ -185,6 +213,8 @@ window.PennController._AddElementType("Scale", function(PennEngine) {
         this.defaultValue = null;
         this.orientation = "horizontal";
         this.width = null;
+        this.keys = [];
+        this.buttons = this.initialButtons;
         this.choice = value=>{                                      // (Re)set upon creation, since it can be modified during runtime
             if (this.disabled)
                 return;                                             // Store the value + timestamp
@@ -197,6 +227,14 @@ window.PennController._AddElementType("Scale", function(PennEngine) {
             }
             this.choices.push(["Choice", value, Date.now(), duration]);
         };
+        PennEngine.controllers.running.safeBind($(document), "keydown", (e)=>{
+            if (this.disabled)
+                return;
+            for (let k = 0; k < this.keys.length; k++){
+                if (String.fromCharCode(e.which) == this.keys[k])
+                    return selectIndex.apply(this, [k, true]);
+            }
+        });
         resolve();
     };
 
@@ -234,6 +272,21 @@ window.PennController._AddElementType("Scale", function(PennEngine) {
                 resolve();
             };                                              // Standard print, then afterPrint resolves
             PennEngine.elements.standardCommands.actions.print.apply(this, [afterPrint, where]);
+        },
+        select: function(resolve, option, simulate){
+            for (var b  = 0; b < this.buttons.length; b++){
+                let button = this.buttons[b];
+                if (button && button == option)
+                    break;
+                if (button && button._element &&  button._element.id == option)
+                    break;
+                if (b == option)
+                    break;
+            }
+            if (b>=this.buttons.length)
+                return resolve(console.warn("Option "+option+" not found for selection on scale "+this.id+" in PennController #"+PennEngine.controllers.underConstruction.id));
+            selectIndex.apply(this, [b, simulate]);
+            resolve();
         },
         wait: function(resolve, test){
             if (test == "first" && this.choices.length)     // If first and already chosen, resolve already
@@ -279,8 +332,12 @@ window.PennController._AddElementType("Scale", function(PennEngine) {
             resolve();
         },
         default: function(resolve, value){
-            if (this.buttons.indexOf(value)>-1||(Number(value)>=0&&Number(value)<this.buttons.length))
+            if (this.buttons.indexOf(value)>-1||(Number(value)>=0&&Number(value)<this.buttons.length)){
                 this.defaultValue = value;
+                if (value._element)
+                    value = value._element.id;
+                this.choices.push(["Default", value, Date.now(), this.scaleType]); // Log it
+            }
             else
                 console.warn("Invalid default value for scale "+this.id+" in controller #"+PennEngine.controllers.running.id, value);
             resolve();
@@ -295,6 +352,22 @@ window.PennController._AddElementType("Scale", function(PennEngine) {
         },
         horizontal: function(resolve){
             this.orientation = "horizontal";
+            if (this.jQueryElement.parent().length){
+                buildScale.apply(this);
+                fixAesthetics.apply(this);
+            }
+            resolve();
+        },
+        keys: function(resolve, ...keys){
+            if (keys instanceof Array && keys.length == this.buttons.length){
+                if (keys.filter(e=>typeof(e)=="string"&&e.length==1).length!=keys.length)
+                    return resolve(console.warn("Every key should be a string of length 1 in scale "+this.id+" in PennController #"+PennEngine.controllers.running.id, keys));
+                this.keys = keys.map(k=>k.toUpperCase());
+            }
+            else if (this.buttons.filter(e=>typeof(e)=="string"&&e.length==1).length == this.buttons.length)
+                this.keys = this.buttons.map(e=>e.toUpperCase());
+            else
+                this.keys = Array.from({length:this.buttons.length},(v,k)=>k+1);
             resolve();
         },
         label: function(resolve, index, value){
@@ -357,6 +430,10 @@ window.PennController._AddElementType("Scale", function(PennEngine) {
         },
         vertical: function(resolve){
             this.orientation = "vertical";
+            if (this.jQueryElement.parent().length){
+                buildScale.apply(this);
+                fixAesthetics.apply(this);
+            }
             resolve();
         }
     };

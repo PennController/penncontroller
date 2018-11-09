@@ -7,13 +7,14 @@ window.PennController._AddElementType("Selector", function(PennEngine) {
             elementsToShuffle = [].concat(this.elements);
         else {                                      // Else, first feed elementsToShuffle
             for (let e in elementCommands) {        // Go through each elementCommand
-                if (!(elementCommands._element && elementCommands._element.jQueryElement instanceof jQuery)){
+                console.log("element",e,elementCommands[e]);
+                if (!(elementCommands[e]._element && elementCommands[e]._element.jQueryElement instanceof jQuery)){
                     console.warn("Invalid element #"+e+" in shuffling selector "+this.id+" in PennController #"+PennEngine.controllers.running.id);
                     continue;
                 }
-                let index = this.elements.map(e=>e[0]).indexOf(elementCommands._element);
+                let index = this.elements.map(e=>e[0]).indexOf(elementCommands[e]._element);
                 if (index<0){
-                    console.warn("Cannot shuffle element "+element.id+" for it has not been added to selector "+this.id+" in PennController #"+PennEngine.controllers.running.id);
+                    console.warn("Cannot shuffle element "+elementCommands[e]._element.id+" for it has not been added to selector "+this.id+" in PennController #"+PennEngine.controllers.running.id);
                     continue;
                 }
                 elementsToShuffle.push(this.elements[index]);
@@ -63,9 +64,10 @@ window.PennController._AddElementType("Selector", function(PennEngine) {
         this.frame = $("<div>").css({
             position: "absolute",
             display: "inline-block",
-            border: "dotted 1px grey",
+            margin: "auto",
+            outline: "dotted 1px grey",
             "z-index": 100
-        }).addClass("PennController-"+this.type+"-selectionFrame");
+        }).addClass("PennController-"+this.type.replace(/[\s_]/g,'')+"-selectionFrame");
         this.noClick = false;
         this.select = element=>{          // (Re)set select upon creation, for it can be modified during trial
             if (this.disabled)
@@ -74,8 +76,8 @@ window.PennController._AddElementType("Selector", function(PennEngine) {
                 return console.warn("Tried to select an element not part of selector "+this.id+" in PennController #"+PennEngine.controllers.running.id);
             this.selections.push(["Selection", element.id, Date.now(), "NULL"]);
             this.frame.css({
-                width: element.jQueryElement.width(),
-                height: element.jQueryElement.height(),
+                width: element.jQueryElement.outerWidth(),
+                height: element.jQueryElement.outerHeight(),
                 "pointer-events": "none" // Can click through it
             });
             if (element.jQueryElement.css("position")=="absolute")
@@ -85,7 +87,7 @@ window.PennController._AddElementType("Selector", function(PennEngine) {
                 });
             element.jQueryElement.before(this.frame);
             this.elements.map(e=>e[0].jQueryElement.removeClass("PennController-"+this.type+"-selected"));
-            element.jQueryElement.addClass("PennController-"+this.type+"-selected");
+            element.jQueryElement.addClass("PennController-"+this.type.replace(/[\s_]/g,'')+"-selected");
         };
         PennEngine.controllers.running.safeBind($(document), "keydown", (e)=>{
             if (this.disabled)
@@ -124,7 +126,8 @@ window.PennController._AddElementType("Selector", function(PennEngine) {
 
     this.value = function(){                                // Value is last selection
         if (this.selections.length){
-            let selectedElement = this.selections[this.selections.length-1][1];
+            let selectedElementID = this.selections[this.selections.length-1][1];
+            let selectedElement = this.elements.filter(e=>e[0].id==selectedElementID)[0][0];
             return window.PennController.Elements["get"+selectedElement.type](selectedElement.id);
         }
         else
@@ -209,8 +212,6 @@ window.PennController._AddElementType("Selector", function(PennEngine) {
             let oldSelect = this.select;
             this.select = async function(element) {
                 oldSelect.apply(this, [element]);
-                if (this.disabled)
-                    return;
                 for (let c in elementCommands)
                     await elementCommands[c]._runPromises();
             };
@@ -238,7 +239,7 @@ window.PennController._AddElementType("Selector", function(PennEngine) {
             resolve();
         },
         frame: function(resolve, css){
-            this.frame.css.apply(this.frame, ["border", css]);
+            this.frame.css.apply(this.frame, ["outline", css]);
             resolve();
         },
         keys: function(resolve, ...keys){
@@ -246,7 +247,7 @@ window.PennController._AddElementType("Selector", function(PennEngine) {
                 if (k >= this.elements.length)
                     break;
                 let key = keys[k];
-                if (Number(key)>0)
+                if (typeof(key) != "string" && Number(key)>0)
                     key = String.fromCharCode(key);
                 this.elements[k] = [this.elements[k][0], key];
             }

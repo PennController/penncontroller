@@ -16,6 +16,28 @@ window.PennController._AddElementType("Canvas", function(PennEngine) {
                 let afterPrint = ()=>{
                     let element = elementCommand._element;
                     let jQueryElement = element.jQueryElement;
+                    let anchorX = String(x).match(/^(.+) at (.+)$/i);
+                    let anchorY = String(y).match(/^(.+) at (.+)$/i);
+                    if (anchorX && anchorX[2].match(/^\d+(\.\d+)?$/))
+                        anchorX[2] = String(anchorX[2]) + "px";
+                    if (anchorY && anchorY[2].match(/^\d+(\.\d+)?$/))
+                        anchorY[2] = String(anchorY[2]) + "px";
+                    if (anchorX){
+                        if (anchorX[1].match(/center|middle/i))
+                            x = "calc("+anchorX[2]+" - "+(element.jQueryContainer.width()/2)+"px)";
+                        else if (anchorX[1].match(/right/i))
+                            x = "calc("+anchorX[2]+" - "+element.jQueryContainer.width()+"px)";
+                        else
+                            x = anchorX[2];
+                    }
+                    if (anchorY){
+                        if (anchorY[1].match(/center|middle/i))
+                            y = "calc("+anchorY[2]+" - "+(element.jQueryContainer.height()/2)+"px)";
+                        else if (anchorX[1].match(/bottom/i))
+                            y = "calc("+anchorY[2]+" - "+element.jQueryContainer.height()+"px)";
+                        else
+                            y = anchorY[2];
+                    }
                     if (element.jQueryContainer){
                         element.jQueryContainer.css({position: "absolute", left: x, top: y});
                         if (Number(z)>0||Number(z)>0)
@@ -48,9 +70,12 @@ window.PennController._AddElementType("Canvas", function(PennEngine) {
     
     this.actions = {
         print: async function(resolve, where){
-            for (let e in this.elementCommands)
-                await this.showElement(...this.elementCommands[e]);
-            PennEngine.elements.standardCommands.actions.print.apply(this, [resolve, where]);
+            let t=this, showElements = async function(){
+                for (let e in t.elementCommands)
+                    await t.showElement(...t.elementCommands[e]);
+                resolve();
+            };
+            PennEngine.elements.standardCommands.actions.print.apply(this, [showElements, where]);
         }
     };
 

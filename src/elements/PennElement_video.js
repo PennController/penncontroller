@@ -53,7 +53,7 @@ window.PennController._AddElementType("Video", function(PennEngine) {
                 height: this.jQueryElement.height()
             });
             this.jQueryElement.before(this.jQueryDisable);
-            this.jQueryElement.addClass("PennController-"+this.type+"-disabled");
+            this.jQueryElement.addClass("PennController-"+this.type.replace(/[\s_]/g,'')+"-disabled");
         };
         resolve();
     };
@@ -122,7 +122,7 @@ window.PennController._AddElementType("Video", function(PennEngine) {
         },
         stop: function(resolve){
             this.video.pause();
-            this.currentTime = 0;
+            this.video.currentTime = 0;
             resolve();
         }
         ,
@@ -174,16 +174,17 @@ window.PennController._AddElementType("Video", function(PennEngine) {
         once: function(resolve){
             if (this.hasPlayed){
                 this.disabled = true;
-                resolve();
+                this.printDisable();
             }
             else {  // Extend onend
                 let onended = this.video.onended, t = this;
                 this.video.onended = function(...rest){
                     onended.apply(this, rest);
                     t.disabled = true;
-                    resolve();
+                    t.printDisable();
                 };
             }
+            resolve();
         }
         ,
         log: function(resolve,  ...what){

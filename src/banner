@@ -1,14 +1,42 @@
 This software is licensed under a BSD license; see the LICENSE file for details.
 
- - Version 1.0
- - Last Update:  2018, October 1
- - Major changes in version 1.0:
-    * Revised the optional definition of shuffleSequence (now runs in passed order if undefined)
-    * PennController now adds items to the items variable without being embedded
-    * Standard settings commands .after, .before, .center, .left and .right now update even after action .print
-    * Settings command .labels for Scale is now deprecated, use .labelsPosition instead
-    + Added duration for sliders (as comments)
-    + Added options "left" and "right" to the settings command .labelsPosition for Scale elements
-    + Added Setting commands .checkboxWarning, .inputWarning and .radioWarning to Html elements
-    + Added .settings.log as a default for printing (canvas, image and text)
-    + Added getScale(id).settings.label(index, value) to (re)set the label of the index'th option
+ - Version 1.1
+ - Last Update:  2018, November 8
+ - Major changes in version 1.1:
+    * Fixed: .settings.once would not validate for Audio and Video
+    * Fixed: .settings.callback for Selector elements now fires even if .settings.once was applied
+    * Fixed: end() can now be executed in callback commands
+    * Fixed: PennController().setOption used to not return PennController
+    * Fixed: PNG/WAV/MP3 signature identification used to prevent some zipped files to preload
+    * Fixed: getVar().test... used to fail in wait() commands
+    * Fixed: presence of byte order mark in CSV files (due to encoding) used to cause crash
+    * Fixed: (string) numbers passed as scale labels no longer evaluated as scale's length
+    * Fixed: bad spacing rendering of vertical sliders
+    * Fixed: Scale settings commands horizontal and vertical now also take effect when printed
+    * Fixed tooltip positioning
+    * Fixed Selector elements' frame positioning
+    * Fixed: clear command used to resolve too early
+    * Fixed: Audio and Video settings command once worked only if print was called after playback
+    * Fixed: tooltip.settings.text sometimes caused the validation label button to disappear
+    * Fixed: .stop action command for Youtube elements used to restart the video playback
+    * Fixed: "preloading" message used to disappear after execution of Header instead of before
+    * Fixed: PennController.CheckPreloaded used to have no effect
+    * Fixed: Function elements would not have consistent internal variable assignment
+    * Fixed: Selector command shuffle did not work with a subset of elements
+    * Fixed: scale.settings.button would show IDs of Element options instead of their value
+    * Fixed: CSS classes gerenated from names/IDs now remove spaces/underscores (Ibex cannot handle them)
+    * Manually defined items (var items = ...) now run in the order of definition by default
+    * Better handling of comma- vs tab-separated tables (no unnecessary error messages)
+    * Passing a number **as a string** to newKey or getSelector().settings.keys no longer treats it as keycode
+    + Added .or and .and to Test commands
+    + Added Standard action command .refresh to reprint the element where it is
+    + Added .settings.callback to Button and Key elements
+    + Added .settings.keys to Scale elements
+    + Added .stop() action command for Timer elements
+    + Added .select action command for Scale elements
+    + Added .settings.cssContainer as a default for every element type
+    + Added "right|center|bottom at x|y" options for x and y in .settings.add for Canvas elements
+    + Added PennController.SetCounter, PennController.SendResults and PennController.Sequence ('items' now totally optional)
+    + Added "play" / "playback" option to voicerecorder.wait()
+    + Can now refer back to elements introduced in header
+    + Header/Footer now appends to existing header/footer if already defined

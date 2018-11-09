@@ -102,12 +102,11 @@ window.PennController._AddElementType("Var", function(PennEngine) {
         },
         global: function(resolve){
             this.scope = "global";
-            for (c in PennEngine.controllers.list){
+            for (c in PennEngine.controllers.list)
                 PennEngine.controllers.list[c].elements[this.id] = this;
-            }
             resolve();
         }
-    }
+    };
 
     this.test = {
         is: function(test){

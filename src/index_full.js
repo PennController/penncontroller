@@ -5,6 +5,10 @@ import "./elements.js";                 // constructor for element types [fed wi
 import "./zip.js";                      // adds the PreloadZip global command [imports jszip and jszip-utils]
 import "./tables.js";                   // defines FeedItems    [imports jquery-csv]
 
+// TEMP
+import "./items.js";
+// END TEMP
+
 // ELEMENTS
 import "./elements/PennElement_audio.js";
 import "./elements/PennElement_button.js";

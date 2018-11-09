@@ -25,6 +25,8 @@ window.PennController._AddElementType("VoiceRecorder", function(PennEngine) {
     let initiated = false;          // Whether PennController.InitiateRecorder has been called
     let currentVoiceElement;        // The voice element currently active
     let statusElement;              // The top-right DOM element indicating whether it is currently recording
+    let resolveStart = [];          // List of promises to resolve on start
+    let resolveStop = [];           // List of promises to resolve on stop
 
     // This controller MUST be manually added to items and specify a URL to a PHP file for uploading the archive
     window.PennController.InitiateRecorder = function(saveURL, message) {
@@ -37,6 +39,7 @@ window.PennController._AddElementType("VoiceRecorder", function(PennEngine) {
         controller.runHeader = false;                           // Don't run header and footer
         controller.runFooter = false;
         PennEngine.controllers.list.pop();                      // Remove from PennEngine's list immediately (not a 'real' controller)
+        PennEngine.tmpItems.push(controller);                   // Add it to the list of items to run
         controller.sequence = ()=>new Promise(resolve=>{
             let controller = PennEngine.controllers.running;    // In SEQUENCE, controller is the running instance
             if (!navigator.mediaDevices)                        // Cannot continue if no media device available!
@@ -49,6 +52,7 @@ window.PennController._AddElementType("VoiceRecorder", function(PennEngine) {
             navigator.mediaDevices.getUserMedia(constraints)
             .then(function(stream) {                            // Create the mediaRecorder instance
                 mediaRecorder = new MediaRecorder(stream);
+                mediaRecorder.recording = false;
                 mediaRecorder.onstop = function(e) {            // When a recording is complete
                     statusElement.css({'font-weight': "normal", color: "black", 'background-color': "lightgray"});
                     statusElement.html("Not recording");        // Indicate that recording is over in status bar
@@ -57,10 +61,14 @@ window.PennController._AddElementType("VoiceRecorder", function(PennEngine) {
                     currentVoiceElement.audioPlayer.src = URL.createObjectURL(currentVoiceElement.blob);    // Can replay now
                     chunks = [];                                                                                // Reset chunks
                     currentVoiceElement = null;                                                                 // Reset current element
+                    resolveStop.shift().call();
+                    mediaRecorder.recording = false;
                 };
                 mediaRecorder.onstart = function(e) {           // When a recording starts
                     statusElement.css({'font-weight': "bold", color: "white", 'background-color': "red"});
                     statusElement.html("Recording...");         // Indicate it in the status bar
+                    mediaRecorder.recording = true;
+                    resolveStart.shift().call();
                 }
                 mediaRecorder.ondataavailable = function(e) {   // Add chunks as they become available
                     chunks.push(e.data);
@@ -91,74 +99,79 @@ window.PennController._AddElementType("VoiceRecorder", function(PennEngine) {
     };
 
     // Handle uploading of the results automatically
-    let oldModify = window.modifyRunningOrder;          // Trick: use Ibex's modifyRunningOrder to probe sequence of trials
-    window.modifyRunningOrder = function (ro){          // Add the upload step automatically when sequence has been built
-        if (oldModify instanceof Function)
-            ro = oldModify.apply(this, [ro]);
-        if (!initiated)                                 // If InitiateRecorder has not been called, leave running order as is
-            return ro;
-        let manualUpload = false;                       // Whether the sequence contains manual uploading of the results
-        let sendResultsID = [-1,-1];                    // Item + Element IDs of the __SendResults__ controller
-        for (let item = 0; item < ro.length; ++item) {  // Go through each element of each item in the running order
-            for (let element = 0; element < ro[item].length; ++element) {
-                if (ro[item][element].controller == "PennController" && ro[item][element].options.id == "UploadRecordings") {
-                    manualUpload = true;                // Uploading of recordings is manual
-                    if (sendResultsID[0]>=0)            // If __SendResults__ was found before
-                        alert("WARNING: upload of voice archive set AFTER sending of results; check the 'items' and 'shuffleSequence' variables.");
+    PennEngine.Prerun(()=>{
+        let oldModify = window.conf_modifyRunningOrder;     // Trick: use Ibex's modifyRunningOrder to probe sequence of trials
+        window.conf_modifyRunningOrder = function (ro){     // Add the upload step automatically when sequence has been built  
+            if (oldModify instanceof Function)
+                ro = oldModify.apply(this, [ro]);
+            if (!initiated)                                 // If InitiateRecorder has not been called, leave running order as is
+                return ro;
+            let manualUpload = false;                       // Whether the sequence contains manual uploading of the results
+            let sendResultsID = [-1,-1];                    // Item + Element IDs of the __SendResults__ controller
+            for (let item = 0; item < ro.length; ++item) {  // Go through each element of each item in the running order
+                for (let element = 0; element < ro[item].length; ++element) {
+                    if (ro[item][element].controller == "PennController" && ro[item][element].options.id == "UploadRecordings") {
+                        manualUpload = true;                // Uploading of recordings is manual
+                        if (sendResultsID[0]>=0)            // If __SendResults__ was found before
+                            alert("WARNING: upload of voice archive set AFTER sending of results; check the 'items' and 'shuffleSequence' variables.");
+                    }
+                    else if (ro[item][element].controller == "__SendResults__" && sendResultsID[0]<0 && !manualUpload)
+                        sendResultsID = [item, element];    // Found __SendResults__: store item+element IDs
                 }
-                else if (ro[item][element].controller == "__SendResults__" && sendResultsID[0]<0 && !manualUpload)
-                    sendResultsID = [item, element];    // Found __SendResults__: store item+element IDs
             }
-        }
-        if (!manualUpload) {                            // If no manual upload, add the upload controller before __SendResults__
-            let uploadController = PennEngine.controllers.new();
-            uploadController.id = "UploadRecordings";
-            uploadController.runHeader = false;         // Don't run header and footer
-            uploadController.runFooter = false;
-            uploadController.sequence = ()=>new Promise(resolve=>{
-                let controller = PennEngine.controllers.running;    // In SEQUENCE, controller is running instance
-                controller.element.append($("<p>Please wait while the archive is being uploaded to the server...</p>"));
-                let zip = new PennEngine.utils.JSZip(); // Create the object representing the zip file
-                for (let s in audioStreams)             // Add each recording to the zip instance
-                    zip.file(audioStreams[s].name, audioStreams[s].data);
-                zip.generateAsync({
-                    compression: 'DEFLATE',
-                    type: 'blob'
-                }).then(function(zc) {                  // Generation/Compression of zip is complete
-                    window.PennController.downloadVoiceRecordingsArchive = ()=>saveAs(zc, "VoiceRecordingsArchive.zip");
-                    let fileName = 'msr-' + (new Date).toISOString().replace(/:|\./g, '-') + '.zip';
-                    var fileObj = new File([zc], fileName); // Create file object to upload with uniquename
-                    var fd = new FormData();                // Submission-friendly format
-                    fd.append('fileName', fileName);
-                    fd.append('file', fileObj);
-                    fd.append('mimeType', 'application/zip');
-                    var xhr = new XMLHttpRequest();     // XMLHttpRequest rather than jQuery's Ajax (mysterious CORS problems with jQuery 1.8)
-                    xhr.open('POST', uploadURL, true);
-                    xhr.onreadystatechange = ()=>{
-                        if (xhr.readyState == 4){       // 4 means finished and response ready
-                            controller.save("PennController", "UploadRecordings", "Filename", fileName, Date.now(), "NULL");
-                            if (xhr.status == 200 && !xhr.responseText.match(/problem|error/i)) // Success
-                                controller.save("PennController", "UploadRecordings", "Status", "Success", Date.now(), "NULL");
-                            else {                                                              // Error
-                                alert("There was an error uploading the recordings ("+xhr.responseText+").");
-                                console.warn('Ajax post failed. ('+xhr.status+')', xhr.responseText);
-                                controller.save("PennController", "UploadRecordings", "Status", "Failed", Date.now(), 
-                                                "Error Text: "+xhr.responseText+"; Status: "+xhr.status);
-                            }
-                            resolve();                  // Request finished: end of 'trial'
-                        } 
-                    };
-                    xhr.send(fd);                       // Send the request
+            if (!manualUpload) {                            // If no manual upload, add the upload controller before __SendResults__
+                let uploadController = PennEngine.controllers.new();
+                uploadController.id = "UploadRecordings";
+                uploadController.runHeader = false;         // Don't run header and footer
+                uploadController.runFooter = false;
+                uploadController.countsForProgressBar = false;
+                uploadController.sequence = ()=>new Promise(resolve=>{
+                    let controller = PennEngine.controllers.running;    // In SEQUENCE, controller is running instance
+                    controller.element.append($("<p>Please wait while the archive is being uploaded to the server...</p>"));
+                    let zip = new PennEngine.utils.JSZip(); // Create the object representing the zip file
+                    for (let s in audioStreams)             // Add each recording to the zip instance
+                        zip.file(audioStreams[s].name, audioStreams[s].data);
+                    zip.generateAsync({
+                        compression: 'DEFLATE',
+                        type: 'blob'
+                    }).then(function(zc) {                  // Generation/Compression of zip is complete
+                        window.PennController.downloadVoiceRecordingsArchive = ()=>PennEngine.utils.saveAs(zc, "VoiceRecordingsArchive.zip");
+                        let fileName = 'msr-' + (new Date).toISOString().replace(/:|\./g, '-') + '.zip';
+                        var fileObj = new File([zc], fileName); // Create file object to upload with uniquename
+                        var fd = new FormData();                // Submission-friendly format
+                        fd.append('fileName', fileName);
+                        fd.append('file', fileObj);
+                        fd.append('mimeType', 'application/zip');
+                        var xhr = new XMLHttpRequest();     // XMLHttpRequest rather than jQuery's Ajax (mysterious CORS problems with jQuery 1.8)
+                        xhr.open('POST', uploadURL, true);
+                        xhr.onreadystatechange = ()=>{
+                            if (xhr.readyState == 4){       // 4 means finished and response ready
+                                controller.save("PennController", "UploadRecordings", "Filename", fileName, Date.now(), "NULL");
+                                let success = xhr.status == 200 && !xhr.responseText.match(/problem|error/i);
+                                if (success) // Success
+                                    controller.save("PennController", "UploadRecordings", "Status", "Success", Date.now(), "NULL");
+                                else {                                                              // Error
+                                    alert("There was an error uploading the recordings ("+xhr.responseText+").");
+                                    window.PennController.uploadRecordingsError = xhr.responseText||"error";
+                                    console.warn('Ajax post failed. ('+xhr.status+')', xhr.responseText);
+                                    controller.save("PennController", "UploadRecordings", "Status", "Failed", Date.now(), 
+                                                    "Error Text: "+xhr.responseText+"; Status: "+xhr.status);
+                                }
+                                resolve();                  // Request finished: end of 'trial'
+                            } 
+                        };
+                        xhr.send(fd);                       // Send the request
+                    });
                 });
-            });
-            let uploadElement = new DynamicElement("PennController", uploadController);
-            if (sendResultsID[0]>=0)                    // Manual __SendResults__, add upload controller before it
-                ro[sendResultsID[0]].splice(sendResultsID[1], 0, uploadElement);
-            else                                        // Else, just add uploadElement at the end
-                ro.push([uploadElement]);
-        }
-        return ro;                                      // Return new running order
-    };
+                let uploadElement = new DynamicElement("PennController", uploadController);
+                if (sendResultsID[0]>=0)                    // Manual __SendResults__, add upload controller before it
+                    ro[sendResultsID[0]].splice(sendResultsID[1], 0, uploadElement);
+                else                                        // Else, just add uploadElement at the end
+                    ro.push([uploadElement]);
+            }
+            return ro;                                      // Return new running order
+        };
+    });
     //
     // ==== END INTERNAL SETTINGS AND FUNCTIONS ==== //
 
@@ -173,20 +186,20 @@ window.PennController._AddElementType("VoiceRecorder", function(PennEngine) {
         this.log = false;
         this.recordings = [];
         this.recording = false;
-        this.audioPlayer = document.createElement("audio");                             // To play back recording
-        this.jQueryElement = $("<span>").addClass("PennController-"+this.type+"-ui");   // The general UI 
-        let recordButton = $("<button>").addClass("PennController-"+this.type+"-record");// The record button
-        let recordStatus = $("<div>").addClass("PennController-"+this.type+"-status");  // Small colored dot inside record button
-        let stopButton = $("<button>").addClass("PennController-"+this.type+"-stop");   // The stop button
-        let stopInner = $("<div>");                                                     // The brownish/reddish square
-        let playButton = $("<button>").addClass("PennController-"+this.type+"-play");   // The play button
-        let playInner = $("<div>");                                                     // The green triangle
+        this.audioPlayer = document.createElement("audio");                                                // To play back recording
+        this.jQueryElement = $("<span>").addClass("PennController-"+this.type.replace(/[\s_]/g,'')+"-ui");   // The general UI 
+        let recordButton = $("<button>").addClass("PennController-"+this.type.replace(/[\s_]/g,'')+"-record");// The record button
+        let recordStatus = $("<div>").addClass("PennController-"+this.type.replace(/[\s_]/g,'')+"-status");  // Small colored dot inside record button
+        let stopButton = $("<button>").addClass("PennController-"+this.type.replace(/[\s_]/g,'')+"-stop");   // The stop button
+        let stopInner = $("<div>");                                                                        // The brownish/reddish square
+        let playButton = $("<button>").addClass("PennController-"+this.type.replace(/[\s_]/g,'')+"-play");   // The play button
+        let playInner = $("<div>");                                                                        // The green triangle
         $([recordButton, stopButton, playButton]).each(function(){ this.css({width: "25px", height: "25px", position: "relative"}); });
         $([recordStatus, stopInner, playInner]).each(function(){ this.css({position: "absolute", left: "2px", top: "4px", width: "15px", height: "15px"}); });
         recordButton.css({'background-color': "red", 'border-radius': "50%", "margin-right": "10px"});
         recordStatus.css({'background-color': "brown", 'border-radius': "50%", left: "6px", top: "6px", width: "10px", height: "10px" });
         stopInner.css({ 'background-color': "brown" });
-        playInner.css({                                                                 // Triangles are more complicated
+        playInner.css({                                                                                    // Triangles are more complicated
             width: 0, height: 0, 'background-color': "transparent", padding: 0,
             'border-top': "7.5px solid transparent", 'border-bottom': "7.5px solid transparent",
             'border-right': "0px solid transparent", 'border-left': "15px solid green"
@@ -259,18 +272,21 @@ window.PennController._AddElementType("VoiceRecorder", function(PennEngine) {
         });
         this.audioPlayer.onended = ()=>showPlay(true);                                  // show play triangle again after playback
 
-        this.start = ()=>{
+        this.start = ()=>new Promise(r=>{
             this.recording = true;
-            this.recordings.push(["Recording", "Start", Date.now(), "NULL"]);
+            resolveStart.push( ()=>{ this.recordings.push(["Recording", "Start", Date.now(), "NULL"]); r(); } );
             mediaRecorder.start();
-        };
+        });
 
-        this.stop = ()=>{
+        this.stop = ()=>new Promise(r=>{
             this.recording = false;
-            this.recordings.push(["Recording", "Stop", Date.now(), "NULL"]);
             currentVoiceElement = this;
-            mediaRecorder.stop();                                                       // This will look at currentVoiceElement
-        };
+            resolveStop.push( ()=>{ this.recordings.push(["Recording", "Stop", Date.now(), "NULL"]); r(); } );
+            if (mediaRecorder.recording)
+                mediaRecorder.stop();                                                  // This will look at currentVoiceElement
+            else
+                r();
+        });
 
         this.jQueryElement.append(
             recordButton.append(recordStatus)
@@ -303,44 +319,59 @@ window.PennController._AddElementType("VoiceRecorder", function(PennEngine) {
     this.actions = {
         play: function(resolve){
             if (this.audioPlayer && this.audioPlayer.src){
-                this.audioPlayer.currentTime = 0;
-                this.audioPlayer.play();
+                console.log("yes");
+                if (this.audioPlayer.currentTime && this.audioPlayer.currentTime != 0)
+                    this.audioPlayer.currentTime = 0;
+                this.audioPlayer.play().then(()=>resolve());
+            }
+            else
+                resolve();
+        },
+        record: async function(resolve){
+            await this.start();
+            resolve();
+        },
+        stop: async function(resolve){
+            await this.stop();
+            if (this.audioPlayer && this.audioPlayer.src){
+                this.audioPlayer.pause();
+                if (this.audioPlayer.currentTime && this.audioPlayer.currentTime != 0)
+                    this.audioPlayer.currentTime = 0;
             }
             resolve();
         },
-        record: function(resolve){
-            this.start();
-            resolve();
-        },
-        stop: function(resolve){
-            this.stop();
-            if (this.audioPlayer && this.audioPlayer.src)
-                this.audioPlayer.pause();
-            this.audioPlayer.currentTime = 0;
-            resolve();
-        },
         wait: function(resolve, test){
-            if (test == "first" && this.recordings.length)  // If first and has already recorded, resolve already
-                resolve();
+            if (test && typeof(test)=="string" && test.match(/first/i) && this.recordings.length)
+                resolve();                                  // If first and has already recorded, resolve already
+            else if (test && typeof(test)=="string" && test.match(/play/i) && this.audioPlayer){
+                let oldEnded = this.audioPlayer.onended;
+                this.audioPlayer.onended = function(...rest) {
+                    if (oldEnded instanceof Function)
+                        oldEnded.apply(this, rest);
+                    resolve();
+                };
+            }
             else {                                          // Else, extend stop and do the checks
                 let resolved = false;
                 let originalStop = this.stop;
-                this.stop = ()=>{
-                    originalStop.apply(this);
-                    if (resolved)
-                        return;
-                    if (test instanceof Object && test._runPromises && test.success)
-                        test._runPromises().then(value=>{   // If a valid test command was provided
-                            if (value=="success"){
-                                resolved = true;
-                                resolve();                  // resolve only if test is a success
-                            }
-                        });
-                    else{                                   // If no (valid) test command was provided
-                        resolved = true;
-                        resolve();                          // resolve anyway
-                    }
-                };
+                this.stop = ()=>new Promise(r=>{
+                    originalStop.apply(this).then(()=>{
+                        r();
+                        if (resolved)
+                            return;
+                        if (test instanceof Object && test._runPromises && test.success)
+                            test._runPromises().then(value=>{   // If a valid test command was provided
+                                if (value=="success"){
+                                    resolved = true;
+                                    resolve();                  // resolve only if test is a success
+                                }
+                            });
+                        else{                                   // If no (valid) test command was provided
+                            resolved = true;
+                            resolve();                          // resolve anyway
+                        }
+                    });
+                });
             }
         }
     };
@@ -348,27 +379,37 @@ window.PennController._AddElementType("VoiceRecorder", function(PennEngine) {
     this.settings = {
         disable: function(resolve){
             this.disabled = true;
-            this.origin.element.find("button.PennController-"+this.type+"-record").attr("disabled", true);
+            this.jQueryElement.find("button.PennController-"+this.type+"-record")
+                .attr("disabled", true)
+                .css("background-color", "brown");
             resolve();
         },
         enable: function(resolve){
             this.disabled = false;
-            this.origin.element.find("button.PennController-"+this.type+"-record").removeAttr("disabled");
+            this.jQueryElement.find("button.PennController-"+this.type+"-record")
+                .removeAttr("disabled")
+                .css("background-color", "red");
             resolve();
         },
         once: function(resolve){
             if (this.recordings.length){
                 this.disabled = true;
-                this.origin.element.find("button.PennController-"+this.type+"-record").attr("disabled", true);
+                this.jQueryElement.find("button.PennController-"+this.type+"-record")
+                    .attr("disabled", true)
+                    .css("background-color", "brown");
             }
             else{
                 let originalStop = this.stop;
-                this.stop = ()=>{
+                this.stop = ()=>new Promise(r=>{
                     if (originalStop instanceof Function)
-                        originalStop.apply(this);
+                        originalStop.apply(this).then(r);
+                    else
+                        r();
                     this.disabled = true;
-                    this.origin.element.find("button.PennController-"+this.type+"-record").attr("disabled", true);
-                }
+                    this.jQueryElement.find("button.PennController-"+this.type+"-record")
+                        .attr("disabled", true)
+                        .css("background-color", "brown");
+                });
             }
             resolve();
         },

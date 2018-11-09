@@ -1,3 +1,5 @@
+- Multiple references?      getText("textA","textB").settings.center()
+- Make it possible to pass elements as tooltip content?
 
 KAJSA'S BUG [**FIXED**]:
     SOME ELEMENTS IN THE MIDDLE OF THE SPREADSHEET HAVE DIFFERENT LABELS
@@ -83,6 +85,25 @@ MAYBE
 - Add a first trial that measures latencies?
 
 
+// Below release 1.1
+DONE
+    - youtube command stop restarts instead of (really) stopping for good
+DONE
+    - Replace shuffleSequence and stuff [someday; PARTLY DONE]
+    - Add a 'reprint' (or 'refresh'?) command that re-prints the element where it is
+DONE
+    - Revise Selector's frame rendering (shifted, spacing)
+DONE
+    - Fix tooltip's positioning
+DONE
+    - String parameters for keys shouldn't be evaluated as charCode first (e.g. newKey("key", "123456789"))
+DONE
+    - Make it possible to print Canvas from top-left corner of the screen
+DONE
+    - Add settings.callback to Button and Key
+DONE
+    - Add .select to Scale
+
 
 // Below release 1.0
 DONE
@@ -109,7 +130,7 @@ DONE
 DONE
     - Also add a log entry when no choice was made
 DONE
-- Add a VIDEO Instruction
+    - Add a VIDEO Instruction
 
 
 // Below beta 0.3

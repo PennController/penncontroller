@@ -78,7 +78,7 @@ window.PennController._AddElementType("Html", function(PennEngine) {
             this.jQueryElement = $("<div>").html(this.html);
         this.log = false;
         this.checkboxWarningMessage = "You must check the %name% checkbox to continue.";
-        this.inputWarningMessage = "You \u2018%name%\u2019 field is obligatory.";
+        this.inputWarningMessage = "The \u2018%name%\u2019 field is obligatory.";
         this.radioWarningMessage = "You must select an option for \u2018%name%\u2019.";
         resolve();
     };
@@ -169,7 +169,7 @@ window.PennController._AddElementType("Html", function(PennEngine) {
                 var inp = $(inps[i]);
 
                 if (inp.hasClass("obligatory") && ((! inp.attr('value')) || inp.attr('value').match(/^\s*$/)))
-                    alertOrAddError(inp.attr('name'), inputWarningMessage.replace(/%name%/gi,inp.attr('name')));
+                    alertOrAddError(inp.attr('name'), this.inputWarningMessage.replace(/%name%/gi,inp.attr('name')));
             }
 
             var checks = $(dom).find("input[type=checkbox]");
@@ -178,7 +178,7 @@ window.PennController._AddElementType("Html", function(PennEngine) {
 
                 // Checkboxes with the 'obligatory' class must be checked.
                 if (! check.attr('checked') && check.hasClass('obligatory'))
-                    alertOrAddError(check.attr('name'), checkboxWarningMessage.replace(/%name%/gi,check.attr('name')));
+                    alertOrAddError(check.attr('name'), this.checkboxWarningMessage.replace(/%name%/gi,check.attr('name')));
             }
 
             var rads = $(dom).find("input[type=radio]");
@@ -203,7 +203,7 @@ window.PennController._AddElementType("Html", function(PennEngine) {
                 }
                 
                 if (oblig && (! oneIsSelected))
-                    alertOrAddError(rgs[k][0].attr('name'), radioWarningMessage.replace(/%name%/gi,rgs[k][0].attr('name')));
+                    alertOrAddError(rgs[k][0].attr('name'), this.radioWarningMessage.replace(/%name%/gi,rgs[k][0].attr('name')));
             }
             resolve();
         }

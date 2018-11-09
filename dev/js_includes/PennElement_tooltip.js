@@ -20,11 +20,13 @@ window.PennController._AddElementType("Tooltip", function(PennEngine) {
             this.label = this.initialLabel;
         else
             this.label = "OK";
+        this.resetLabel = false;                            // Use initial label
         this.jQueryElement = $("<div>").html(this.text);    // The tooltip itself
         this.jQueryLabel = $("<a>").html(this.label);       // The confirmation button
         this.validations = [];                              // Stores all the validations of the tooltip
-        this.frame = $("<div>").addClass("PennController-"+this.type+"-tooltip-frame");
-        this.jQueryElement.addClass("PennController-"+this.type+"-tooltip");
+        this.frame = $("<div>").addClass("PennController-"+this.type.replace(/[\s_]/g,'')+"-tooltip-frame");
+        this.jQueryElement.addClass("PennController-"+this.type.replace(/[\s_]/g,'')+"-tooltip");
+        this.jQueryElement.addClass("PennController-"+this.id.replace(/[\s_]/g,''));
         // Default aesthetics
         this.jQueryElement.css({background: "floralwhite", position: "relative"});
         this.jQueryLabel.css({border: "dotted 1px gray", cursor: "pointer", position: "absolute", bottom: "2px", right: "2px"});
@@ -33,11 +35,11 @@ window.PennController._AddElementType("Tooltip", function(PennEngine) {
         this.disabled = false;
         this.log = false;
         this.validate = ()=>{                              // (Re)set upon creation, for it can be modified during runtime
-            if (!this.disabled){
-                this.wasValidated = true;
-                this.validations.push(["Validate", "Validate", Date.now(), "NULL"]);
-                remove.apply(this);
-            }
+            if (this.delayedPrinting||this.disabled)       // delayedPrinting to prevent early validation
+                return;
+            this.wasValidated = true;
+            this.validations.push(["Validate", "Validate", Date.now(), "NULL"]);
+            remove.apply(this);
         };
         resolve();
     }
@@ -59,7 +61,7 @@ window.PennController._AddElementType("Tooltip", function(PennEngine) {
         print: function(resolve, element){
             if (element && element.hasOwnProperty("_element") && element._element.jQueryElement instanceof jQuery)
                 element = element._element.jQueryElement;
-            this.jQueryElement.append(this.jQueryLabel);                        // Label, aligned on the right
+            this.jQueryElement.append(this.jQueryLabel);                        // Label, aligned to the right
             this.jQueryLabel.click(()=>{
                 if (!this.noClicks)
                     this.validate();                                            // Validate on click
@@ -71,25 +73,15 @@ window.PennController._AddElementType("Tooltip", function(PennEngine) {
                 this.jQueryElement.css({
                     position: "absolute",                                       // may be moved anywhere on the page
                     display: "inline-block",
+                    visibility: "hidden",                                       // Hide until position is final
                     overflow: "scroll",
+                    top: "auto",
+                    left: "auto",
                     "margin-top": parenth,                                      // Default relative position: Bottom-Right
                     "margin-left": parentw,
                     "z-index": 9999,                                            // In case * layer (e.g. canvas)
                     padding: "1px"                                              // Just aesthetics
                 });
-                let w = this.jQueryElement.width(), h = this.jQueryElement.height();
-                if (typeof(this.relativePosition) == "string"){                 // If other specified...
-                    // Vertical
-                    if (this.relativePosition.match(/top/i))                    // Top
-                        this.jQueryElement.css("margin-top", -1 * h);
-                    else if (this.relativePosition.match(/middle/i))            // Middle
-                        this.jQueryElement.css("margin-top", 0.5*(parenth-h));
-                    // Horizontal
-                    if (this.relativePosition.match(/left/i))                   // Left
-                        this.jQueryElement.css("margin-left", -1 * w);
-                    else if (this.relativePosition.match(/center/i))            // Center
-                        this.jQueryElement.css("margin-left", 0.5*(parentw-w));
-                }
                 if (this.frameParent)                                           // Add a frame to the parent element
                     element.before(this.frame.css({
                         position: "absolute", 
@@ -107,10 +99,40 @@ window.PennController._AddElementType("Tooltip", function(PennEngine) {
                     left = "auto";
                 this.jQueryElement.css({left: left, top: top});
                 this.frame.css({left: left, top: top});
-                this.jQueryElement.addClass("PennController-"+this.type);
+                this.jQueryElement.addClass("PennController-"+this.type.replace(/[\s_]/g,''));
                 if (this.jQueryLabel.css("display")!="none")
                     this.jQueryElement.css("padding-bottom", "20px");
-                resolve();
+                if (this.relativePosition){                                         // If other specified...
+                    let set_top = ()=>{ 
+                        if (this.relativePosition.match(/top/i))                    // Top
+                            return -1 * this.jQueryElement.outerHeight();
+                        else if (this.relativePosition.match(/middle/i))            // Middle
+                            return 0.5 * (element.height() - this.jQueryElement.outerHeight());
+                        else
+                            return element.height();
+                    };
+                    let set_left = ()=>{ 
+                        if (this.relativePosition.match(/left/i))                   // Left
+                            return -1 * this.jQueryElement.outerWidth();
+                        else if (this.relativePosition.match(/center/i))            // Center
+                            return 0.5* (element.width() -  this.jQueryElement.outerWidth());
+                        else
+                            return element.width();
+                    };
+                    this.delayedPrinting = true;                              // To prevent early validation
+                    setTimeout(()=>{                                          // Only accurate 2nd time for some reason
+                        this.jQueryElement.css({"margin-top": set_top(), "margin-left": set_left()});
+                        setTimeout(()=>{
+                            this.jQueryElement.css({"margin-top": set_top(), "margin-left": set_left(), visibility: "visible"});
+                            this.delayedPrinting = false;
+                            resolve();
+                        });
+                    });
+                }
+                else{
+                    this.jQueryElement.css("visibility", "visible");
+                    resolve();
+                }
             }
             else{                                                              // Add to the page
                 this.jQueryElement.css({position: "relative", left: "", top: "", margin: 0, display:"inline-block"});
@@ -152,12 +174,12 @@ window.PennController._AddElementType("Tooltip", function(PennEngine) {
     this.settings = {
         disable: function(resolve){
             this.disabled = true;
-            this.jQueryElement.addClass("PennController-"+this.type+"-disabled");
+            this.jQueryElement.addClass("PennController-"+this.type.replace(/[\s_]/g,'')+"-disabled");
             resolve();
         },
         enable: function(resolve){
             this.disabled = false;
-            this.jQueryElement.removeClass("PennController-"+this.type+"-disabled");
+            this.jQueryElement.removeClass("PennController-"+this.type.replace(/[\s_]/g,'')+"-disabled");
             resolve();
         },
         frame: function(resolve, css){
@@ -169,42 +191,33 @@ window.PennController._AddElementType("Tooltip", function(PennEngine) {
         },
         key: function(resolve, keys, noclick){              // noclick is optional
             if (Number(keys)>0)                             // If keycode
-                PennEngine.controllers.running.safeBind($(document),"keydown",(e)=>{
+                PennEngine.events.keypress(e=>{
                     if (!this.jQueryElement.parent().length)
                         return;
-                    if (e.which==keys)
+                    if (e.keyCode==keys)
                         this.validate();
                 });
             else if (typeof(keys)=="string")                // If string of key(s)
-                PennEngine.controllers.running.safeBind($(document),"keydown",(e)=>{
+                PennEngine.events.keypress(e=>{
                     if (!this.jQueryElement.parent().length)
                         return;
-                    let _to_ascii = {'188': '44', '109': '45', '190': '46', '191': '47', '192': '96', '220': '92',
-                     '222': '39', '221': '93', '219': '91', '173': '45', '187': '61', '186': '59', '189': '45'};
-                    let shiftUps = {"96": "~", "49": "!", "50": "@", "51": "#", "52": "$", "53": "%", "54": "^",
-                        "55": "&", "56": "*", "57": "(", "48": ")", "45": "_", "61": "+", "91": "{", "93": "}",
-                        "92": "|", "59": ":", "39": "\"", "44": "<", "46": ">", "47": "?"};
-                    let key = e.which;
-                    if (_to_ascii.hasOwnProperty(key))
-                        key = _to_ascii[key];
-                    if (!e.shiftKey && (key >= 65 && key <= 90))
-                        key = String.fromCharCode(key + 32);
-                    else if (e.shiftKey && shiftUps.hasOwnProperty(key))
-                        key = shiftUps[key];
-                    if (keys.toUpperCase().includes(String.fromCharCode(key).toUpperCase()))
+                    let key = e.keyCode;
+                    if (!keys.length||keys.toUpperCase().includes(String.fromCharCode(key).toUpperCase()))
                         this.validate();
                 });
             if (noclick){                                   // If noclick was specified
                 this.noClicks = true;
                 this.jQueryLabel.css("cursor", "");         // No pointer when hovering the label
-                if (!this.initialLabel)                     // If no label initially set
+                if (!this.initialLabel&&!this.resetLabel)   // If no label initially set
                     this.jQueryLabel.css("display","none"); // Just remove it
             }
             resolve();
         },
         label: function(resolve, text){
             this.label = text;
+            this.resetLabel = true;
             this.jQueryLabel.html(text);
+            this.jQueryLabel.css("display","inherit");
             resolve();
         },
         log: function(resolve,  ...what){
@@ -218,6 +231,13 @@ window.PennController._AddElementType("Tooltip", function(PennEngine) {
         text: function(resolve, text){
             this.text = text;
             this.jQueryElement.html(text);
+            this.jQueryElement.append(this.jQueryLabel);
+            this.jQueryLabel.click(()=>{
+                if (!this.noClicks)
+                    this.validate();
+            });
+            if (this.jQueryLabel.css("display")!="none")
+                this.jQueryElement.css("padding-bottom", "20px");
             resolve();
         }
     };

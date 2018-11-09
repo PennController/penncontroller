@@ -3,10 +3,10 @@ window.PennController._AddElementType("Key", function(PennEngine) {
 
     // This is executed when Ibex runs the script in data_includes (not a promise, no need to resolve)
     this.immediate = function(id, keys){
-        if (Number(keys)>0)
-            this.keys = String.fromCharCode(keys).toUpperCase();
-        else if (typeof(keys)=="string")
+        if (typeof(keys)=="string")
             this.keys = keys.toUpperCase();
+        else if (Number(keys)>0)
+            this.keys = String.fromCharCode(keys).toUpperCase();
         else
             console.warn("Invalid key(s) passed to new Key "+id+" (should be a string or a key code number)", keys);
     };
@@ -16,7 +16,7 @@ window.PennController._AddElementType("Key", function(PennEngine) {
         this.pressed = [];
         this.pressedWait = [];
         this.log = false;
-        PennEngine.controllers.running.safeBind($(document),"keydown",e=>{
+        PennEngine.events.keypress(e=>{
             if (this.keys.length==0 || this.keys.match(RegExp(String.fromCharCode(e.which),"i")))
                 this.press(e.which);
         });
@@ -81,9 +81,10 @@ window.PennController._AddElementType("Key", function(PennEngine) {
                                 resolved = true;
                                 resolve();                  // resolve only if test is a success
                             }
+                            else 
+                                this.pressed[this.pressed.length-1][3] = "Wait failure";
                         });
                     else{                                   // If no (valid) test command was provided
-                        this.pressed[this.pressed.length-1][3] = "Wait failure";
                         resolved = true;
                         resolve();                          // resolve anyway  
                     }
@@ -93,6 +94,16 @@ window.PennController._AddElementType("Key", function(PennEngine) {
     };
     
     this.settings = {
+        callback: function(resolve, ...elementCommands){
+            let oldPress = this.press;
+            this.press = async function (key) {
+                if (!this.disabled)
+                    for (let c in elementCommands)
+                        await elementCommands[c]._runPromises();
+                oldPress.apply(this, [key]);
+            };
+            resolve();
+        },
         log: function(resolve,  ...what){
             if (what.length)
                 this.log = what;

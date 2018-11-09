@@ -14,8 +14,8 @@ let newCommand = function(command) {
     return function(...rest){
         let element = this;
         return new Promise( function(resolve){
-            for (let r in rest){                        // Evaluate any variable passed as argument
-                if (rest[r] instanceof PennElementCommands && rest[r].type == "Var"){
+            for (let r in rest){                        // Evaluate any getVar() passed as argument (no command)
+                if (rest[r] instanceof PennElementCommands && rest[r].type == "Var" && !rest[r]._promises.length){
                     rest[r]._runPromises();
                     rest[r] = rest[r]._element.evaluate();
                 }
@@ -32,9 +32,9 @@ let newCommand = function(command) {
 let newTest = function(condition) {
     return function(success, failure, ...rest){         // success/failure = lazy promises (see PennElementCommand)
         let element = this;
-        return new Promise( async function(resolve){    // async resolution (in contrast to newCommand)
-            for (let r in rest){                        // Evaluate any variable passed as argument
-                if (rest[r] instanceof PennElementCommands && rest[r].type == "Var"){
+        let promise = new Promise( async function(resolve){ // async resolution (in contrast to newCommand)
+            for (let r in rest){                        // Evaluate any getVar() passed as argument (no command)
+                if (rest[r] instanceof PennElementCommands && rest[r].type == "Var" && !rest[r]._promises.length){
                     rest[r]._runPromises();
                     rest[r] = rest[r]._element.evaluate();
                 }
@@ -48,6 +48,80 @@ let newTest = function(condition) {
                 resolve("failure");
             }
         });
+        promise.test = condition;                       // So it can be accessed independently of (async) resolution
+        return promise;
+    };
+};
+
+// Used in PennElementCommand to create a test command (both positive and negative)
+//
+// Example:     testCommand( function( opt ) { return this.opt == opt; } );
+//
+let testCommand = function(condition){
+    let t = this;
+    return function(...rest){
+        let listOfTests = [condition];
+        // Complex expressions are evaluated strictly linearly
+        let test = () => newTest( () => {
+            let connective = "and";
+            let previousTest = true;
+            for (let i = 0; i < listOfTests.length; i++) {
+                let tst = listOfTests[i];
+                if (tst=="and") connective = "and";
+                else if (tst=="or") connective = "or";
+                else{
+                    let result = tst.apply(t._element, rest);
+                    if (connective=="and")
+                        previousTest = previousTest&&result;
+                    else if (connective=="or")
+                        previousTest = previousTest||result;
+                }
+            }
+            return previousTest;
+        });
+        // NOTE: Test commands are special, they add two methods to the PennElementCommands instance: success and failure
+        let successCommands = [()=>new Promise(resolve=>resolve())], failureCommands = [()=>new Promise(resolve=>resolve())];
+        t._promises.push( () => test().apply( t._element , [
+            lazyPromiseFromArrayOfLazyPromises(       // Map each command to a lazy Promise from its list of promises
+                successCommands.map(successCommand=>lazyPromiseFromArrayOfLazyPromises(successCommand._promises))
+            )
+            ,
+            lazyPromiseFromArrayOfLazyPromises(       // Map each command to a lazy Promise from its list of promises
+                failureCommands.map(failureCommand=>lazyPromiseFromArrayOfLazyPromises(failureCommand._promises))
+            )
+        ].concat(rest)
+        ) );
+        t.success = function(...commands){        // To define the (sequence of) command(s) run upon success
+            successCommands = successCommands.concat(commands);
+            return t;                                           // Return the PennElementCommands instance
+        };
+        t.failure = function(...commands){        // To define the (sequence of) command(s) run upon failure
+            failureCommands = failureCommands.concat(commands);
+            return t;                                           // Return the PennElementCommands instance
+        };
+        t.and = function(...tests){
+            for (let t = 0; t < tests.length; t++){
+                if (!tests[t].hasOwnProperty("success")){
+                    console.warn("Invalid test passed to and");
+                    continue; 
+                }
+                listOfTests.push("and");
+                listOfTests.push( ()=>tests[t]._promises[tests[t]._promises.length-1]().test() );
+            }
+            return t;
+        };
+        t.or = function(...tests){
+            for (let t = 0; t < tests.length; t++){
+                if (!tests[t].hasOwnProperty("success")){
+                    console.warn("Invalid test passed to and");
+                    continue; 
+                }
+                listOfTests.push("or");
+                listOfTests.push( ()=>tests[t]._promises[tests[t]._promises.length-1]().test() );
+            }
+            return t;
+        };
+        return t;                       // Return the PennElementCommands instance
     };
 };
 
@@ -65,16 +139,37 @@ class PennElement {
 // A class representing commands on elements, instantiated upon call to newX and getX
 // An instance is fed with the methods corresponding to its element type (defined within _AddElementType)
 class PennElementCommands {
+        //  TODO
+        //      constructor should take elementId as a parameter instead
+        //      its _element attribute should be a dynamic get
+        //      this will take care of elements defined in headers
     constructor(element, type){
         let t = this;
-        t._element = element;               // Commands are associated with a PennElement
-        t.type = element.type;              // Commands inherit their element's type
+        if (element instanceof PennElement)
+            t._element = element;
+        else if (typeof(element) == "string"){  // element = name/id    >   attribute
+            let controller;
+            if (!PennEngine.controllers.running)    // If in phase of creation:
+                controller = PennEngine.controllers.underConstruction; // get from controller under construction
+            else                                    // Else, get from the running controller (e.g. async command)
+                controller = PennEngine.controllers.list[PennEngine.controllers.running.id];
+            Object.defineProperty(t, "_element", { get: ()=>controller._getElement(element) });
+        }
+        t.type = type.name;
         t._promises = [];                   // Commands are essentially (lazy) promises, to be run in order (see _runPromises)
         // METHOD COMMANDS
         for (let p in type.actions) {
             t[p] = function(...rest){
-                let command = newCommand( type.actions[p] );
-                t._promises.push( () => command.apply(element, rest) );
+                //let command = newCommand( type.actions[p] );
+                // TMP
+                let func = function(...args){
+                    if (PennEngine.debug)
+                        console.debug(type.name+" action command "+p+" running with params", rest);
+                    type.actions[p].apply(this, args);
+                };
+                let command = newCommand( func );
+                // END TMP
+                t._promises.push( () => command.apply(t._element, rest) );
                 return t;                       // Return the PennElementCommands instance
             };
         }
@@ -82,8 +177,16 @@ class PennElementCommands {
         t.settings = {};
         for (let p in type.settings) {
             t.settings[p] = function(...rest){ 
-                let command = newCommand( type.settings[p] );
-                t._promises.push( () => command.apply(element, rest) );
+                //let command = newCommand( type.settings[p] );
+                // TMP
+                let func = function(...args){ 
+                    if (PennEngine.debug)
+                        console.debug(type.name+" settings command "+p+" running with params", rest);
+                    type.settings[p].apply(this, args);
+                };
+                let command = newCommand( func );
+                // END TMP
+                t._promises.push( () => command.apply(t._element, rest) );
                 return t;                       // Return the PennElementCommands instance
             };
         }
@@ -91,46 +194,11 @@ class PennElementCommands {
         t.test = {};
         t.testNot = {};
         for (let p in type.test) {
-            t.test[p] = function(...rest){
-                let test = newTest( type.test[p] );
-                // NOTE: Test commands are special, they add two methods to the PennElementCommands instance: success and failure
-                let success = ()=>new Promise(resolve=>resolve()), failure = ()=>new Promise(resolve=>resolve());
-                t._promises.push( () => test.apply(element, [success, failure].concat(rest)) );                     
-                t.success = function(...successCommands){               // To define the (sequence of) command(s) run upon success
-                    success = lazyPromiseFromArrayOfLazyPromises(       // Map each command to a lazy Promise from its list of promises
-                        successCommands.map(successCommand=>lazyPromiseFromArrayOfLazyPromises(successCommand._promises))
-                    );
-                    return t;                                           // Return the PennElementCommands instance
-                };
-                t.failure = function(...failureCommands){               // To define the (sequence of) command(s) run upon failure
-                    failure = lazyPromiseFromArrayOfLazyPromises(       // Map each command to a lazy Promise from its list of promises
-                        failureCommands.map(failureCommand=>lazyPromiseFromArrayOfLazyPromises(failureCommand._promises))
-                    );
-                    return t;                                           // Return the PennElementCommands instance
-                };
-                return t;                       // Return the PennElementCommands instance
-            };
-            t.testNot[p] = function(...rest){
-                let test = newTest( function(...rest){ return !type.test[p].apply(this, rest); });
-                let success = ()=>new Promise(resolve=>resolve()), failure = ()=>new Promise(resolve=>resolve());
-                t._promises.push( () => test.apply(element, [success, failure].concat(rest)) );
-                t.success = function(...successCommands){
-                    success = lazyPromiseFromArrayOfLazyPromises(
-                        successCommands.map(successCommand=>lazyPromiseFromArrayOfLazyPromises(successCommand._promises))
-                    );
-                    return t;
-                };
-                t.failure = function(...failureCommands){
-                    failure = lazyPromiseFromArrayOfLazyPromises(
-                        failureCommands.map(failureCommand=>lazyPromiseFromArrayOfLazyPromises(failureCommand._promises))
-                    );
-                    return t;
-                };
-                return t;
-            };
+            t.test[p] = testCommand.call(t, type.test[p]);
+            t.testNot[p] = testCommand.call(t, function(...rest){ return !type.test[p].apply(t._element,rest); });
         }
         if (type.value)
-            Object.defineProperty(t, "value", { get() {return type.value.apply(element);} });
+            Object.defineProperty(t, "value", { get() {return type.value.apply(t._element);} });
     }
     
     // The promises will be run in order (see lazyPromiseFromArrayOfLazyPromises in utils.js)
@@ -147,8 +215,8 @@ let standardCommands = {
             if (this.hasOwnProperty("jQueryElement") && this.jQueryElement instanceof jQuery){
                 if (this.jQueryContainer instanceof jQuery)
                     this.jQueryContainer.remove();
-                this.jQueryElement.addClass("PennController-"+this.type);
-                this.jQueryElement.addClass("PennController-"+this.id);
+                this.jQueryElement.addClass("PennController-"+this.type.replace(/[\s_]/g,''));
+                this.jQueryElement.addClass("PennController-"+this.id.replace(/[\s_]/g,''));
                 let div = $("<div>").css({                      // (embed in a div first)
                     display: "inherit", 
                     "min-width": this.jQueryElement.width(),
@@ -158,21 +226,23 @@ let standardCommands = {
                 if (typeof(this.jQueryAlignment)=="string")
                     div.css("text-align",this.jQueryAlignment);     // Handle horizontal alignement, if any
                 div.addClass("PennController-elementContainer")
-                    .addClass("PennController-"+this.type+"-container")
-                    .addClass("PennController-"+this.id+"-container")
+                    .addClass("PennController-"+this.type.replace(/[\s_]+/g,'')+"-container")
+                    .addClass("PennController-"+this.id.replace(/[\s_]+/g,'')+"-container")
                     .append(this.jQueryElement);
                 if (where instanceof jQuery)                        // Add to the specified jQuery element
                     where.append(div);
                 else                                                // Or to main element by default
                     PennEngine.controllers.running.element.append(div.css("width", "100%"));
+                if (this.cssContainer)                              // Apply custom css if defined
+                    div.css.apply(div, this.cssContainer);
                 let before = $("<div>").css("display", "inline-block")
                                 .addClass("PennController-before")
-                                .addClass("PennController-"+this.type+"-before")
-                                .addClass("PennController-"+this.id+"-before");
+                                .addClass("PennController-"+this.type.replace(/[\s_]/g,'')+"-before")
+                                .addClass("PennController-"+this.id.replace(/[\s_]/g,'')+"-before");
                 let after = $("<div>").css("display", "inline-block")  
                                 .addClass("PennController-after")
-                                .addClass("PennController-"+this.type+"-after")
-                                .addClass("PennController-"+this.id+"-after");
+                                .addClass("PennController-"+this.type.replace(/[\s_]/g,'')+"-after")
+                                .addClass("PennController-"+this.id.replace(/[\s_]/g,'')+"-after");
                 //if (this.jQueryBefore && this.jQueryBefore.length)
                     this.jQueryElement.before( before );
                 //if (this.jQueryAfter && this.jQueryAfter.length)
@@ -188,6 +258,13 @@ let standardCommands = {
                 console.warn("No jQuery instance to print for element ", this.id);
             this.printTime = Date.now();
             resolve();
+        },
+        // Calls print again, where the element currently is
+        refresh: function(resolve){
+            let container = this.jQueryElement.parent();
+            if (!(container instanceof jQuery) || !container.parent().length)
+                return resolve();
+            PennController.Elements['get'+this.type](this.id).print( container )._runPromises().then(resolve);
         },
         // Removes the element from the page
         remove: function(resolve){
@@ -261,7 +338,13 @@ let standardCommands = {
             if (this.jQueryElement && typeof(color)=="string")
                 this.jQueryElement.css("color", color);
             else
-                console.warm("Element named ",this.id," has not jQuery element to render as",color);
+                console.warn("Element named ",this.id," has not jQuery element to render as",color);
+            resolve();
+        },
+        cssContainer: function(resolve, ...rest){
+            this.cssContainer = rest;
+            if (this.jQueryContainer instanceof jQuery)
+                this.jQueryContainer.css(...rest);
             resolve();
         },
         css: function(resolve, ...rest){
@@ -367,8 +450,8 @@ PennController.Elements.clear = function(){
                     let element = controller.elements[e];
                     let commands = PennController.Elements["get"+element.type](element.id);
                     await commands.remove()._runPromises(); // Call element's own remove
-                    resolve();
                 }
+                resolve();
             }
         )]
     };
@@ -379,6 +462,8 @@ PennController.Elements.end = function(){
         _promises: [()=>new Promise(                        // PennController cares for _promises
             ()=>PennEngine.controllers.running.endTrial()   // No promise resolution = sequence halted
         )]
+        ,
+        _runPromises: () => lazyPromiseFromArrayOfLazyPromises(this._promises)()
     };
 };
 
@@ -400,7 +485,7 @@ let elementTypes = {};
 PennController._AddElementType = function(name, Type) {
     if (elementTypes.hasOwnProperty(name))
         console.error("Element type "+name+" defined more than once");
-    elementTypes[name] = Type;
+    
     function getType(T){                            // Makes sure type is set when calling new/get/default
         let type = new T(PennEngine);               // type defines a template type of PennElement (see, e.g., elements/text.js)
 
@@ -449,16 +534,20 @@ PennController._AddElementType = function(name, Type) {
             if (end instanceof Function)
                 end.apply(this);                        // Call end for this type
         };
+
+        type.name = name;
         return type;
     }
     
+    elementTypes[name] = getType(Type);
+
     // 'new'
     PennController.Elements["new"+name] = function (...rest) {
-        for (let t in elementTypes)                             // Check that all types have been defined
-            if (elementTypes[t] instanceof Function)
-                elementTypes[t] = getType(elementTypes[t]);
-        for (let r in rest)                                     // Evaluate any variable passed as argument
-            if (rest[r] instanceof PennElementCommands && rest[r].type == "Var")
+        // for (let t in elementTypes)                             // Check that all types have been defined
+        //     if (elementTypes[t] instanceof Function)
+        //         elementTypes[t] = getType(elementTypes[t]);
+        for (let r in rest)                                     // Evaluate any getVar() passed as argument (no command)
+            if (rest[r] instanceof PennElementCommands && rest[r].type == "Var" && !rest[r]._promises.length)
                 rest[r] = rest[r]._element.evaluate();
         let type = elementTypes[name];
         let controller = PennEngine.controllers.underConstruction; // Controller under construction
@@ -489,23 +578,14 @@ PennController._AddElementType = function(name, Type) {
     // 'get'
     PennController.Elements["get"+name] = function (id) {
         let type = elementTypes[name];
-        let controller;
-        if (!PennEngine.controllers.running)                    // If in phase of creation:
-            controller = PennEngine.controllers.underConstruction; // get from controller under construction
-        else                                                    // Else, get from the running controller (e.g. async command)
-            controller = PennEngine.controllers.list[PennEngine.controllers.running.id]
-        let element = controller._getElement(id);
-        if (element && element.type == name)
-            return new PennElementCommands(element, type);      // Return the command API
-        else
-            console.error("No "+name+" element named "+id+" found for controller #"+controller.id);
+        return new PennElementCommands(id, type);          // Return the command API
     };
     // 'default'        Use a getter method to run setType when called
     Object.defineProperty(PennController.Elements, "default"+name, {
         get: function(){
-            for (let t in elementTypes)                         // Check that all types have been defined
-                if (elementTypes[t] instanceof Function)
-                    elementTypes[t] = getType(elementTypes[t]);
+            // for (let t in elementTypes)                         // Check that all types have been defined
+            //     if (elementTypes[t] instanceof Function)
+            //         elementTypes[t] = getType(elementTypes[t]);
             let type = elementTypes[name];
             let defaultInstance = {};
             let checkDefaultsExist = function(){    // function ensuring existence of default commands for element type for current controller
@@ -544,8 +624,12 @@ PennController._AddStandardCommands = function(commandsConstructor){
                     console.warn("There already is a standard "+type+" command named "+name);
                 else if (!(command instanceof Function))
                     console.warn("Standard "+type+" command "+name+" should be a function");
-                else
+                else{
                     standardCommands[type][name] = command;
+                    for (let t in elementTypes)
+                        if (!elementTypes[t][type].hasOwnProperty(name))
+                            elementTypes[t][type][name] = command;
+                }
             }
         }
         else
@@ -556,7 +640,7 @@ PennController._AddStandardCommands = function(commandsConstructor){
 
 // This allows the users to call the instruction methods as global functions
 PennController.ResetPrefix = function(prefixName) {
-    if (typeof(prefix)=="string"){
+    if (typeof(prefixName)=="string"){
         if (window[prefix])
             throw "ERROR: prefix string already used for another JS object";
         window[prefixName] = {};                // Create an object

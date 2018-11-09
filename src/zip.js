@@ -46,21 +46,23 @@ function _preloadZip () {
                             if (type){                                                        // Add only type was recognized
                                 let url = URL.createObjectURL(new Blob([content], {type: type}));   // The URL of the Blob
                                 var resourceFound = false;                                    // Check extent resources
-                                for (let r in PennEngine.resources.list)
-                                    if (PennEngine.resources.list[r].name==filename && r.status!="ready"){
-                                        PennEngine.resources.list[r].create.apply(      // Create the resource's object
-                                            $.extend({}, PennEngine.resources.list[r], {// using a copy of the resource found
-                                                value: url,                             // with its value set to the Blob's URL
-                                                resolve: function() {                   // and its resolve taking care of object
-                                                    if (PennEngine.resources.list[r].status=="ready")
-                                                        return;                         // Assign copy's object to original's
-                                                    PennEngine.resources.list[r].object = this.object;
-                                                    PennEngine.resources.list[r].resolve();
+                                for (let r in PennEngine.resources.list){
+                                    let resource = PennEngine.resources.list[r];
+                                    if (resource.name==filename && resource.status!="ready"){
+                                        resource.create.apply(                              // Create the resource's object
+                                            $.extend({}, resource, {                        // using a copy of the resource found
+                                                value: url,                                 // with its value set to the Blob's URL
+                                                resolve: function() {                       // and its resolve taking care of object
+                                                    if (resource.status=="ready")
+                                                        return;                             // Assign copy's object to original's
+                                                        resource.object = this.object;
+                                                        resource.resolve();
                                                 }
                                             })
                                         );
                                         resourceFound = true;
                                     }
+                                }
                                 if (!resourceFound)                     // If no resource was found:
                                     PennEngine.resources.list.push({    // add a new one to the list
                                         name: filename,
