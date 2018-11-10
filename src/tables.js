@@ -117,7 +117,7 @@ class TableHandler {
 function _checkTable(table){
     if (table.charCodeAt(0) === 0xFEFF)
         table = table.slice(1);
-    if (!table.charCodeAt(table.length-1).match(/[\n\r]$/))
+    if (!table.match(/[\n\r]$/))
         table = table + '\n';                               // Last row ignored if doesn't end with linebreak
     let commaTable = [], tabTable = [];
     try {
