@@ -117,9 +117,10 @@ class TableHandler {
 function _checkTable(table){
     if (table.charCodeAt(0) === 0xFEFF)
         table = table.slice(1);
+    if (!table.charCodeAt(table.length-1).match(/[\n\r]$/))
+        table = table + '\n';                               // Last row ignored if doesn't end with linebreak
     let commaTable = [], tabTable = [];
     try {
-        //commaTable = $.csv.toObjects(table, {separator: ","});
         let tmpTable = $.csv.toArrays(table, {separator: ","});
         let columns = tmpTable[0];
         for (let r = 1; r<tmpTable.length; r++){
@@ -132,7 +133,6 @@ function _checkTable(table){
         commaTable.push({});
     }
     try {
-        //tabTable = $.csv.toObjects(table, {separator: "\t"});
         let tmpTable = $.csv.toArrays(table, {separator: "\t"});
         let columns = tmpTable[0];
         for (let r = 1; r<tmpTable.length; r++){
