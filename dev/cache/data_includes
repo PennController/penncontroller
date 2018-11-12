@@ -3,35 +3,31 @@ PennController.ResetPrefix(null);
 PennController.ResetPrefix(null);
 
 PennController.PreloadZip("https://files.lab.florianschwarz.net/ibexfiles/PennController/SampleTrials/stillalienspictures.zip"); // Pictures
-PennController.PreloadZip("https://files.lab.florianschwarz.net/ibexfiles/PennController/SampleTrials/stillalienssounds.zip"); // Sounds
 
 PennController(
     newImage( "alien" , "alien_blue.png" )
+        .settings.size( 100, 100 )
+    ,
+    newCanvas( "myCanvas" , 400 , 400 )
+        .settings.css("border", "solid 1px black")
+        .settings.add( "center at 50%", "center at 50%" , getImage( "alien" ) )
         .print()
     ,
-    newText( "instruction" , "Please listen, then press space." )
+    newButton("resize", "Resize")
         .print()
-    ,
-    newAudio( "sentence" , "stillalien1.mp3" )
-        .play()
         .wait()
     ,
-    newKey( "space key" , " " )
-        .wait()
-);
-
-PennController(
-    newImage( "alien" , "alien_red.png" )
-        .print()
+    getImage( "alien" )
+        .settings.size( 200, 200 )
     ,
-    newText( "instruction" , "Please listen, then press space." )
-        .print()
+    //getCanvas( "myCanvas" )
+    getImage( "alien" )
+        .refresh()
     ,
-    newAudio( "sentence" , "stillalien2.mp3" )
-        .play()
-        .wait()
+    getCanvas( "myCanvas" )
+        .refresh()
     ,
-    newKey( "space key" , " " )
+    newTimer("forever", 1)
         .wait()
 );
 

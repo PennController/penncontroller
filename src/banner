@@ -1,7 +1,7 @@
 This software is licensed under a BSD license; see the LICENSE file for details.
 
  - Version 1.1
- - Last Update:  2018, November 8
+ - Last Update:  2018, November 12
  - Major changes in version 1.1:
     * Fixed: .settings.once would not validate for Audio and Video
     * Fixed: .settings.callback for Selector elements now fires even if .settings.once was applied

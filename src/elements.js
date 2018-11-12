@@ -264,7 +264,13 @@ let standardCommands = {
             let container = this.jQueryElement.parent();
             if (!(container instanceof jQuery) || !container.parent().length)
                 return resolve();
-            PennController.Elements['get'+this.type](this.id).print( container )._runPromises().then(resolve);
+            let tmpContainer = $("<span>");
+            container.before( tmpContainer );
+            PennController.Elements['get'+this.type](this.id).print( tmpContainer )._runPromises().then(()=>{
+                tmpContainer.before( this.jQueryElement.parent() );
+                tmpContainer.remove();
+                resolve();
+            });
         },
         // Removes the element from the page
         remove: function(resolve){
