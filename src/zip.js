@@ -36,7 +36,7 @@ function _preloadZip () {
                 throw error;    // Throw the error
             }
             zip.loadAsync(data).then(function(){                // Load the zip object with the data stream
-                console.log("Download of ",url," complete");
+                PennEngine.debug.log("Download of ",url," complete");
                 var unzippedFilesSoFar = 0;                     // Number of files unzipped
                 zip.forEach(function(path, file){               // Going through each zip file
                     file.async('arraybuffer').then(function(content){   // Unzip the file
@@ -55,8 +55,8 @@ function _preloadZip () {
                                                 resolve: function() {                       // and its resolve taking care of object
                                                     if (resource.status=="ready")
                                                         return;                             // Assign copy's object to original's
-                                                        resource.object = this.object;
-                                                        resource.resolve();
+                                                    resource.object = this.object;
+                                                    resource.resolve();
                                                 }
                                             })
                                         );
@@ -88,7 +88,7 @@ function _preloadZip () {
         let url = _URLsToLoad[u];
         let extension = url.match(/^https?:\/\/.+\.(zip)$/i);
         if (typeof(url) != "string" || !extension) {
-            console.warn("Preload: entry #"+u+" is not a valid URL, ignoring it");
+            PennEngine.debug.log("Preload: entry #"+u+" is not a valid URL, ignoring it");
             continue;
         }
         else if (extension[1].toLowerCase() == "zip")

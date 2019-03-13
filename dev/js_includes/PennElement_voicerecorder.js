@@ -31,7 +31,7 @@ window.PennController._AddElementType("VoiceRecorder", function(PennEngine) {
     // This controller MUST be manually added to items and specify a URL to a PHP file for uploading the archive
     window.PennController.InitiateRecorder = function(saveURL, message) {
         if (!typeof(url)=="string" || !saveURL.match(/^http.+/i))
-            console.error("VoiceRecorder's save URL is incorrect", saveURL);
+            PennEngine.debug.error("VoiceRecorder's save URL is incorrect", saveURL);
         uploadURL = saveURL;                                    // Assign a URL
         initiated = true;                                       // Indicate that recorder has been initiated
         let controller = PennEngine.controllers.new();          // Create a new controller
@@ -153,7 +153,7 @@ window.PennController._AddElementType("VoiceRecorder", function(PennEngine) {
                                 else {                                                              // Error
                                     alert("There was an error uploading the recordings ("+xhr.responseText+").");
                                     window.PennController.uploadRecordingsError = xhr.responseText||"error";
-                                    console.warn('Ajax post failed. ('+xhr.status+')', xhr.responseText);
+                                    PennEngine.debug.error("VoiceRecorder's Ajax post failed. ("+xhr.status+")", xhr.responseText);
                                     controller.save("PennController", "UploadRecordings", "Status", "Failed", Date.now(), 
                                                     "Error Text: "+xhr.responseText+"; Status: "+xhr.status);
                                 }
@@ -182,7 +182,7 @@ window.PennController._AddElementType("VoiceRecorder", function(PennEngine) {
 
     this.uponCreation = function(resolve){
         if (typeof(mediaRecorder)=="undefined")
-            console.error("recorder not initiated. Make sure the sequence of items contains an InitiateRecorder PennController.");
+            PennEngine.debug.error("Recorder not initiated. Make sure the sequence of items contains an InitiateRecorder PennController.");
         this.log = false;
         this.recordings = [];
         this.recording = false;
@@ -319,7 +319,6 @@ window.PennController._AddElementType("VoiceRecorder", function(PennEngine) {
     this.actions = {
         play: function(resolve){
             if (this.audioPlayer && this.audioPlayer.src){
-                console.log("yes");
                 if (this.audioPlayer.currentTime && this.audioPlayer.currentTime != 0)
                     this.audioPlayer.currentTime = 0;
                 this.audioPlayer.play().then(()=>resolve());
@@ -359,13 +358,18 @@ window.PennController._AddElementType("VoiceRecorder", function(PennEngine) {
                         r();
                         if (resolved)
                             return;
-                        if (test instanceof Object && test._runPromises && test.success)
+                        if (test instanceof Object && test._runPromises && test.success){
+                            let oldDisabled = this.disabled;    // Disable temporarilly
+                            this.disabled = "tmp";
                             test._runPromises().then(value=>{   // If a valid test command was provided
                                 if (value=="success"){
                                     resolved = true;
                                     resolve();                  // resolve only if test is a success
                                 }
+                                if (this.disabled == "tmp")     // Restore old setting if not modified by test
+                                    this.disabled = oldDisabled;
                             });
+                        }
                         else{                                   // If no (valid) test command was provided
                             resolved = true;
                             resolve();                          // resolve anyway

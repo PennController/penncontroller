@@ -18,8 +18,8 @@ window.PennController._AddElementType("Var", function(PennEngine) {
         let oldGetVar = window.PennController.Elements.getVar;
         let underConstruction = PennEngine.controllers.underConstruction;
         window.PennController.Elements.getVar = function(getVarID){
-            let currentVar = PennEngine.controllers.underConstruction.elements[id];
-            if (getVarID==id && !(currentVar && currentVar.type=="Var")){
+            let controllerElements = PennEngine.controllers.underConstruction.elements;
+            if (getVarID==id && !(controllerElements.hasOwnProperty("Var") && controllerElements.Var.hasOwnProperty(id))){
                 let oldRunning = PennEngine.controllers.running;
                 let oldUnderConstruction = PennEngine.controllers.underConstruction;
                 PennEngine.controllers.running = null;
@@ -46,7 +46,7 @@ window.PennController._AddElementType("Var", function(PennEngine) {
     };
 
     this.uponCreation = function(resolve){
-        let running = PennEngine.controllers.running.options.elements[this.id];
+        let running = PennEngine.controllers.running.options.elements.Var[this.id];
         if (running && running.scope=="global" && running != this)
             this.value = running.value;
         else if (this.scope=="local")
@@ -102,8 +102,11 @@ window.PennController._AddElementType("Var", function(PennEngine) {
         },
         global: function(resolve){
             this.scope = "global";
-            for (c in PennEngine.controllers.list)
-                PennEngine.controllers.list[c].elements[this.id] = this;
+            for (c in PennEngine.controllers.list){
+                if (!PennEngine.controllers.list[c].elements.hasOwnProperty("Var"))
+                    PennEngine.controllers.list[c].elements.Var = {};
+                PennEngine.controllers.list[c].elements.Var[this.id] = this;
+            }
             resolve();
         }
     };
@@ -125,14 +128,13 @@ window.PennController._AddStandardCommands(function(PennEngine){
     this.actions = {
         setVar: function(resolve, varRef){
             if (typeof(varRef)=="string") {
-                let variable = PennEngine.controllers.running.options.elements[varRef];
-                if (variable.type && variable.type=="Var")
-                    variable.value = window.PennController.Elements["get"+this.type](this.id).value;
-                else
-                    console.warn("Invalid variable reference when trying to store "+this.id+"'s value in PennController #"+PennEngine.controllers.running.id, varRef);
+                if (!PennEngine.controllers.running.options.elements.hasOwnProperty("Var"))
+                    return PennEngine.debug.error("No Var element named "+varRef+" found");
+                let variable = PennEngine.controllers.running.options.elements.Var[varRef];
+                variable.value = window.PennController.Elements["get"+this.type](this.id).value;
             }
             else
-                console.warn("Invalid variable reference when trying to store "+this.id+"'s value in PennController #"+PennEngine.controllers.running.id, varRef);
+                PennEngine.debug.error("Invalid variable reference when trying to store "+this.id+"'s value", varRef);
             resolve();
         }
     };

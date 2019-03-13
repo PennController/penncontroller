@@ -1,4 +1,4 @@
-import { lazyPromiseFromArrayOfLazyPromises } from "./utils.js";
+import { lazyPromiseFromArrayOfLazyPromises, guidGenerator, parseElementCommands } from "./utils.js";
 import { PennController } from "./controller.js";
 import { PennEngine } from "./engine.js";
 
@@ -14,121 +14,106 @@ let newCommand = function(command) {
     return function(...rest){
         let element = this;
         return new Promise( function(resolve){
+            let controller = PennEngine.controllers.running;
+            PennEngine.debug.currentPromise = resolve;
+            let resolveOnlyForCurrentController = (...args)=>(PennEngine.controllers.running!=controller||resolve(...args));
             for (let r in rest){                        // Evaluate any getVar() passed as argument (no command)
                 if (rest[r] instanceof PennElementCommands && rest[r].type == "Var" && !rest[r]._promises.length){
                     rest[r]._runPromises();
                     rest[r] = rest[r]._element.evaluate();
                 }
             }
-            command.apply(element, [resolve].concat(rest));
+            command.apply(element, [resolveOnlyForCurrentController].concat(rest));
         });
     }
 };
 
-// Returns an anonymous function returning a Promise fulfilled only when the condition function returns true
+
+
+// Used in PennElementCommand to create a test command (both positive and negative)
 //
-// Example:     newTest( function( element ){ return (element == this._element.selectedElement); } );
+// Example:     newTestBis( function( opt ) { return this.opt == opt; } );
 //
-let newTest = function(condition) {
-    return function(success, failure, ...rest){         // success/failure = lazy promises (see PennElementCommand)
+let newTest = function(condition){
+    let complex = [];                                   // ["and", testCommand, "or", testCommand, ...]
+    let success = ()=>new Promise(r=>r()), failure = ()=>new Promise(r=>r());
+    let test = function(...rest){
         let element = this;
-        let promise = new Promise( async function(resolve){ // async resolution (in contrast to newCommand)
-            for (let r in rest){                        // Evaluate any getVar() passed as argument (no command)
+        return new Promise(async function(resolve){
+            let controller = PennEngine.controllers.running;
+            PennEngine.debug.currentPromise = resolve;
+            let resolveOnlyForCurrentController = (...args)=>(PennEngine.controllers.running!=controller||resolve(...args));
+            for (let r = 0; r < rest.length; r++)       // Evaluate any Var element passed as parameter
                 if (rest[r] instanceof PennElementCommands && rest[r].type == "Var" && !rest[r]._promises.length){
                     rest[r]._runPromises();
                     rest[r] = rest[r]._element.evaluate();
                 }
-            }
-            if (condition.apply(element, rest)){
-                await success();                        // success = sequence of promises (see lazyPromiseFromArrayOfLazyPromises)
-                resolve("success");
-            }
-            else{
-                await failure();                        // failure = sequence of promises (see lazyPromiseFromArrayOfLazyPromises)
-                resolve("failure");
-            }
-        });
-        promise.test = condition;                       // So it can be accessed independently of (async) resolution
-        return promise;
-    };
-};
-
-// Used in PennElementCommand to create a test command (both positive and negative)
-//
-// Example:     testCommand( function( opt ) { return this.opt == opt; } );
-//
-let testCommand = function(condition){
-    let t = this;
-    return function(...rest){
-        let listOfTests = [condition];
-        // Complex expressions are evaluated strictly linearly
-        let test = () => newTest( () => {
-            let connective = "and";
-            let previousTest = true;
-            for (let i = 0; i < listOfTests.length; i++) {
-                let tst = listOfTests[i];
+            let result = condition.apply(element, rest);    // Result of this test
+            let connective = "and";                     // Going through conjunctions/disjunction tests
+            for (let c = 0; c < complex.length; c++){
+                let tst = complex[c];
                 if (tst=="and") connective = "and";
                 else if (tst=="or") connective = "or";
-                else{
-                    let result = tst.apply(t._element, rest);
+                else if (tst && tst._runPromises && tst.success) {
+                    tst = await tst._runPromises()=="success";  // Run the test; _runPromises returns last promise's value
                     if (connective=="and")
-                        previousTest = previousTest&&result;
+                        result = result&&tst;
                     else if (connective=="or")
-                        previousTest = previousTest||result;
+                        result = result||tst;
                 }
             }
-            return previousTest;
+            if (result){
+                await success();
+                resolveOnlyForCurrentController("success");
+            }
+            else{
+                await failure();
+                resolveOnlyForCurrentController("failure");
+            }
         });
-        // NOTE: Test commands are special, they add two methods to the PennElementCommands instance: success and failure
-        let successCommands = [()=>new Promise(resolve=>resolve())], failureCommands = [()=>new Promise(resolve=>resolve())];
-        t._promises.push( () => test().apply( t._element , [
-            lazyPromiseFromArrayOfLazyPromises(       // Map each command to a lazy Promise from its list of promises
-                successCommands.map(successCommand=>lazyPromiseFromArrayOfLazyPromises(successCommand._promises))
-            )
-            ,
-            lazyPromiseFromArrayOfLazyPromises(       // Map each command to a lazy Promise from its list of promises
-                failureCommands.map(failureCommand=>lazyPromiseFromArrayOfLazyPromises(failureCommand._promises))
-            )
-        ].concat(rest)
-        ) );
-        t.success = function(...commands){        // To define the (sequence of) command(s) run upon success
-            successCommands = successCommands.concat(commands);
-            return t;                                           // Return the PennElementCommands instance
-        };
-        t.failure = function(...commands){        // To define the (sequence of) command(s) run upon failure
-            failureCommands = failureCommands.concat(commands);
-            return t;                                           // Return the PennElementCommands instance
-        };
-        t.and = function(...tests){
-            for (let t = 0; t < tests.length; t++){
-                if (!tests[t].hasOwnProperty("success")){
-                    console.warn("Invalid test passed to and");
-                    continue; 
-                }
-                listOfTests.push("and");
-                listOfTests.push( ()=>tests[t]._promises[tests[t]._promises.length-1]().test() );
-            }
-            return t;
-        };
-        t.or = function(...tests){
-            for (let t = 0; t < tests.length; t++){
-                if (!tests[t].hasOwnProperty("success")){
-                    console.warn("Invalid test passed to and");
-                    continue; 
-                }
-                listOfTests.push("or");
-                listOfTests.push( ()=>tests[t]._promises[tests[t]._promises.length-1]().test() );
-            }
-            return t;
-        };
-        return t;                       // Return the PennElementCommands instance
-    };
-};
+    }
+    test.and = t=>{ complex.push("and"); complex.push(t); }
+    test.or = t=>{ complex.push("or"); complex.push(t); }
+    // Mapping directly to _runPromises doesn't work so map to ()=>_runPromises()
+    test.success = (...commands)=>success = lazyPromiseFromArrayOfLazyPromises(commands.map(c=>()=>c._runPromises()));
+    test.failure = (...commands)=>failure = lazyPromiseFromArrayOfLazyPromises(commands.map(c=>()=>c._runPromises()));
+
+    return test;
+}
 
 // A class representing instances of elements
 class PennElement {
     constructor(id, name, type){
-        this.jQueryElement = $("<PennElement>");
+        let jQueryElement = $("<PennElement>");
+        let oldCSS = jQueryElement.css;
+        let styles = [];
+        jQueryElement.css = (...css)=>{
+            styles.push(css);
+            oldCSS.apply(jQueryElement, css);
+        };
+        let alreadySet = false;
+        Object.defineProperty(this, "jQueryElement", {
+            set: function(element) {
+                if (!(element instanceof jQuery))
+                    return PennEngine.debug.error("Tried to assign a non jQuery element to PennElement named "+id);
+                if (alreadySet)
+                    return jQueryElement = element;
+                // inherit old jQueryElement's handlers
+                let events = jQueryElement.data('events');
+                if (events)
+                    $.each(events, function() {
+                        $.each(this, function() {
+                            element.bind(this.type, this.handler);
+                        });
+                    });
+                // inherit old jQueryElement's css
+                for (let s in styles)
+                    element.css(...styles[s]);
+                jQueryElement = element;
+                alreadySet = true;
+            },
+            get: function() { return jQueryElement; }
+        });
         this.id = id;
         this.type = name;
         if (type.hasOwnProperty("end"))     // Called at the end of a trial
@@ -139,10 +124,6 @@ class PennElement {
 // A class representing commands on elements, instantiated upon call to newX and getX
 // An instance is fed with the methods corresponding to its element type (defined within _AddElementType)
 class PennElementCommands {
-        //  TODO
-        //      constructor should take elementId as a parameter instead
-        //      its _element attribute should be a dynamic get
-        //      this will take care of elements defined in headers
     constructor(element, type){
         let t = this;
         if (element instanceof PennElement)
@@ -153,22 +134,22 @@ class PennElementCommands {
                 controller = PennEngine.controllers.underConstruction; // get from controller under construction
             else                                    // Else, get from the running controller (e.g. async command)
                 controller = PennEngine.controllers.list[PennEngine.controllers.running.id];
-            Object.defineProperty(t, "_element", { get: ()=>controller._getElement(element) });
+            Object.defineProperty(t, "_element", { get: ()=>controller._getElement(element, type.name) });
         }
         t.type = type.name;
         t._promises = [];                   // Commands are essentially (lazy) promises, to be run in order (see _runPromises)
-        // METHOD COMMANDS
+        // ACTION COMMANDS
         for (let p in type.actions) {
             t[p] = function(...rest){
-                //let command = newCommand( type.actions[p] );
-                // TMP
                 let func = function(...args){
-                    if (PennEngine.debug)
-                        console.debug(type.name+" action command "+p+" running with params", rest);
+                    if (PennEngine.debug.on)
+                        PennEngine.debug.log("<div style='color: lightsalmon'>"+
+                                            t._element.id+" ("+type.name+") Action command '"+p+
+                                            "' running, params: " + JSON.stringify(parseElementCommands(rest)) +
+                                            "</div>");
                     type.actions[p].apply(this, args);
                 };
                 let command = newCommand( func );
-                // END TMP
                 t._promises.push( () => command.apply(t._element, rest) );
                 return t;                       // Return the PennElementCommands instance
             };
@@ -177,15 +158,15 @@ class PennElementCommands {
         t.settings = {};
         for (let p in type.settings) {
             t.settings[p] = function(...rest){ 
-                //let command = newCommand( type.settings[p] );
-                // TMP
                 let func = function(...args){ 
-                    if (PennEngine.debug)
-                        console.debug(type.name+" settings command "+p+" running with params", rest);
+                    if (PennEngine.debug.on)
+                        PennEngine.debug.log("<div style='color: salmon'>"+
+                                            t._element.id+" ("+type.name+") Settings command '"+p+
+                                            "' running, params: " + JSON.stringify(parseElementCommands(rest)) +
+                                            "</div>");
                     type.settings[p].apply(this, args);
                 };
                 let command = newCommand( func );
-                // END TMP
                 t._promises.push( () => command.apply(t._element, rest) );
                 return t;                       // Return the PennElementCommands instance
             };
@@ -194,8 +175,43 @@ class PennElementCommands {
         t.test = {};
         t.testNot = {};
         for (let p in type.test) {
-            t.test[p] = testCommand.call(t, type.test[p]);
-            t.testNot[p] = testCommand.call(t, function(...rest){ return !type.test[p].apply(t._element,rest); });
+            t.test[p] = function (...rest){
+                let func = function(...args){
+                    if (PennEngine.debug.on)
+                        PennEngine.debug.log("<div style='color: darksalmon'>"+
+                                            t._element.id+" ("+type.name+") Test command '"+p+
+                                            "' running, params: " + JSON.stringify(parseElementCommands(rest)) +
+                                            "</div>");
+                    return type.test[p].apply(this, args);
+                };
+                let test = newTest( func );
+                t._promises.push( () => test.apply(t._element, rest) );
+
+                // Methods defined in newTest, encapsulating them to return t
+                t.success = (...commands)=>{ test.success.apply(t._element, commands); return t; };
+                t.failure = (...commands)=>{ test.failure.apply(t._element, commands); return t; };
+                t.and = tst=>{ test.and.call(t._element, tst); return t; };
+                t.or = tst=>{ test.or.call(t._element, tst); return t; };
+                
+                return t;                       // Return the PennElementCommands instance
+            }
+            t.testNot[p] = function (...rest){
+                let func = function(...args){
+                    if (PennEngine.debug.on)
+                        PennEngine.debug.log(type.name+" testNot command "+p+" running, params: " + JSON.stringify(parseElementCommands(rest)));
+                    return !type.test[p].apply(this, args);
+                };
+                let test = newTest( func );
+                t._promises.push( () => test.apply(t._element, rest) );
+
+                // Methods defined in newTest, encapsulating them to return t
+                t.success = (...commands)=>{ test.success.apply(t._element, commands); return t; };
+                t.failure = (...commands)=>{ test.failure.apply(t._element, commands); return t; };
+                t.and = tst=>{ test.and.call(t._element, tst); return t; };
+                t.or = tst=>{ test.or.call(t._element, tst); return t; };
+                
+                return t;                       // Return the PennElementCommands instance
+            }
         }
         if (type.value)
             Object.defineProperty(t, "value", { get() {return type.value.apply(t._element);} });
@@ -255,7 +271,7 @@ let standardCommands = {
                         await this.jQueryAfter[e].print( after )._runPromises();
             }
             else
-                console.warn("No jQuery instance to print for element ", this.id);
+                PennEngine.debug.error("No jQuery instance to print for element "+this.id);
             this.printTime = Date.now();
             resolve();
         },
@@ -279,7 +295,7 @@ let standardCommands = {
             if (this.jQueryElement instanceof jQuery)
                 this.jQueryElement.remove();
             else
-                console.warn("No jQuery instance to remove for element ", this.id);
+                PennEngine.debug.error("No jQuery instance to remove for element "+this.id);
             if (this.jQueryBefore && this.jQueryBefore.length)
                 for (let b in this.jQueryBefore)
                     if (this.jQueryBefore[b]._element && this.jQueryBefore[b]._element.jQueryElement instanceof jQuery)
@@ -303,7 +319,7 @@ let standardCommands = {
                 });
             }
             else{
-                console.warn("Tried to add an invalid element after element named ", this.id);
+                PennEngine.debug.error("Tried to add an invalid element after element named "+this.id);
                 resolve();
             }
         },
@@ -317,7 +333,7 @@ let standardCommands = {
                 });
             }
             else{
-                console.warn("Tried to add an invalid element before element named ", this.id);
+                PennEngine.debug.error("Tried to add an invalid element before element named "+this.id);
                 resolve();
             }
                 
@@ -326,7 +342,7 @@ let standardCommands = {
             if (this.jQueryElement instanceof jQuery)
                 this.jQueryElement.css("font-weight","bold");
             else
-                console.warm("Element named ",this.id," has not jQuery element to render as bold");
+                PennEngine.debug.error("Element named "+this.id+" has not jQuery element to render as bold");
             resolve();
         },
         center: function(resolve){
@@ -337,14 +353,14 @@ let standardCommands = {
                     this.jQueryContainer.css("text-align", "center");
             }
             else
-                console.warm("Element named ",this.id," has not jQuery element to render as centered");
+                PennEngine.debug.error("Element named "+this.id+" has not jQuery element to render as centered");
             resolve();
         },
         color: function(resolve, color){
             if (this.jQueryElement && typeof(color)=="string")
                 this.jQueryElement.css("color", color);
             else
-                console.warn("Element named ",this.id," has not jQuery element to render as",color);
+                PennEngine.debug.error("Element named "+this.id+" has not jQuery element to render as "+color);
             resolve();
         },
         cssContainer: function(resolve, ...rest){
@@ -357,35 +373,35 @@ let standardCommands = {
             if (this.jQueryElement instanceof jQuery)
                 this.jQueryElement.css(...rest);
             else
-                console.warm("Element named ",this.id," has not jQuery element on which to apply the CSS");
+                PennEngine.debug.error("Element named "+this.id+" has not jQuery element on which to apply the CSS");
             resolve();
         },
         disable: function(resolve){
             if (this.hasOwnProperty("jQueryElement") && this.jQueryElement instanceof jQuery)
                 this.jQueryElement.attr("disabled", true);
             else
-                console.warn("No jQuery instance to disable for element ", this.id);
+                PennEngine.debug.error("No jQuery instance to disable for element "+this.id);
             resolve();
         },
         enable: function(resolve){
             if (this.hasOwnProperty("jQueryElement") && this.jQueryElement instanceof jQuery)
                 this.jQueryElement.removeAttr("disabled");
             else
-                console.warn("No jQuery instance to enable for element ", this.id);
+                PennEngine.debug.error("No jQuery instance to enable for element "+this.id);
             resolve();
         },
         hidden: function(resolve){
             if (this.hasOwnProperty("jQueryElement") && this.jQueryElement instanceof jQuery)
                 this.jQueryElement.css({visibility: "hidden"/*, "pointer-events": "none"*/});
             else
-                console.warn("No jQuery instance to hide for element ", this.id);
+                PennEngine.debug.error("No jQuery instance to hide for element "+this.id);
             resolve();
         },
         italic: function(resolve){
             if (this.jQueryElement instanceof jQuery)
                 this.jQueryElement.css("font-style","italic");
             else
-                console.warm("Element named ",this.id," has not jQuery element to render in italic");
+                PennEngine.debug.error("Element named "+this.id+" has not jQuery element to render in italic");
             resolve();
         },
         left: function(resolve){
@@ -396,11 +412,11 @@ let standardCommands = {
                     this.jQueryContainer.css("text-align", "left");
             }
             else
-                console.warm("Element named ",this.id," has not jQuery element to render as aligned to the left");
+                PennEngine.debug.error("Element named "+this.id+" has not jQuery element to render as aligned to the left");
             resolve();
         },
-        log: function(resolve){
-            this.log = true;
+        log: function(resolve, value){
+            this.log = value===undefined||value;
             resolve();
         },
         right: function(resolve){
@@ -411,7 +427,7 @@ let standardCommands = {
                     this.jQueryContainer.css("text-align", "right");
             }
             else
-                console.warm("Element named ",this.id," has not jQuery element to render as aligned to the right");
+                PennEngine.debug.error("Element named "+this.id+" has not jQuery element to render as aligned to the right");
             resolve();
         },
         size: function(resolve, width, height){
@@ -420,14 +436,14 @@ let standardCommands = {
                 this.jQueryElement.height(height);
             }
             else
-                console.warm("Element named ",this.id," has not jQuery element to render as aligned to the right");
+                PennEngine.debug.error("Element named "+this.id+" has not jQuery element to render as aligned to the right");
             resolve();
         },
         visible: function(resolve){
             if (this.hasOwnProperty("jQueryElement") && this.jQueryElement instanceof jQuery)
                 this.jQueryElement.css({visibility: "visible"/*, "pointer-events": "auto"*/});
             else
-                console.warn("No jQuery instance to make visible for element ", this.id);
+                PennEngine.debug.error("No jQuery instance to make visible for element "+this.id);
             resolve();
         }
     }
@@ -452,10 +468,12 @@ PennController.Elements.clear = function(){
         _promises: [()=>new Promise(                        // PennController cares for _promises
             async function(resolve) {
                 let controller = PennEngine.controllers.list[PennEngine.controllers.running.id];
-                for (let e in controller.elements){
-                    let element = controller.elements[e];
-                    let commands = PennController.Elements["get"+element.type](element.id);
-                    await commands.remove()._runPromises(); // Call element's own remove
+                for (let t in controller.elements){
+                    for (let e in controller.elements[t]){
+                        let element = controller.elements[t][e];
+                        let commands = PennController.Elements["get"+element.type](element.id);
+                        await commands.remove()._runPromises(); // Call element's own remove
+                    }
                 }
                 resolve();
             }
@@ -490,7 +508,7 @@ PennController.Elements.end = function(){
 let elementTypes = {};
 PennController._AddElementType = function(name, Type) {
     if (elementTypes.hasOwnProperty(name))
-        console.error("Element type "+name+" defined more than once");
+        PennEngine.debug.error("Element type "+name+" defined more than once");
     
     function getType(T){                            // Makes sure type is set when calling new/get/default
         let type = new T(PennEngine);               // type defines a template type of PennElement (see, e.g., elements/text.js)
@@ -559,11 +577,17 @@ PennController._AddElementType = function(name, Type) {
         let controller = PennEngine.controllers.underConstruction; // Controller under construction
         if (PennEngine.controllers.running)                     // Or running, if in running phase
             controller = PennEngine.controllers.list[PennEngine.controllers.running.id];
-        let id = rest[0];                                       // All new elements must be given an id
+        let id = guidGenerator();                               // The element's ID (to be overwritten)
+        if (rest.length<1){                                     // No argument provided
+            rest = [id];                                        // Try to create an ID anyway
+            PennEngine.debug.error("No argument provided for a "+name+" element");
+        }
+        else if (typeof(rest[0])=="string"&&rest[0].length>0)   // If an ID was provided, use it
+            id = rest[0];                                       
         let element = new PennElement(id, name, type);          // Creation of the element itself
         if (type.hasOwnProperty("immediate") && type.immediate instanceof Function)
             type.immediate.apply(element, rest);                // Immediate initiation of the element
-        controller._addElement(id, element);                    // Adding the element to the controller's dictionary
+        controller._addElement(element);                        // Adding the element to the controller's dictionary
         let commands = new PennElementCommands(element, type);  // An instance of PennElementCommands bound to the element
         commands._promises.push( ()=>new Promise(r=>{element.printTime=0; element.log=false; r();}) ); // Init universal properties
         commands._promises.push( ()=>new Promise(r=>type.uponCreation.apply(element, [r])) ); // First command (lazy Promise)
@@ -584,7 +608,7 @@ PennController._AddElementType = function(name, Type) {
     // 'get'
     PennController.Elements["get"+name] = function (id) {
         let type = elementTypes[name];
-        return new PennElementCommands(id, type);          // Return the command API
+        return new PennElementCommands(id, type);               // Return the command API
     };
     // 'default'        Use a getter method to run setType when called
     Object.defineProperty(PennController.Elements, "default"+name, {
@@ -627,9 +651,9 @@ PennController._AddStandardCommands = function(commandsConstructor){
             for (let name in commands[type]){
                 let command = commands[type][name];
                 if (standardCommands[type].hasOwnProperty(name))
-                    console.warn("There already is a standard "+type+" command named "+name);
+                    PennEngine.debug.error("There already is a standard "+type+" command named "+name);
                 else if (!(command instanceof Function))
-                    console.warn("Standard "+type+" command "+name+" should be a function");
+                    PennEngine.debug.error("Standard "+type+" command "+name+" should be a function");
                 else{
                     standardCommands[type][name] = command;
                     for (let t in elementTypes)
@@ -639,7 +663,7 @@ PennController._AddStandardCommands = function(commandsConstructor){
             }
         }
         else
-            console.warn("Standard command type unknown", type);
+            PennEngine.debug.error("Standard command type unknown", type);
     }
 };
 

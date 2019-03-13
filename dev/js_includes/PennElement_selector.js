@@ -7,14 +7,13 @@ window.PennController._AddElementType("Selector", function(PennEngine) {
             elementsToShuffle = [].concat(this.elements);
         else {                                      // Else, first feed elementsToShuffle
             for (let e in elementCommands) {        // Go through each elementCommand
-                console.log("element",e,elementCommands[e]);
                 if (!(elementCommands[e]._element && elementCommands[e]._element.jQueryElement instanceof jQuery)){
-                    console.warn("Invalid element #"+e+" in shuffling selector "+this.id+" in PennController #"+PennEngine.controllers.running.id);
+                    PennEngine.debug.error("Invalid element #"+e+" in shuffling selector "+this.id);
                     continue;
                 }
                 let index = this.elements.map(e=>e[0]).indexOf(elementCommands[e]._element);
                 if (index<0){
-                    console.warn("Cannot shuffle element "+elementCommands[e]._element.id+" for it has not been added to selector "+this.id+" in PennController #"+PennEngine.controllers.running.id);
+                    PennEngine.debug.error("Cannot shuffle element "+elementCommands[e]._element.id+" for it has not been added to selector "+this.id);
                     continue;
                 }
                 elementsToShuffle.push(this.elements[index]);
@@ -73,7 +72,7 @@ window.PennController._AddElementType("Selector", function(PennEngine) {
             if (this.disabled)
                 return;
             if (this.elements.map(e=>e[0]).indexOf(element)<0)
-                return console.warn("Tried to select an element not part of selector "+this.id+" in PennController #"+PennEngine.controllers.running.id);
+                return PennEngine.debug.error("Tried to select an element not part of Selector "+this.id);
             this.selections.push(["Selection", element.id, Date.now(), "NULL"]);
             this.frame.css({
                 width: element.jQueryElement.outerWidth(),
@@ -86,7 +85,7 @@ window.PennController._AddElementType("Selector", function(PennEngine) {
                     top: element.jQueryElement.css("top")
                 });
             element.jQueryElement.before(this.frame);
-            this.elements.map(e=>e[0].jQueryElement.removeClass("PennController-"+this.type+"-selected"));
+            this.elements.map(e=>e[0].jQueryElement.removeClass("PennController-"+this.type.replace(/[\s_]/g,'')+"-selected"));
             element.jQueryElement.addClass("PennController-"+this.type.replace(/[\s_]/g,'')+"-selected");
         };
         PennEngine.controllers.running.safeBind($(document), "keydown", (e)=>{
@@ -96,7 +95,7 @@ window.PennController._AddElementType("Selector", function(PennEngine) {
                 let key = "";
                 if (this.elements[s].length>1)
                     key = this.elements[s][1];
-                if (key && typeof(key)=="string" && key.match(RegExp(String.fromCharCode(e.which), "i")))
+                if (key && typeof(key)=="string" && key.toUpperCase().indexOf(String.fromCharCode(e.which).toUpperCase())>-1)
                     return this.select(this.elements[s][0]);
             }
         });
@@ -145,7 +144,7 @@ window.PennController._AddElementType("Selector", function(PennEngine) {
                 this.disabled = disabled;
             }
             else
-                console.warn("Invalid element passed to select command for selector "+this.id+" in PennController #"+PennEngine.controllers.running.id);
+                PennEngine.debug.error("Invalid element passed to select command for selector "+this.id);
             resolve();
         },
         shuffle: function(resolve, ...elements){
@@ -165,15 +164,20 @@ window.PennController._AddElementType("Selector", function(PennEngine) {
                 let oldSelect = this.select;
                 this.select = element => {
                     let once = oldSelect.apply(this, [element]);
-                    if (resolved || (this.disable && !once))
+                    if (resolved || (this.disabled && !once))
                         return;
-                    if (test instanceof Object && test._runPromises && test.success)
+                    if (test instanceof Object && test._runPromises && test.success){
+                        let oldDisabled = this.disabled;    // Disable temporarilly
+                        this.disabled = "tmp";
                         test._runPromises().then(value=>{   // If a valid test command was provided
                             if (value=="success"){
                                 resolved = true;
                                 resolve();                  // resolve only if test is a success
                             }
+                            if (this.disabled == "tmp")     // Restore old setting if not modified by test
+                                this.disabled = oldDisabled;
                         });
+                    }
                     else{                                   // If no (valid) test command was provided
                         resolved = true;
                         resolve();                          // resolve anyway
@@ -188,11 +192,11 @@ window.PennController._AddElementType("Selector", function(PennEngine) {
             for (w in what) {
                 let element = what[w]._element;
                 if (element == undefined || element.id == undefined)
-                    console.warn("Invalid element added to selector "+this.id+" in PennController #"+PennEngine.controllers.running.id);
+                    PennEngine.debug.error("Invalid element added to selector "+this.id);
                 else if (this.elements.map(e=>e[0]).indexOf(element)>-1)
-                    console.warn("Element "+element.id+" already part of selector "+this.id+" in PennController #"+PennEngine.controllers.running.id);
+                    PennEngine.debug.error("Element "+element.id+" already part of selector "+this.id);
                 else if (element.jQueryElement == undefined || !(element.jQueryElement instanceof jQuery))
-                    console.warn("Element "+element.id+" has no visble element to be chosen in selector "+this.id+" in PennController #"+PennEngine.controllers.running.id);
+                    PennEngine.debug.error("Element "+element.id+" has no visble element to be chosen in selector "+this.id);
                 else {
                     this.elements.push([element]);        // Each member of this.elements is an array [2nd member = keys]
                     if (!this.noClick)
@@ -211,7 +215,10 @@ window.PennController._AddElementType("Selector", function(PennEngine) {
         callback: function(resolve, ...elementCommands){
             let oldSelect = this.select;
             this.select = async function(element) {
+                let disabled = this.disabled;
                 oldSelect.apply(this, [element]);
+                if (disabled)
+                    return;
                 for (let c in elementCommands)
                     await elementCommands[c]._runPromises();
             };
@@ -289,12 +296,12 @@ window.PennController._AddElementType("Selector", function(PennEngine) {
                 return this.selections.length;
             else if (elementCommand._element)
                 return this.selections[this.selections.length-1][1] == elementCommand._element.id;
-            console.warn("Invalid element tested for selector "+this.id+" in PennController #"+PennEngine.controllers.running.id, elementCommand._element.id);
+            PennEngine.debug.error("Invalid element tested for Selector "+this.id, elementCommand._element.id);
             return false;
         },
         index: function(elementCommand, index){
             if (elementCommand == undefined || elementCommand._element == undefined)
-                return console.warn("Invalid element tested for selector "+this.id+" in PennController #"+PennEngine.controllers.running.id, elementCommand._element.id);
+                return PennEngine.debug.error("Invalid element tested for selector "+this.id, elementCommand._element.id);
             else if (Number(index) >= 0)
                 return ( this.elements.map(e=>e[0]).indexOf(elementCommand._element) == Number(index) );
             else 
@@ -310,9 +317,11 @@ window.PennController._AddStandardCommands(function(PennEngine){
         selector: async function(resolve, selectorRef){
             var selector;
             if (typeof(selectorRef)=="string"){
-                selector = PennEngine.controllers.running.options.elements[selectorRef];
-                if (!selector)
-                    console.warn("No selector found named "+selectorRef+" for PennController #"+PennEngine.controllers.running.id);
+                let elements = PennEngine.controllers.running.options.elements;
+                if (elements.hasOwnProperty("Selector") && elements.Selector.hasOwnProperty(selectorRef))
+                    selector = elements.Selector[selectorRef];
+                else
+                    return PennEngine.debug.error("No selector found named "+selectorRef);
             }
             else if (selectorRef._element && selectorRef._runPromises){
                 if (selectorRef._element.type=="Selector"){
@@ -320,12 +329,12 @@ window.PennController._AddStandardCommands(function(PennEngine){
                     selector = selectorRef._element;
                 }
                 else
-                    console.warn("Tried to add "+this.name+" to an invalid selector in PennController #"+PennEngine.controllers.running.id);
+                    PennEngine.debug.error("Tried to add "+this.name+" to an invalid Selector");
             }
             if (selector.elements.map(e=>e[0]).indexOf(this)>-1)
-                console.warn("Element "+this.id+" already part of selector "+selector.id+" in PennController #"+PennEngine.controllers.running.id);
+                PennEngine.debug.error("Element "+this.id+" already part of Selector "+selector.id);
             else if (this.jQueryElement == undefined || !(this.jQueryElement instanceof jQuery))
-                console.warn("Element "+this.id+" has no visble element to be chosen in selector "+selector.id+" in PennController #"+PennEngine.controllers.running.id);
+                PennEngine.debug.error("Element "+this.id+" has no visble element to be chosen in Selector "+selector.id);
             else {
                 selector.elements.push([this]);        // Each member of this.elements is an array [2nd member = keys]
                 if (!this.noClick)

@@ -2,6 +2,10 @@
 window.PennController._AddElementType("Image", function(PennEngine) {
 
     this.immediate = function(id, file){
+        if (typeof id == "string" && file===undefined){
+            this.id = PennEngine.utils.guidGenerator();
+            file = id;
+        }
         let addHostURLs = !file.match(/^http/i);
         this.resource = PennEngine.resources.fetch(file, function(resolve){
             this.object = new Image();          // Creation of the image element
@@ -20,9 +24,9 @@ window.PennController._AddElementType("Image", function(PennEngine) {
     this.end = function(){
         if (this.log){
             if (!this.printTime)
-                PennEngine.controllers.running.save(this.type, this.id, "Print", "NA", "Never");
+                PennEngine.controllers.running.save(this.type, this.id, "Print", "NA", "Never", "NULL");
             else
-                PennEngine.controllers.running.save(this.type, this.id, "Print", this.printTime, "NULL");
+                PennEngine.controllers.running.save(this.type, this.id, "Print", "NA", this.printTime, "NULL");
         }
     }
     

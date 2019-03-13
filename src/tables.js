@@ -2,14 +2,15 @@ import "jquery-csv";
 import { PennController } from "./controller.js";
 import { PennEngine } from "./engine.js";
 
-var tables = {};                // Dictionary of named tables
+PennEngine.tables = {};         // Dictionary of named tables
 var defaultTable = {};          // A dummy object representing the default table handler
 
 // The TABLE class contains an 2x2 Array-Object and defines Item, Group and Label
 class Table {
-    constructor(table) {
+    constructor(table, id) {
         if (!(table instanceof Array) || table.length < 1 || !Object.keys(table[0]).length)
-            return console.warn("Invalid format for table when creating new table");
+            return PennEngine.debug.error("Invalid format for table when creating new table");
+        this.id = id||"unnamed";
         this.table = table;
         for (let col in table[0]) {
             if (col.match(/^item$/i))
@@ -24,21 +25,21 @@ class Table {
         if (this.table[0].hasOwnProperty(col))
             this.item = col;
         else
-            console.warn("Error when setting table's item column: no column found with the name "+col);
+            PennEngine.debug.log("Error when setting table's item column: no column found with the name "+col);
         return this;
     }
     setGroup(col) {
         if (this.table[0].hasOwnProperty(col))
             this.group = col;
         else
-            console.warn("Error when setting table's group column: no column found with the name "+col);
+            PennEngine.debug.log("Error when setting table's group column: no column found with the name "+col);
         return this;
     }
     setLabel(col) {
         if (this.table[0].hasOwnProperty(col))
             this.label = col;
         else
-            console.warn("Error when setting table's label column: no column found with the name "+col);
+            PennEngine.debug.log("Error when setting table's label column: no column found with the name "+col);
         return this;
     }
     filter(...args) {
@@ -53,8 +54,8 @@ class Table {
                         returnTable.push(this.table[row]);
                 }
                 if (!returnTable.length)
-                    console.error("Empty table with filter:", args[0], args[1]);
-                returnTable = new Table(returnTable);
+                    PennEngine.debug.error("Empty table with filter:", args[0], args[1]);
+                returnTable = new Table(returnTable, this.id);
                 if (this.group)
                     returnTable.setGroup(this.group);
                     if (this.label)
@@ -62,7 +63,7 @@ class Table {
                 return returnTable;
             }
             else
-                return console.error("No column named \u2018"+args[0]+"\u2019 found in the table for filtering");
+                return PennEngine.debug.error("No column named \u2018"+args[0]+"\u2019 found in the table for filtering");
         }
         else if (args.length && args[0] instanceof Function){
             let returnTable = [];
@@ -71,8 +72,8 @@ class Table {
                     returnTable.push(this.table[row]);
             }
             if (!returnTable.length)
-                    console.error("Empty table after filter:", args[0]);
-            return (new Table(returnTable)).setGroup(this.group).setLabel(this.label);
+                PennEngine.debug.error("Empty table after filter:", args[0]);
+            return (new Table(returnTable,this.id)).setGroup(this.group).setLabel(this.label);
         }
     }
 }
@@ -148,22 +149,22 @@ function _checkTable(table){
         return commaTable;                              // Return comma-based table if more columns
     else if (Object.keys(tabTable[0]).length)           // Check that there is at least one column
         return tabTable;
-    return console.warn("Format of table is invalid");
+    return PennEngine.debug.error("Format of table is invalid");
 }
 
 
 // Adds a table to the dictionary
 PennController.AddTable = function(name, table) {
     if (typeof(name)!="string"||typeof(table)!="string")
-        return console.warn("ERROR: tables and table names should be strings");
-    if (tables.hasOwnProperty(name))
-        console.warn("A table named "+name+" already exists; overriding it");
+        return PennEngine.debug.error("Table "+name+" not added: tables and table names should be strings");
+    if (PennEngine.tables.hasOwnProperty(name))
+        PennEngine.debug.log("A table named "+name+" already exists; overriding it");
     table = _checkTable(table);
     if (table)
-        table = new Table(table);
+        table = new Table(table, name);
     else
-        return console.warn("ERROR: table "+name+" does not have the right format.");
-    tables[name] = table;
+        return PennEngine.debug.error("Table "+name+" does not have the right format.");
+    PennEngine.tables[name] = table;
 }
 
 // Returns a table from the dictionary
@@ -198,32 +199,32 @@ PennController.Template = function (tableName, func) {              // FeedItems
         let table;
         if (tableName instanceof Function) {                        // No table name specified, try to automatically detect
             func = tableName;
-            let tableNames = Object.keys(tables);
-            if (tableNames.length && tables[tableNames[0]] instanceof Table)
-                table = tables[tableNames[0]];
+            let tableNames = Object.keys(PennEngine.tables);
+            if (tableNames.length && PennEngine.tables[tableNames[0]] instanceof Table)
+                table = PennEngine.tables[tableNames[0]];
             else
-                return console.warn("No valid table detected");
+                return PennEngine.debug.error("No valid table detected");
         }
         else if (typeof(tableName)=="string") {                     // Table name was specified
-            if (tables.hasOwnProperty(tableName)) {                 // Check that it has been added
-                if (tables[tableName] instanceof Table)
-                    table = tables[tableName];
+            if (PennEngine.tables.hasOwnProperty(tableName)) {                 // Check that it has been added
+                if (PennEngine.tables[tableName] instanceof Table)
+                    table = PennEngine.tables[tableName];
                 else
-                    return console.warn("Table "+tableName+" does not have the right format.");
+                    return PennEngine.debug.error("Table "+tableName+" does not have the right format.");
             }
             else                                                    // If not added, return an error
-                return console.warn("No table found with name "+tableName);
+                return PennEngine.debug.error("No table found with name "+tableName);
         }
         else if (tableName instanceof TableHandler){                // TableHandler: retrieve Table instance
-            if (!tables)
-                return console.warn("No table was defined");
+            if (Object.keys(PennEngine.tables).length<1)
+                return PennEngine.debug.error("No table was defined");
             else {
                 if (tableName.name == defaultTable)                 // Default: take first table
-                    table = tables[Object.keys(tables)[0]];
-                else if (tableName.name && tables.hasOwnProperty(tableName.name))
-                    table = tables[tableName.name];                 // Take table with corresponding name
+                    table = PennEngine.tables[Object.keys(PennEngine.tables)[0]];
+                else if (tableName.name && PennEngine.tables.hasOwnProperty(tableName.name))
+                    table = PennEngine.tables[tableName.name];                 // Take table with corresponding name
                 else
-                    return console.warn("No table named "+tableName.name+" was found");
+                    return PennEngine.debug.error("No table named "+tableName.name+" was found");
                 for (let a = 0; a < tableName.actions.length; a++){
                     let arg = tableName.actions[a][1];
                     switch (tableName.actions[a][0]){
@@ -244,16 +245,16 @@ PennController.Template = function (tableName, func) {              // FeedItems
             }
         }
         else
-            return console.warn("Bad format for FeedItems' first argument (should be a PennController table, table name or function from rows to Ibex elements)");
+            return PennEngine.debug.error("Bad format for Template's first argument (should be a PennController table, table name or function from rows to Ibex elements)");
 
         let groups = [];
         if (table.group)
-            for (let row in table.table)
+            for (let row = 0; row < table.table.length; row++)
                 if (groups.indexOf(table.table[row][table.group])<0)
                     groups.push(table.table[row][table.group]);
 
         let itemsToAdd = [];
-        for (let row in table.table) {                              // Going through the table
+        for (let row = 0; row < table.table.length; row++) {        // Going through the table
             if (table.group){                                       // GROUP DESIGN
                 let rowGroup = table.table[row][table.group];       // The group of this row
                 let counter = window.__counter_value_from_server__; // Retrieve counter value from server
@@ -279,8 +280,11 @@ PennController.Template = function (tableName, func) {              // FeedItems
                     label = "Item-"+row;
             }
             let item = [label];
-            for (let c in content)
+            for (let c in content){
+                if (content[c] instanceof Object)                   // Add pointers to the table to any controller
+                    content[c]._PennController = {table: table, row: row};
                 item.push(content[c]);                              // Add the elements
+            }
             
             itemsToAdd.push(item);
         }
@@ -316,14 +320,14 @@ PennEngine.Prerun(()=>{
             continue;
         let table = _checkTable(window.CHUNKS_DICT[entry]); // Try to interpret it as a CSV
         if (table){                                         // Success: add it to the list and return
-            table = new Table(table);
-            tables[entry] = table;
+            table = new Table(table, entry);
+            PennEngine.tables[entry] = table;
         }
         else {
             table = $.csv.toObjects(window.CHUNKS_DICT[entry], {separator: "\t"});
             if (Object.keys(table[0]).length > 1){              // Try to interpret it as a TSV
-                table = new Table(table);
-                tables[entry] = table;
+                table = new Table(table, entry);
+                PennEngine.tables[entry] = table;
             }
         }
     }

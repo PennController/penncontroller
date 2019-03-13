@@ -63,6 +63,71 @@
 .Message-continue-link:visited { color: blue; }
 
 
+.PennController-PennController {
+    width: 40em;
+    text-align: center;
+}
+.PennController-draw-container  , .PennController-guess-container  , .PennController-shaken-container {
+    text-align: left;
+}
+.PennController-ball-container {
+    margin-top: 1.5em;
+    margin-bottom: 1.5em;
+}
+.PennController-board-container {
+    margin-top: 2em;
+}
+.PennController-Tooltip {
+    padding-top: 5px !important;
+    padding-left: 5px !important;
+    padding-right: 5px !important;
+    border: solid 1px gray;
+    border-radius: 5px;
+    opacity: 0.95;
+    font-family: sans-serif;
+    font-size: 16px;
+    font-weight: normal;
+}
+.PennController-Button {
+    margin: 0.5em;
+}
+.PennController-shake  , .PennController-reset  , .PennController-validate  , .PennController-continue {
+    font-size: 15px;
+    font-family: sans-serif;
+    padding: 5px;
+    border: solid 1px lightgray;
+    border-radius: 4px;
+    background-color: whitesmoke;
+    color: black;
+}
+.PennController-shake:disabled  , .PennController-reset:disabled {
+    border: dotted 1px lightgray;
+    color: lightgray;
+}
+.PennController-shake  , .PennController-reset {
+    font-size: 15px;
+    font-family: sans-serif;
+    padding: 5px;
+    border: solid 1px lightgray;
+    border-radius: 4px;
+    background-color: whitesmoke;
+}
+.PennController-Tooltip a {
+    font-style: italic;
+    font-variant: small-caps;
+    font-size: 0.9em;
+    border-radius: 2px;
+    padding: 2px;
+}
+.PennController-instructions-container  , .PennController-description-container {
+    font-weight: bold;
+}
+.PennController-instructions-container  , .PennController-description-container {
+    font-size: large;
+    margin-top: 1em;
+    font-family: sans-serif;
+    text-align: center;
+}
 td.PennController-Scale-scaleButton {
     margin-left: 0;
     padding-left: 0;
@@ -77,6 +142,32 @@ td.PennController-Scale-scaleButton {
 }
 td.PennController-Scale-scaleButton:hover {
 	text-decoration: underline;
+}
+.PennController-testsentence-container {
+    text-align: center;
+    font-weight: bold;
+    font-size: larger;
+    margin-top: 1em !important;
+}
+.PennController-panel {
+    border: solid 1px black;
+}
+.PennController-panelBuffy-container {
+    margin-top: 2em !important;
+}
+.PennController-panel .PennController-Canvas  , .PennController-panelBuffy .PennController-Canvas {
+    border-radius: 30px;
+    border: solid 1px grey;
+}
+.PennController-board .PennController-Canvas {
+    border-radius: 10px;
+    border: dotted 1px grey;
+}
+.PennController-Palette-palette-selected {
+    border: dashed 2px lightpink !important;
+}
+.PennController-eyetracked {
+    outline: solid 2px purple !important;
 }
 
 

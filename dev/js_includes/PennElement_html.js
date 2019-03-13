@@ -68,6 +68,10 @@ window.PennController._AddElementType("Html", function(PennEngine) {
     }
 
     this.immediate = function(id, html){
+        if (typeof(id)=="string" && html===undefined){
+            this.id = PennEngine.utils.guidGenerator();
+            html = id;
+        }
         this.html = html;
     };
 
@@ -99,8 +103,8 @@ window.PennController._AddElementType("Html", function(PennEngine) {
             PennEngine.controllers.running.save(
                 this.type,
                 this.id,
-                csv_url_encode(inp.attr('value')),
                 csv_url_encode(inp.attr('name')),
+                csv_url_encode(inp.attr('value')),
                 Date.now(),
                 "text input"
             );

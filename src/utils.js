@@ -1,18 +1,3 @@
-// Returns a polyvalent function s.t.
-//   - it stores any function given as its argument
-//   - it executes, in order, all the stored functions with the list of passed arguments (as long as it is not a singleton function)
-export function newBag(t) {
-    let functions = [];
-    return (...func) => {
-        if (func.length==1 && func[0] instanceof Function)
-            functions.push(func[0]);
-        else {
-            for (let f in functions)
-                functions[f].apply(t, func);
-        }
-    };
-}
-
 // Returns a lazy Promise that will be fulfilled only after executing a sequence lazy Promises
 export function lazyPromiseFromArrayOfLazyPromises(arrayOfLazyPromises) {
     return () => new Promise(async function (resolve){
@@ -80,4 +65,22 @@ export function getMimetype (signature) {
 export function minsecStringFromMilliseconds(n){
     let s = (n / 1000) % 60, m = Math.trunc(n / 60000);
     return (m>0?m+"min":"")+(s>0?s+"s":"");
+}
+
+// From https://stackoverflow.com/questions/105034/create-guid-uuid-in-javascript
+export function guidGenerator() {
+    var S4 = function() {
+       return (((1+Math.random())*0x10000)|0).toString(16).substring(1);
+    };
+    return (S4()+S4()+"-"+S4()+"-"+S4()+"-"+S4()+"-"+S4()+S4()+S4());
+}
+
+// Converts any PennElementCommand in 'array' into a string
+export function parseElementCommands(array){
+    return array.map(e=>{
+        if (e instanceof Object && e.hasOwnProperty("_promises"))
+            return e.type + ":" + e._element.id;
+        else
+            return e;
+    });
 }

@@ -68,8 +68,8 @@ window.PennController._AddElementType("Scale", function(PennEngine) {
             let buttonCell = $("<td>").addClass("PennController-"+this.type.replace(/[\s_]/g,'')+"-scaleButton");
             let labelCell = $("<td>").addClass("PennController-"+this.type.replace(/[\s_]/g,'')+"-label");
             let value = this.buttons[b];
-            if (!value)                                             // If the array's entry is void, use its index
-                value = b;
+            if (value===undefined||value===null)                    // If the array's entry is void, use its index
+                value = b+1;
             else if (value._runPromises)                            // If the value is an element command
                 value.print( labelCell )._runPromises().then(()=>{  // Print the element in the cell
                     value._element.jQueryContainer.css({display: "inline-block", width: "100%"});
@@ -89,7 +89,10 @@ window.PennController._AddElementType("Scale", function(PennEngine) {
                 buttonCell.click(()=>{
                     if (this.disabled)                              // Only if enabled
                         return;
-                    this.choice(this.buttons[b]);
+                    let v = this.buttons[b];
+                    if (v===undefined||v===null)
+                        v = value;
+                    this.choice(v);
                     this.table.find("td").css("outline","");        // Remove frame from other buttons
                     buttonCell.css("outline", "dotted 1px gray")    // Add a frame around the button
                 });
@@ -112,7 +115,12 @@ window.PennController._AddElementType("Scale", function(PennEngine) {
                 if (this.disabled)
                     input.attr("disabled", true);
                 buttonCell.append(input);
-                input.click(()=>this.choice(this.buttons[b]||value));
+                input.click(()=>{
+                    let v = this.buttons[b];
+                    if (v===undefined||v===null)
+                        v = value;
+                    this.choice(v);
+                });
                 break;
             }
             buttonLabelCells.push([buttonCell,labelCell]);
@@ -191,14 +199,14 @@ window.PennController._AddElementType("Scale", function(PennEngine) {
     
 
     this.immediate = function(id, ...buttons){
-        if (buttons.length){
-            if (typeof(buttons[0])!="string" && Number(buttons[0])>0)
-                this.initialButtons = new Array(Number(buttons[0])); // Number: array of void values/labels
-            else
-                this.initialButtons = buttons;                       // Array of values/labels
+        if (!buttons.length){
+            buttons = [id];
+            this.id = PennEngine.utils.guidGenerator();
         }
-        else                                                         // No argument
-            console.error("Invalid parameters for scale "+id+" in PennController #"+PennEngine.controllers.underConstruction.id);
+        if (typeof(buttons[0])!="string" && Number(buttons[0])>0)
+            this.initialButtons = new Array(Number(buttons[0])); // Number: array of void values/labels
+        else
+            this.initialButtons = buttons;                       // Array of values/labels
     };
 
     this.uponCreation = function(resolve){
@@ -284,7 +292,7 @@ window.PennController._AddElementType("Scale", function(PennEngine) {
                     break;
             }
             if (b>=this.buttons.length)
-                return resolve(console.warn("Option "+option+" not found for selection on scale "+this.id+" in PennController #"+PennEngine.controllers.underConstruction.id));
+                return resolve(PennEngine.debug.error("Option "+option+" not found for selection on Scale "+this.id));
             selectIndex.apply(this, [b, simulate]);
             resolve();
         },
@@ -298,13 +306,18 @@ window.PennController._AddElementType("Scale", function(PennEngine) {
                     oldChoice.apply(this, [value]);
                     if (resolved)
                         return;
-                    if (test instanceof Object && test._runPromises && test.success)
+                    if (test instanceof Object && test._runPromises && test.success){
+                        let oldDisabled = this.disabled;    // Disable temporarilly
+                        this.disabled = "tmp";
                         test._runPromises().then(value=>{   // If a valid test command was provided
                             if (value=="success"){
                                 resolved = true;
                                 resolve();                  // resolve only if test is a success
                             }
+                            if (this.disabled=="tmp")       // Restore old setting if not changed by test
+                                this.disabled = oldDisabled;
                         });
+                    }
                     else{                                   // If no (valid) test command was provided
                         resolved = true;
                         resolve();                          // resolve anyway
@@ -323,8 +336,9 @@ window.PennController._AddElementType("Scale", function(PennEngine) {
         callback: function(resolve, ...elementCommands){
             let originalChoice = this.choice;
             this.choice = async function(value) {
+                let disabled = this.disabled;
                 originalChoice.apply(this, [value]);
-                if (this.disabled)
+                if (disabled)
                     return;
                 for (let c in elementCommands)
                     await elementCommands[c]._runPromises();
@@ -339,7 +353,7 @@ window.PennController._AddElementType("Scale", function(PennEngine) {
                 this.choices.push(["Default", value, Date.now(), this.scaleType]); // Log it
             }
             else
-                console.warn("Invalid default value for scale "+this.id+" in controller #"+PennEngine.controllers.running.id, value);
+                PennEngine.debug.error("Invalid default value for Scale "+this.id, value);
             resolve();
         },
         disable: function(resolve){
@@ -361,7 +375,7 @@ window.PennController._AddElementType("Scale", function(PennEngine) {
         keys: function(resolve, ...keys){
             if (keys instanceof Array && keys.length == this.buttons.length){
                 if (keys.filter(e=>typeof(e)=="string"&&e.length==1).length!=keys.length)
-                    return resolve(console.warn("Every key should be a string of length 1 in scale "+this.id+" in PennController #"+PennEngine.controllers.running.id, keys));
+                    return resolve(PennEngine.debug.error("Every key should be a string of length 1 in Scale "+this.id, keys));
                 this.keys = keys.map(k=>k.toUpperCase());
             }
             else if (this.buttons.filter(e=>typeof(e)=="string"&&e.length==1).length == this.buttons.length)

@@ -2,12 +2,16 @@
 window.PennController._AddElementType("Text", function(PennEngine) {
 
     this.immediate = function(id, text){
+        if (text===undefined){
+            text = id;
+            this.id = PennEngine.utils.guidGenerator();
+        }
         this.initialText = text;                                        // Keep track of this for reset
         this.text = text;
     };
 
     this.uponCreation = function(resolve){
-        this.jQueryElement = $("<span>"+this.initialText+"</span>");    // The jQuery element
+        this.jQueryElement = $("<span>"+this.initialText+"</span>").css('display','inline-block');    // The jQuery element
         resolve();
     };
 
@@ -18,9 +22,9 @@ window.PennController._AddElementType("Text", function(PennEngine) {
     this.end = function(){
         if (this.log){
             if (!this.printTime)
-                PennEngine.controllers.running.save(this.type, this.id, "Print", "NA", "Never");
+                PennEngine.controllers.running.save(this.type, this.id, "Print", "NA", "Never", "NULL");
             else
-                PennEngine.controllers.running.save(this.type, this.id, "Print", this.printTime, "NULL");
+                PennEngine.controllers.running.save(this.type, this.id, "Print", "NA", this.printTime, "NULL");
         }
     }
 

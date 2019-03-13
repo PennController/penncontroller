@@ -1,4 +1,4 @@
-import { lazyPromiseFromArrayOfLazyPromises } from "./utils";
+import { lazyPromiseFromArrayOfLazyPromises, guidGenerator } from "./utils";
 
 let preRunningFunctions = [];       // Functions to be run before Ibex processes window.items
 let functionsDictionary = {
@@ -21,7 +21,7 @@ class Resource {
     }
     resolve() {
         this.status = "ready";
-        console.log("Successfully preloaded "+this.name);
+        PennEngine.debug.log("<div style='color: purple;'>Successfully preloaded resource "+this.name+"</div>");
     }
 }
 
@@ -96,9 +96,13 @@ export var PennEngine = {
     ,
     URLs: []
     ,
-    utils: {}
+    utils: {
+        guidGenerator: guidGenerator
+    }
     ,
     tmpItems: []        //  PennController() adds {PennController: id}, PennController.Template adds {PennTemplate: [...]}
+    ,
+    tables: {}
     ,
     Prerun: function(func){
         preRunningFunctions.push(func);

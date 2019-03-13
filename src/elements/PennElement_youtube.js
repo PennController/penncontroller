@@ -22,8 +22,12 @@ window.PennController._AddElementType("Youtube", function(PennEngine) {
 
     // This is executed when Ibex runs the script in data_includes (not a promise, no need to resolve)
     this.immediate = function(id, code, showControls){
+        if (code === undefined && typeof(id)=="string"){
+            this.id = PennEngine.utils.guidGenerator();
+            code = id;
+        }
         if (!(code && typeof(code)=="string"))
-            console.error("Invalid code for Youtube element "+id, code);
+            PennEngine.debug.error("Invalid code for Youtube element "+id, code);
         if (showControls && !showControls.match(/^\W*no\W*controls?\W*$/i))
             showControls = 1;
         else
@@ -231,13 +235,18 @@ window.PennController._AddElementType("Youtube", function(PennEngine) {
                     originalEnd.apply(this, rest);
                     if (resolved)
                         return;
-                    if (test instanceof Object && test._runPromises && test.success)
+                    if (test instanceof Object && test._runPromises && test.success){
+                        let oldDisabled = this.disabled;    // Disable temporarilly
+                        this.disabled = "tmp";
                         test._runPromises().then(value=>{   // If a valid test command was provided
                             if (value=="success"){
                                 resolved = true;
                                 resolve();                  // resolve only if test is a success
                             }
+                            if (this.disabled=="tmp")       // Restore if not modified by test
+                                this.disabled = oldDisabled;
                         });
+                    }
                     else{                                   // If no (valid) test command was provided
                         resolved = true;
                         resolve();                          // resolve anyway

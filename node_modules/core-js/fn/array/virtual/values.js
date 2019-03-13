@@ -1,2 +1,2 @@
-require('../../../modules/es6.array.iterator');
+require('../../../modules/core.number.iterator');
 module.exports = require('../../../modules/_iterators').Array;

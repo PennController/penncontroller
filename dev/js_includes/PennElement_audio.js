@@ -3,6 +3,10 @@ window.PennController._AddElementType("Audio", function(PennEngine) {
 
     // This is executed when Ibex runs the script in data_includes (not a promise, no need to resolve)
     this.immediate = function(id, file){
+        if (typeof id == "string" && file===undefined){
+            this.id = PennEngine.utils.guidGenerator();
+            file = id;
+        }
         let addHostURLs = !file.match(/^http/i);
         this.resource = PennEngine.resources.fetch(file, function(resolve){
             this.object = new Audio(this.value);               // Creation of the audio using the resource's value
@@ -105,7 +109,7 @@ window.PennController._AddElementType("Audio", function(PennEngine) {
             if (this.hasOwnProperty("audio") && this.audio instanceof Audio)
                 this.audio.play();
             else
-                console.warn("No audio to play for element ", this.id);
+                PennEngine.debug.error("No audio to play for element ", this.id);
             resolve();
         },
         pause: function(resolve){
@@ -138,13 +142,18 @@ window.PennController._AddElementType("Audio", function(PennEngine) {
                     originalOnended.apply(this, rest);
                     if (resolved)
                         return;
-                    if (test instanceof Object && test._runPromises && test.success)
+                    if (test instanceof Object && test._runPromises && test.success){
+                        let oldDisabled = this.disabled;     // Temporarilly disable
+                        this.disabled = "tmp";
                         test._runPromises().then(value=>{   // If a valid test command was provided
                             if (value=="success"){
                                 resolved = true;
                                 resolve();                  // resolve only if test is a success
                             }
+                            if (this.disabled == "tmp")     // Restore to previous setting if not modified by test
+                                this.disabled = oldDisabled;
                         });
+                    }
                     else{                                   // If no (valid) test command was provided
                         resolved = true;
                         resolve();                          // resolve anyway

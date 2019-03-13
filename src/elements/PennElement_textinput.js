@@ -117,13 +117,18 @@ window.PennController._AddElementType("TextInput", function(PennEngine) {
                     oldPressEnter.apply(this);
                     if (resolved)
                         return;
-                    if (test instanceof Object && test._runPromises && test.success)
+                    if (test instanceof Object && test._runPromises && test.success){
+                        let oldDisabled = this.disabled;    // Disable temporarilly
+                        this.disabled = "tmp";
                         test._runPromises().then(value=>{   // If a valid test command was provided
                             if (value=="success"){
                                 resolved = true;
                                 resolve();                  // resolve only if test is a success
                             }
+                            if (this.disabled=="tmp")       // Restore old setting if not modified by test
+                                this.disabled = oldDisabled;
                         });
+                    }
                     else{                                   // If no (valid) test command was provided
                         resolved = true;
                         resolve();                          // resolve anyway
@@ -152,8 +157,10 @@ window.PennController._AddElementType("TextInput", function(PennEngine) {
                 what = ["final", "validate", "first"];
             this.log = what;
             if (what.indexOf("all")>-1)
-                console.warn("Now logging all typing events in inputText element "+this.id+
-                             ": this can drastically increase the weight of the results file");
+                PennEngine.debug.log("<div style='color:red;'>"+
+                             "Now logging all typing events in inputText element "+this.id+
+                             ": this can drastically increase the weight of the results file"+
+                             "</div>");
             resolve();
         },
         once: function(resolve){

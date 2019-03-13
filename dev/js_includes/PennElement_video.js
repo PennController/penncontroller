@@ -2,6 +2,10 @@
 window.PennController._AddElementType("Video", function(PennEngine) {
 
     this.immediate = function(id, file){
+        if (typeof id == "string" && file===undefined){
+            this.id = PennEngine.utils.guidGenerator();
+            file = id;
+        }
         let addHostURLs = !file.match(/^http/i);
         this.resource = PennEngine.resources.fetch(file, function(resolve){
             this.object = document.createElement("video");
@@ -104,7 +108,7 @@ window.PennController._AddElementType("Video", function(PennEngine) {
             if (this.hasOwnProperty("video") && this.video.nodeName && this.video.nodeName == "VIDEO")
                 this.video.play();
             else
-                console.warn("No video to play for element ", this.id);
+                PennEngine.debug.error("No video to play for Video ", this.id);
             resolve();
         },
         pause: function(resolve){
@@ -137,13 +141,18 @@ window.PennController._AddElementType("Video", function(PennEngine) {
                     originalOnended.apply(this, rest);
                     if (resolved)
                         return;
-                    if (test instanceof Object && test._runPromises && test.success)
+                    if (test instanceof Object && test._runPromises && test.success){
+                        let oldDisabled = this.disabled;    // Disable temporarilly
+                        this.disabled = "tmp"; 
                         test._runPromises().then(value=>{   // If a valid test command was provided
                             if (value=="success"){
                                 resolved = true;
                                 resolve();                  // resolve only if test is a success
                             }
+                            if (this.disabled=="tmp")       // Restore old setting if not modified by test
+                                this.disabled = oldDisabled;
                         });
+                    }
                     else{                                   // If no (valid) test command was provided
                         resolved = true;
                         resolve();                          // resolve anyway

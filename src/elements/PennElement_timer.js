@@ -3,11 +3,15 @@ window.PennController._AddElementType("Timer", function(PennEngine) {
 
     // This is executed when Ibex runs the script in data_includes (not a promise, no need to resolve)
     this.immediate = function(id, duration){
+        if (duration===undefined&&Number(id)>0){
+            this.id = PennEngine.utils.guidGenerator();
+            duration = id;
+        }
         this.duration = 0;
         if (Number(duration)>0)
             this.duration = Number(duration);
         else
-            console.warn("Invalid duration for timer "+id+" in PennController #"+PennEngine.controllers.underConstruction.id);
+            PennEngine.debug.error("Invalid duration for Timer &quot;"+id+"&quot;");
     };
 
     // This is executed when 'newAudio' is executed in the trial (converted into a Promise, so call resolve)

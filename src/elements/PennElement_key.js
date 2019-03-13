@@ -3,12 +3,16 @@ window.PennController._AddElementType("Key", function(PennEngine) {
 
     // This is executed when Ibex runs the script in data_includes (not a promise, no need to resolve)
     this.immediate = function(id, keys){
+        if (keys===undefined){
+            this.id = PennEngine.utils.guidGenerator();
+            keys = id;
+        }
         if (typeof(keys)=="string")
             this.keys = keys.toUpperCase();
         else if (Number(keys)>0)
             this.keys = String.fromCharCode(keys).toUpperCase();
         else
-            console.warn("Invalid key(s) passed to new Key "+id+" (should be a string or a key code number)", keys);
+            PennEngine.debug.error("Invalid key(s) passed to new Key &quot;"+id+"&quot; (should be a string or a key code number)", keys);
     };
 
     // This is executed when 'newAudio' is executed in the trial (converted into a Promise, so call resolve)
@@ -16,8 +20,9 @@ window.PennController._AddElementType("Key", function(PennEngine) {
         this.pressed = [];
         this.pressedWait = [];
         this.log = false;
+        this.enabled = true;
         PennEngine.events.keypress(e=>{
-            if (this.keys.length==0 || this.keys.match(RegExp(String.fromCharCode(e.which),"i")))
+            if (this.enabled && (this.keys.length==0 || this.keys.match(RegExp(String.fromCharCode(e.which),"i"))))
                 this.press(e.which);
         });
         this.press = key=>{                                 // (Re)set press upon creation for it can be modified during trial
@@ -74,7 +79,9 @@ window.PennController._AddElementType("Key", function(PennEngine) {
                     oldPress.apply(this, [key]);
                     if (resolved)
                         return;
-                    if (test instanceof Object && test._runPromises && test.success)
+                    if (test instanceof Object && test._runPromises && test.success){
+                        let oldEnabled = this.enabled;      // Disable temporarilly
+                        this.enabled = 0;
                         test._runPromises().then(value=>{   // If a valid test command was provided
                             if (value=="success"){
                                 this.pressed[this.pressed.length-1][3] = "Wait success";
@@ -83,7 +90,10 @@ window.PennController._AddElementType("Key", function(PennEngine) {
                             }
                             else 
                                 this.pressed[this.pressed.length-1][3] = "Wait failure";
+                            if (this.enabled === 0)         // Restore old setting if not modified by test
+                                this.enabled = oldEnabled;
                         });
+                    }
                     else{                                   // If no (valid) test command was provided
                         resolved = true;
                         resolve();                          // resolve anyway  
@@ -102,6 +112,14 @@ window.PennController._AddElementType("Key", function(PennEngine) {
                         await elementCommands[c]._runPromises();
                 oldPress.apply(this, [key]);
             };
+            resolve();
+        },
+        disable: function(resolve){ /* since 1.2 */
+            this.enabled = false;
+            resolve();
+        },
+        enable: function(resolve){ /* since 1.2 */
+            this.enabled = true;
             resolve();
         },
         log: function(resolve,  ...what){

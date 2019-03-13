@@ -26,16 +26,29 @@ export class Controller {
                 this.defaultCommands[type] = [].concat(headerController.defaultCommands[type]);   // Copy of array
     }
     //  PRIVATE METHODS
-    _addElement(id, element){               // Add element to the list
-        if (this.elements.hasOwnProperty(id))
-            console.warn("Overriding another element with the same name ("+id+") in PennController #"+this.id);
-        this.elements[id] = element;
+    _addElement(element){                   // Adds an element to the dictionary
+        if (!element.hasOwnProperty("type") || !element.hasOwnProperty("id"))
+            return PennEngine.debug.error("Attempted to create an invalid element");
+        if (!this.elements.hasOwnProperty(element.type))
+            this.elements[element.type] = {};
+        if (this.elements[element.type].hasOwnProperty(element.id))
+            PennEngine.debug.error("Overriding another "+element.type+" element with the same name ("+id+")");
+        this.elements[element.type][element.id] = element;
     }
-    _getElement(id){                // Returns element from the list
-        if (this.elements[id])
-            return this.elements[id];
-        else
-            return console.warn("No element named '"+id+"' found for PennController #"+this.id);
+    _getElement(id, type){                  // Returns element from the list
+        if (typeof(id)!="string"||id.length<1||typeof(type)!="string"||type.length<1)
+            return PennEngine.debug.error("Attempted to get an invalid element", id, type);
+        if (!this.elements.hasOwnProperty(type))
+            return PennEngine.debug.error("Attempted to get an element of an invalid type ("+type+")", id);
+        if (!this.elements[type].hasOwnProperty(id)) { 
+            let otherTypes = [];
+            for (let t in this.elements)
+                if (this.elements[t].hasOwnProperty(id))
+                    otherTypes.push(t);
+            return PennEngine.debug.error("No "+type+" element named &quot;"+id+"&quot; found",
+                                        (otherTypes.length?"Found &quot;"+id+"&quot; of type "+otherTypes.join(','):null));
+        }
+        return this.elements[type][id];
     }
     //  PUBLIC METHODS  (return the instance)
     label(text){
@@ -99,7 +112,7 @@ export var PennController = function(...rest) {
 
 // Whether to print debug information
 PennController.Debug = function (onOff) {
-    PennEngine.debug = onOff==undefined||onOff;
+    PennEngine.debug.on = onOff==undefined||onOff;
 };
 
 // Handler for definition of shuffleSequence
@@ -125,7 +138,7 @@ PennController.AddHost = function(...rest) {
         if (typeof(rest[a])=="string" && rest[a].match(/^https?:\/\//i))
             PennEngine.URLs.push(rest[a]);
         else
-            console.warn("URL #"+a+" is not a valid URL (PennController.AddHost).", rest[a]);
+            PennEngine.debug.error("URL #"+a+" is not a valid URL (PennController.AddHost).", rest[a]);
     }
 };
 
@@ -237,7 +250,7 @@ PennController.Header = function(...rest){
             controller.defaultCommands[type][c].push("header");
     if (headerController){
         headerController.resources = headerController.resources.concat(controller.resources);
-        $.extend(headerController.elements, controller.elements);
+        $.extend(true, headerController.elements, controller.elements);
         headerController.headerDefaultCommands = controller.headerDefaultCommands;  // Already inherited
         headerController.sequence = lazyPromiseFromArrayOfLazyPromises( [ headerController.sequence , controller.sequence ] );
     }
@@ -257,7 +270,7 @@ PennController.Footer = function(...rest){
     );
     if (footerController){
         footerController.resources = footerController.resources.concat(controller.resources);
-        $.extend(footerController.elements, controller.elements);
+        $.extend(true,footerController.elements, controller.elements);
         footerController.headerDefaultCommands = controller.headerDefaultCommands;  // Already inherited
         footerController.sequence = lazyPromiseFromArrayOfLazyPromises( [ footerController.sequence , controller.sequence ] );
     }
@@ -329,13 +342,13 @@ define_ibex_controller({
                 _t.controller.resources = _t.controller.resources.concat(               // Inherit header's resources
                     headerController.resources.filter(r=>_t.controller.resources.indexOf(r)<0)
                 );
-                $.extend(_t.controller.elements, headerController.elements);            // Inherit header's elements
+                $.extend(true, _t.controller.elements, headerController.elements);      // Inherit header's elements
             }
             if (_t.runFooter && footerController instanceof Controller){
                 _t.controller.resources = _t.controller.resources.concat(               // Inherit footer's resources
                     footerController.resources.filter(r=>_t.controller.resources.indexOf(r)<0)
                 );
-                $.extend(_t.controller.elements, footerController.elements);            // Inherit footer's elements
+                $.extend(true, _t.controller.elements, footerController.elements);      // Inherit footer's elements
             }
 
             // END
@@ -347,11 +360,13 @@ define_ibex_controller({
                 // FOOTER
                 if (_t.runFooter && footerController instanceof Controller){
                     _t.save("PennController", _t.id, "_Footer_", "Start", Date.now(), "NULL");
+                    footerController._getElement = (id, type) => _t.controller._getElement(id, type);
                     await footerController.sequence();  // Run footer
                     _t.save("PennController", _t.id, "_Footer_", "End", Date.now(), "NULL");
                 }
-                for (let e in _t.controller.elements)   // Call end on each element (when defined)
-                    _t.controller.elements[e].end();
+                for (let t in _t.controller.elements)   // Call end on each element (when defined)
+                    for (let e in _t.controller.elements[t])
+                        _t.controller.elements[t][e].end();
                 _t.save("PennController", _t.id, "_Trial_", "End", Date.now(), "NULL");
                 linesToSave.sort((a,b)=>a[4][1]>b[4][1]);// sort the lines by time
                 linesToSave.map(line=>{

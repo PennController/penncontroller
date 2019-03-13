@@ -1,3 +1,12 @@
+- Add newRow( "text" , newText("name", "text") , newImage("http://.../") ).settings.spacing("33px")
+- Get rid of .settings?
+- IMPORTANT
+    > Revise tests: redundant layers + Var elements not evaluated on one layer, failing tests that should be successful
+- FIX SELECTION OF ELEMENTS (IN PARTICULAR SELECTORS) WHEN NOT DISPLAYED
+- Replace keydown with keypress in selectors
+- DONE: Re-order timestamp in logged .print
+- DONE: Fix click/key mismatch in selector.wait
+
 - Multiple references?      getText("textA","textB").settings.center()
 - Make it possible to pass elements as tooltip content?
 

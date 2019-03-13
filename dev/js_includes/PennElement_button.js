@@ -3,6 +3,10 @@ window.PennController._AddElementType("Button", function(PennEngine) {
 
     // This is executed when Ibex runs the script in data_includes (not a promise, no need to resolve)
     this.immediate = function(id, text){
+        if (text===undefined){
+            text = id;
+            this.id = PennEngine.utils.guidGenerator();
+        }
         this.initialText = text;                            // In case this gets changed later
     };
 
@@ -14,10 +18,12 @@ window.PennController._AddElementType("Button", function(PennEngine) {
         this.clicks = [];
         this.hasClicked = false;
         this.log = false;
-        this.jQueryElement[0].onclick = ()=>{
+        this.disabled = false;
+        this.click = ()=>{
             this.hasClicked=true;
             this.clicks.push(["Click", "Click", Date.now(), "NULL"]);
         };
+        this.jQueryElement[0].onclick = ()=>this.click();
         resolve();
     }
 
@@ -39,56 +45,78 @@ window.PennController._AddElementType("Button", function(PennEngine) {
     };
     
     this.actions = {
+        click: function(resolve){
+            this.click();
+            resolve();
+        },
         wait: function(resolve, test){
             if (test == "first" && this.hasClicked) // If first and already clicked, resolve already
                 resolve();
             else {                                  // Else, extend remove and do the checks
                 let resolved = false;
-                this.jQueryElement.click(()=>{
+                let oldClick = this.click;
+                this.click = ()=>{
+                    oldClick.apply(this);
                     if (resolved)
                         return;
-                    if (test instanceof Object && test._runPromises && test.success)
+                    if (test instanceof Object && test._runPromises && test.success){
+                        let oldDisabled = this.disabled;  // Disable temporarilly
+                        this.jQueryElement.attr("disabled", true);
+                        this.disabled = "tmp";
                         test._runPromises().then(value=>{   // If a valid test command was provided
                             if (value=="success") {
                                 resolved = true;
                                 resolve();                  // resolve only if test is a success
                             }
+                            if (this.disabled=="tmp"){
+                                this.disabled = oldDisabled;
+                                this.jQueryElement.attr("disabled", oldDisabled);
+                            }   
                         });
+                    }
                     else{                                    // If no (valid) test command was provided
                         resolved = true;
                         resolve();                          // resolve anyway
                     }
-                });
+                };
             }
         }
     };
     
     this.settings = {
         callback: function(resolve, ...elementCommands){
-            let originalClick = this.jQueryElement[0].onclick;
-            this.jQueryElement[0].onclick = async function () {
+            let oldClick = this.click;
+            this.click = async function () {
                 if (!this.disabled)
                     for (let c in elementCommands)
                         await elementCommands[c]._runPromises();
-                originalClick.apply(this);
+                oldClick.apply(this);
             };
             resolve();
         },
-        log: function(resolve,  ...what){
+        log: function(resolve){
             this.log = true;
             resolve();
         },
         once: function(resolve){
-            if (this.hasClicked)
+            if (this.hasClicked){
+                this.disabled = true;
                 this.jQueryElement.attr("disabled", true);
-            else
-                this.jQueryElement.click(()=>this.jQueryElement.attr("disabled",true));
+            }
+            else{
+                let oldClick = this.click;
+                this.click = ()=>{
+                    oldClick.apply(this);
+                    this.disabled = true;
+                    this.jQueryElement.attr("disabled",true)
+                };
+            }
             resolve();
         }
     };
 
     this.test = {
-        clicked: function(resolve){
+        clicked: function(){
             return this.hasClicked;
         }  
     };
