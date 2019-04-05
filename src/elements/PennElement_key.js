@@ -1,4 +1,6 @@
 // KEY element
+/* $AC$ PennController.newKey(name,key) Creates a new Key element $AC$ */
+/* $AC$ PennController.getKey(name) Retrieves an existing Key element $AC$ */
 window.PennController._AddElementType("Key", function(PennEngine) {
 
     // This is executed when Ibex runs the script in data_includes (not a promise, no need to resolve)
@@ -69,7 +71,7 @@ window.PennController._AddElementType("Key", function(PennEngine) {
     };
     
     this.actions = {
-        wait: function(resolve, test){
+        wait: function(resolve, test){  /* $AC$ Key PElement.wait() Waits until the key, or one of the keys, is pressed before proceeding $AC$ */
             if (test == "first" && this.pressed.length)     // If first and already pressed, resolve already
                 resolve();
             else {                                          // Else, extend remove and do the checks
@@ -104,7 +106,7 @@ window.PennController._AddElementType("Key", function(PennEngine) {
     };
     
     this.settings = {
-        callback: function(resolve, ...elementCommands){
+        callback: function(resolve, ...elementCommands){  /* $AC$ Key PElement.settings.callback(commands) Will run the specified command(s) whenever a valid keypress happens $AC$ */
             let oldPress = this.press;
             this.press = async function (key) {
                 if (!this.disabled)
@@ -114,15 +116,15 @@ window.PennController._AddElementType("Key", function(PennEngine) {
             };
             resolve();
         },
-        disable: function(resolve){ /* since 1.2 */
+        disable: function(resolve){ /* since 1.2 */   /* $AC$ Key PElement.settings.disable() Stops listening to keypresses $AC$ */
             this.enabled = false;
             resolve();
         },
-        enable: function(resolve){ /* since 1.2 */
+        enable: function(resolve){ /* since 1.2 */   /* $AC$ Key PElement.settings.enable() Starts listening to keypresses (again) $AC$ */
             this.enabled = true;
             resolve();
         },
-        log: function(resolve,  ...what){
+        log: function(resolve,  ...what){   /* $AC$ Key PElement.settings.log() Will log any valid keypress in the results file $AC$ */
             if (what.length)
                 this.log = what;
             else
@@ -132,7 +134,7 @@ window.PennController._AddElementType("Key", function(PennEngine) {
     };
 
     this.test = {
-        pressed: function(keys, first){
+        pressed: function(keys, first){   /* $AC$ Key PElement.test.pressed(key) Checks that the key, or any key if none specified, has been pressed before $AC$ */
             for (let k in this.pressed){
                 let keyCode = this.pressed[k][1];
                 if (Number(keys)>0 && keyCode == key)       // If one keycode matches, true

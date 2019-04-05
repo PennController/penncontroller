@@ -1,4 +1,6 @@
 // IMAGE element
+/* $AC$ PennController.newImage(name,file) Creates a new Image element $AC$ */
+/* $AC$ PennController.getImage(name) Retrieves an existing Image element $AC$ */
 window.PennController._AddElementType("Image", function(PennEngine) {
 
     this.immediate = function(id, file){

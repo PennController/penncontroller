@@ -1,4 +1,6 @@
 // TEXT element
+/* $AC$ PennController.newText(name,text) Creates a new Text element $AC$ */
+/* $AC$ PennController.getText(name) Retrieves an existing Text element $AC$ */
 window.PennController._AddElementType("Text", function(PennEngine) {
 
     this.immediate = function(id, text){
@@ -29,7 +31,7 @@ window.PennController._AddElementType("Text", function(PennEngine) {
     }
 
     this.settings = {
-        text: function(resolve,  text){
+        text: function(resolve,  text){ /* $AC$ Text PElement.settings.text(text) Redefines the text of the element $AC$ */
             this.text = text;
             this.jQueryElement.html(text);
             resolve();
@@ -37,7 +39,7 @@ window.PennController._AddElementType("Text", function(PennEngine) {
     };
     
     this.test = {
-        text: function(text){
+        text: function(text){ /* $AC$ Text PElement.test.text(value) Checks that the text of the element corresponds to the specified value $AC$ */
             if (text instanceof RegExp)
                 return this.text.match(text);
             else

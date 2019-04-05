@@ -1,4 +1,6 @@
 // video element
+/* $AC$ PennController.newVideo(name,file) Creates a new Video element using the specified file $AC$ */
+/* $AC$ PennController.getVideo(name) Retrieves an existing Video element $AC$ */
 window.PennController._AddElementType("Video", function(PennEngine) {
 
     this.immediate = function(id, file){
@@ -104,19 +106,19 @@ window.PennController._AddElementType("Video", function(PennEngine) {
 
     this.actions = {
         // Every method is converted into a Promise (so need to resolve)
-        play: function(resolve){
+        play: function(resolve){        /* $AC$ Video PElement.play() Starts playing the video (visible only if print was called) $AC$ */
             if (this.hasOwnProperty("video") && this.video.nodeName && this.video.nodeName == "VIDEO")
                 this.video.play();
             else
                 PennEngine.debug.error("No video to play for Video ", this.id);
             resolve();
         },
-        pause: function(resolve){
+        pause: function(resolve){        /* $AC$ Video PElement.pause() Pauses the video $AC$ */
             this.video.pause();
             resolve();
         }
         ,
-        print: function(resolve, where){
+        print: function(resolve, where){        /* $AC$ Video PElement.print() Shows a video player $AC$ */
             let afterPrint = ()=>{
                 if (this.disabled)
                     this.printDisable();
@@ -124,14 +126,14 @@ window.PennController._AddElementType("Video", function(PennEngine) {
             };
             PennEngine.elements.standardCommands.actions.print.apply(this, [afterPrint, where]);
         },
-        stop: function(resolve){
+        stop: function(resolve){        /* $AC$ Video PElement.stop() Stops playing the video $AC$ */
             this.video.pause();
             this.video.currentTime = 0;
             resolve();
         }
         ,
         // Here, we resolve only when the video ends (and the test is felicitous, if provided)
-        wait: function(resolve, test){
+        wait: function(resolve, test){        /* $AC$ Video PElement.wait() Waits untils the video reaches the end before proceeding $AC$ */
             if (test == "first" && this.hasPlayed)  // If first and has already played, resolve already
                 resolve();
             else {                                  // Else, extend onend and do the checks
@@ -180,7 +182,7 @@ window.PennController._AddElementType("Video", function(PennEngine) {
         }
         ,
         // Every setting is converted into a Promise (so resolve)
-        once: function(resolve){
+        once: function(resolve){        /* $AC$ Video PElement.settings.once() Will disable the video player after the video has played through once $AC$ */
             if (this.hasPlayed){
                 this.disabled = true;
                 this.printDisable();
@@ -196,7 +198,7 @@ window.PennController._AddElementType("Video", function(PennEngine) {
             resolve();
         }
         ,
-        log: function(resolve,  ...what){
+        log: function(resolve,  ...what){        /* $AC$ Video PElement.settings.log() Will log play and/or stop events in the results file $AC$ */
             if (what.length==1 && typeof(what[0])=="string")
                 this.whatToSave.push(what);
             else if (what.length>1)
@@ -209,11 +211,11 @@ window.PennController._AddElementType("Video", function(PennEngine) {
     
     this.test = {
         // Every test is used within a Promise back-end, but it should simply return true/false
-        hasPlayed: function(){
+        hasPlayed: function(){        /* $AC$ Video PElement.test.hasPlayed() Checks that the video has played through at least once before $AC$ */
             return this.hasPlayed;
         }
         ,
-        playing: function(){
+        playing: function(){        /* $AC$ Video PElement.test.playing() Checks that the video is currently playing $AC$ */
             return this.video.currentTime&&!this.video.paused;
         }
     };

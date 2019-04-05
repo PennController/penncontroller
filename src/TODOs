@@ -1,9 +1,11 @@
+- Add newCanvas(getElement())?
+- Create a Canvas for the whole page by default, and make .print("center at 50%", "center at 50%") possible?
+        > getCanvas("screen")? getCanvas(PennController)? getCanvas(PennController.trial)? getCanvas(PennController.screen)?
 - Add newRow( "text" , newText("name", "text") , newImage("http://.../") ).settings.spacing("33px")
 - Get rid of .settings?
-- IMPORTANT
-    > Revise tests: redundant layers + Var elements not evaluated on one layer, failing tests that should be successful
-- FIX SELECTION OF ELEMENTS (IN PARTICULAR SELECTORS) WHEN NOT DISPLAYED
-- Replace keydown with keypress in selectors
+- DONE: Revise tests: redundant layers + Var elements not evaluated on one layer, failing tests that should be successful
+- DONE: FIX SELECTION OF ELEMENTS (IN PARTICULAR SELECTORS) WHEN NOT DISPLAYED
+- DONE: Replace keydown with keypress in selectors
 - DONE: Re-order timestamp in logged .print
 - DONE: Fix click/key mismatch in selector.wait
 

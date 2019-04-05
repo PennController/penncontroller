@@ -1,7 +1,8 @@
+PennController for IBEX
 This software is licensed under a BSD license; see the LICENSE file for details.
 
  - Version 1.2
- - Last Update:  2019, March 13
+ - Last Update:  2019, March 27
  - Major changes in version 1.2:
     * Fixed: CSS classes no longer rely on dashes (Ibex-internal problems)
     * Fixed: Var elements passed to tests are now properly evaluated
@@ -10,6 +11,7 @@ This software is licensed under a BSD license; see the LICENSE file for details.
     * Two elements of a different type can now share the same name
     * Elements can now take explicitly null or empty-string name IDs
     * Made most element types only optionally take a name upon creation
+    * Container's size now adjusts to its content after .settings.size
     + Added a Debug interface
     + Added action command .click for Button elements
     + Added the Palette element (beta)

@@ -11,6 +11,8 @@ window.PennController.ResetPrefix = function(prefixName) {
 };
 
 // VAR element
+/* $AC$ PennController.newVar(name,value) Creates a new Var element $AC$ */
+/* $AC$ PennController.getVar(name) Retrieves an existing Var element $AC$ */
 window.PennController._AddElementType("Var", function(PennEngine) {
 
     this.immediate = function(id, value){
@@ -73,7 +75,7 @@ window.PennController._AddElementType("Var", function(PennEngine) {
     };
     
     this.actions = {
-        set: function(resolve, value){
+        set: function(resolve, value){  /* $AC$ Var PElement.set(value) Sets the value (can be a function, e.g. v=>v+1 will increment the value) $AC$ */
             if (typeof(value)=="object" && value.hasOwnProperty("value"))
                 this.value = value.value;
             else if (value instanceof Function)
@@ -86,7 +88,7 @@ window.PennController._AddElementType("Var", function(PennEngine) {
     };
 
     this.settings = {
-        local: function(resolve){
+        local: function(resolve){  /* $AC$ Var PElement.settings.local() Ensures that the value of this Var element only affects the current trial $AC$ */
             this.scope = "local";
             for (c in PennEngine.controllers.list)
                 if (PennEngine.controllers.list[c][this.id] == this)
@@ -100,7 +102,7 @@ window.PennController._AddElementType("Var", function(PennEngine) {
                 this.log = ["final"];
             resolve();
         },
-        global: function(resolve){
+        global: function(resolve){  /* $AC$ Var PElement.settings.global() Shares the value with all Var elements with the same name across trials $AC$ */
             this.scope = "global";
             for (c in PennEngine.controllers.list){
                 if (!PennEngine.controllers.list[c].elements.hasOwnProperty("Var"))
@@ -112,7 +114,7 @@ window.PennController._AddElementType("Var", function(PennEngine) {
     };
 
     this.test = {
-        is: function(test){
+        is: function(test){  /* $AC$ Var PElement.test.is(value) Checks the value of the Var element (can be a function, e.g. v=>v<10) $AC$ */
             if (test instanceof RegExp)
                 return this.evaluate().match(test);
             else if (test instanceof Function)
@@ -126,7 +128,7 @@ window.PennController._AddElementType("Var", function(PennEngine) {
 
 window.PennController._AddStandardCommands(function(PennEngine){
     this.actions = {
-        setVar: function(resolve, varRef){
+        setVar: function(resolve, varRef){  /* $AC$ all PElements.setVar(var) Sets the value of the specified Var element with the current value of the element $AC$ */
             if (typeof(varRef)=="string") {
                 if (!PennEngine.controllers.running.options.elements.hasOwnProperty("Var"))
                     return PennEngine.debug.error("No Var element named "+varRef+" found");

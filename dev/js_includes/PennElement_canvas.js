@@ -1,4 +1,6 @@
 // CANVAS element
+/* $AC$ PennController.newCanvas(name,width,height) Creates a new Canvas element $AC$ */
+/* $AC$ PennController.getCanvas(name) Retrieves an existing Canvas element $AC$ */
 window.PennController._AddElementType("Canvas", function(PennEngine) {
 
     this.immediate = function(id, width, height){
@@ -85,7 +87,7 @@ window.PennController._AddElementType("Canvas", function(PennEngine) {
     };
 
     this.settings = {
-        add: function(resolve, x, y, elementCommand, z){
+        add: function(resolve, x, y, elementCommand, z){    /* $AC$ Canvas PElement.settings.add(x,y,element) Places an element at (X,Y) on the canvas $AC$ */
             if (elementCommand.hasOwnProperty("_element") && elementCommand._element.jQueryElement instanceof jQuery){
                 this.elementCommands.push([elementCommand, x, y, z]);
                 if (this.jQueryElement.parent().length)

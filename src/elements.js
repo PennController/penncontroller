@@ -116,6 +116,7 @@ class PennElement {
         });
         this.id = id;
         this.type = name;
+        this._printCallback = [];
         if (type.hasOwnProperty("end"))     // Called at the end of a trial
             this.end = function(){ type.end.apply(this); };
     }
@@ -227,17 +228,13 @@ class PennElementCommands {
 let standardCommands = {
     actions: {
         // Adds the element to the page (or to the provided element)
-        print: async function(resolve, where){
+        print: async function(resolve, where){              /* $AC$ all PElements.print() Prints the element $AC$ */
             if (this.hasOwnProperty("jQueryElement") && this.jQueryElement instanceof jQuery){
                 if (this.jQueryContainer instanceof jQuery)
                     this.jQueryContainer.remove();
                 this.jQueryElement.addClass("PennController-"+this.type.replace(/[\s_]/g,''));
                 this.jQueryElement.addClass("PennController-"+this.id.replace(/[\s_]/g,''));
-                let div = $("<div>").css({                      // (embed in a div first)
-                    display: "inherit", 
-                    "min-width": this.jQueryElement.width(),
-                    "min-height": this.jQueryElement.height()
-                });
+                let div = $("<div>").css("display","inherit");      // (embed in a div first)
                 this.jQueryContainer = div;
                 if (typeof(this.jQueryAlignment)=="string")
                     div.css("text-align",this.jQueryAlignment);     // Handle horizontal alignement, if any
@@ -251,6 +248,10 @@ let standardCommands = {
                     PennEngine.controllers.running.element.append(div.css("width", "100%"));
                 if (this.cssContainer)                              // Apply custom css if defined
                     div.css.apply(div, this.cssContainer);
+                div.css({
+                    "min-width": this.jQueryElement.width(),
+                    "min-height": this.jQueryElement.height()
+                });    
                 let before = $("<div>").css("display", "inline-block")
                                 .addClass("PennController-before")
                                 .addClass("PennController-"+this.type.replace(/[\s_]/g,'')+"-before")
@@ -273,10 +274,13 @@ let standardCommands = {
             else
                 PennEngine.debug.error("No jQuery instance to print for element "+this.id);
             this.printTime = Date.now();
+            for (let f = 0; f < this._printCallback.length; f++)
+                if (this._printCallback[f] instanceof Function)
+                    await this._printCallback[f].call(this);
             resolve();
         },
         // Calls print again, where the element currently is
-        refresh: function(resolve){
+        refresh: function(resolve){              /* $AC$ all PElements.refresh() Reprints the element where it is $AC$ */
             let container = this.jQueryElement.parent();
             if (!(container instanceof jQuery) || !container.parent().length)
                 return resolve();
@@ -289,7 +293,7 @@ let standardCommands = {
             });
         },
         // Removes the element from the page
-        remove: function(resolve){
+        remove: function(resolve){              /* $AC$ all PElements.remove() Removes the element from the page $AC$ */
             if (this.jQueryContainer instanceof jQuery)
                     this.jQueryContainer.remove();
             if (this.jQueryElement instanceof jQuery)
@@ -309,7 +313,7 @@ let standardCommands = {
     }
     ,
     settings: {
-        after: function(resolve,  commands){
+        after: function(resolve,  commands){    /* $AC$ all PElements.settings.after(element) Prints an element to the right of the current element $AC$ */
             if (commands._element && commands._element.jQueryElement instanceof jQuery){
                 if (this.jQueryElement.parent().length)     // If this element already printed
                     commands.print( this.jQueryContainer.find(".PennController-"+this.type+"-after") )
@@ -323,7 +327,7 @@ let standardCommands = {
                 resolve();
             }
         },
-        before: function(resolve,  commands){
+        before: function(resolve,  commands){    /* $AC$ all PElements.settings.before(element) Prints an element to the left of the current element $AC$ */
             if (commands._element && commands._element.jQueryElement instanceof jQuery){
                 if (this.jQueryElement.parent().length)     // If this element already printed
                     commands.print( this.jQueryContainer.find(".PennController-"+this.type+"-before") )
@@ -338,14 +342,14 @@ let standardCommands = {
             }
                 
         },
-        bold: function(resolve){
+        bold: function(resolve){            /* $AC$ all PElements.settings.bold() Prints the text, if any, as boldfaced $AC$ */
             if (this.jQueryElement instanceof jQuery)
                 this.jQueryElement.css("font-weight","bold");
             else
                 PennEngine.debug.error("Element named "+this.id+" has not jQuery element to render as bold");
             resolve();
         },
-        center: function(resolve){
+        center: function(resolve){          /* $AC$ all PElements.settings.center() Centers the element on the page $AC$ */
             if (this.jQueryElement instanceof jQuery){
                 this.jQueryElement.css({"text-align":"center",margin:"auto"});
                 this.jQueryAlignment = "center";
@@ -356,55 +360,55 @@ let standardCommands = {
                 PennEngine.debug.error("Element named "+this.id+" has not jQuery element to render as centered");
             resolve();
         },
-        color: function(resolve, color){
+        color: function(resolve, color){          /* $AC$ all PElements.settings.color(color) Prints the text, if any, in the color specified $AC$ */
             if (this.jQueryElement && typeof(color)=="string")
                 this.jQueryElement.css("color", color);
             else
                 PennEngine.debug.error("Element named "+this.id+" has not jQuery element to render as "+color);
             resolve();
         },
-        cssContainer: function(resolve, ...rest){
+        cssContainer: function(resolve, ...rest){ /* $AC$ all PElements.settings.cssContainer(option,value) Applies the CSS to the container of the element $AC$ */
             this.cssContainer = rest;
             if (this.jQueryContainer instanceof jQuery)
                 this.jQueryContainer.css(...rest);
             resolve();
         },
-        css: function(resolve, ...rest){
+        css: function(resolve, ...rest){        /* $AC$ all PElements.settings.css(option,value) Applies the CSS to the element $AC$ */
             if (this.jQueryElement instanceof jQuery)
                 this.jQueryElement.css(...rest);
             else
                 PennEngine.debug.error("Element named "+this.id+" has not jQuery element on which to apply the CSS");
             resolve();
         },
-        disable: function(resolve){
+        disable: function(resolve){             /* $AC$ all PElements.settings.disable() Disables the element $AC$ */
             if (this.hasOwnProperty("jQueryElement") && this.jQueryElement instanceof jQuery)
                 this.jQueryElement.attr("disabled", true);
             else
                 PennEngine.debug.error("No jQuery instance to disable for element "+this.id);
             resolve();
         },
-        enable: function(resolve){
+        enable: function(resolve){             /* $AC$ all PElements.settings.enable() Enables the element $AC$ */
             if (this.hasOwnProperty("jQueryElement") && this.jQueryElement instanceof jQuery)
                 this.jQueryElement.removeAttr("disabled");
             else
                 PennEngine.debug.error("No jQuery instance to enable for element "+this.id);
             resolve();
         },
-        hidden: function(resolve){
+        hidden: function(resolve){             /* $AC$ all PElements.settings.hidden() Hides the element (will still leave a blank space) $AC$ */
             if (this.hasOwnProperty("jQueryElement") && this.jQueryElement instanceof jQuery)
                 this.jQueryElement.css({visibility: "hidden"/*, "pointer-events": "none"*/});
             else
                 PennEngine.debug.error("No jQuery instance to hide for element "+this.id);
             resolve();
         },
-        italic: function(resolve){
+        italic: function(resolve){             /* $AC$ all PElements.settings.italic() Prints the text, if any, as italicized $AC$ */
             if (this.jQueryElement instanceof jQuery)
                 this.jQueryElement.css("font-style","italic");
             else
                 PennEngine.debug.error("Element named "+this.id+" has not jQuery element to render in italic");
             resolve();
         },
-        left: function(resolve){
+        left: function(resolve){             /* $AC$ all PElements.settings.left() Aligns the element with the left edge of the printing area $AC$ */
             if (this.jQueryElement instanceof jQuery){
                 this.jQueryElement.css("text-align","left");
                 this.jQueryAlignment = "left";
@@ -419,7 +423,7 @@ let standardCommands = {
             this.log = value===undefined||value;
             resolve();
         },
-        right: function(resolve){
+        right: function(resolve){             /* $AC$ all PElements.settings.right() Aligns the element with the right edge of the printing area $AC$ */
             if (this.jQueryElement instanceof jQuery){
                 this.jQueryElement.css("text-align","right");
                 this.jQueryAlignment = "right";
@@ -430,16 +434,23 @@ let standardCommands = {
                 PennEngine.debug.error("Element named "+this.id+" has not jQuery element to render as aligned to the right");
             resolve();
         },
-        size: function(resolve, width, height){
+        size: function(resolve, width, height){  /* $AC$ all PElements.settings.size(width,height) Gives the element a specific width and/or height $AC$ */
             if (this.jQueryElement instanceof jQuery){
                 this.jQueryElement.width(width);
                 this.jQueryElement.height(height);
+                if (this.jQueryContainer && this.jQueryContainer.parent().length){
+                    let w = this.jQueryElement.width(), h = this.jQueryElement.height();
+                    if (w>this.jQueryContainer.width())
+                        jQueryContainer.width(w);
+                    if (w>this.jQueryContainer.height())
+                        jQueryContainer.height(h);
+                }
             }
             else
                 PennEngine.debug.error("Element named "+this.id+" has not jQuery element to render as aligned to the right");
             resolve();
         },
-        visible: function(resolve){
+        visible: function(resolve){             /* $AC$ all PElements.settings.visible() Makes the element visible (again) $AC$ */
             if (this.hasOwnProperty("jQueryElement") && this.jQueryElement instanceof jQuery)
                 this.jQueryElement.css({visibility: "visible"/*, "pointer-events": "auto"*/});
             else
@@ -449,7 +460,7 @@ let standardCommands = {
     }
     ,
     test: {
-        printed: function(){
+        printed: function(){             /* $AC$ all PElements.test.printed() Checks that the element is printed on the page $AC$ */
             return this.hasOwnProperty("jQueryElement") && 
                     this.jQueryElement instanceof jQuery && 
                     this.jQueryElement.parent().length;
@@ -463,7 +474,7 @@ PennEngine.elements.standardCommands = standardCommands;
 
 
 // Special commands (to replace with Trial?)
-PennController.Elements.clear = function(){
+PennController.Elements.clear = function(){     /* $AC$ Special Command.clear() Removes all the PElements currently on the page $AC$ */
     return {
         _promises: [()=>new Promise(                        // PennController cares for _promises
             async function(resolve) {
@@ -481,7 +492,7 @@ PennController.Elements.clear = function(){
     };
 };
 
-PennController.Elements.end = function(){
+PennController.Elements.end = function(){     /* $AC$ Special Command.end() Ends the trial immediately $AC$ */
     return {
         _promises: [()=>new Promise(                        // PennController cares for _promises
             ()=>PennEngine.controllers.running.endTrial()   // No promise resolution = sequence halted

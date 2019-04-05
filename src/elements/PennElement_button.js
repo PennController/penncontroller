@@ -1,4 +1,6 @@
 // BUTTON element
+/* $AC$ PennController.newButton(name,text) Creates a new Button element $AC$ */
+/* $AC$ PennController.getButton(name) Retrieves an existing Button element $AC$ */
 window.PennController._AddElementType("Button", function(PennEngine) {
 
     // This is executed when Ibex runs the script in data_includes (not a promise, no need to resolve)
@@ -45,11 +47,11 @@ window.PennController._AddElementType("Button", function(PennEngine) {
     };
     
     this.actions = {
-        click: function(resolve){
+        click: function(resolve){   /* $AC$ Button PElement.click() Simulates a click on the button $AC$ */
             this.click();
             resolve();
         },
-        wait: function(resolve, test){
+        wait: function(resolve, test){   /* $AC$ Button PElement.wait() Waits until the button is clicked before proceeding $AC$ */
             if (test == "first" && this.hasClicked) // If first and already clicked, resolve already
                 resolve();
             else {                                  // Else, extend remove and do the checks
@@ -84,7 +86,7 @@ window.PennController._AddElementType("Button", function(PennEngine) {
     };
     
     this.settings = {
-        callback: function(resolve, ...elementCommands){
+        callback: function(resolve, ...elementCommands){   /* $AC$ Button PElement.settings.callback(commands) Tell the button to run a (series of) command(s) whenever it is clicked $AC$ */
             let oldClick = this.click;
             this.click = async function () {
                 if (!this.disabled)
@@ -94,11 +96,11 @@ window.PennController._AddElementType("Button", function(PennEngine) {
             };
             resolve();
         },
-        log: function(resolve){
+        log: function(resolve){   /* $AC$ Button PElement.settings.log() Logs clicks on the button in the results file $AC$ */
             this.log = true;
             resolve();
         },
-        once: function(resolve){
+        once: function(resolve){   /* $AC$ Button PElement.settings.once() Will disable the button after the first click $AC$ */
             if (this.hasClicked){
                 this.disabled = true;
                 this.jQueryElement.attr("disabled", true);
@@ -115,7 +117,7 @@ window.PennController._AddElementType("Button", function(PennEngine) {
         }
     };
 
-    this.test = {
+    this.test = {   /* $AC$ Button PElement.test.clicked() Checks that the button has been clicked before $AC$ */
         clicked: function(){
             return this.hasClicked;
         }  

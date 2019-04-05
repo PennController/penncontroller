@@ -1642,3 +1642,811 @@
 1552499751,f59bad337aab65396fb7077d824f93d1,PennController,0,0,unlabeled,NULL,PennController,0,_Trial_,Start,1552499746843,NULL
 1552499751,f59bad337aab65396fb7077d824f93d1,PennController,0,0,unlabeled,NULL,DropDown,0153f071-06e3-3589-c272-849431d4f3f1,Selected,A,1552499748369,First
 1552499751,f59bad337aab65396fb7077d824f93d1,PennController,0,0,unlabeled,NULL,PennController,0,_Trial_,End,1552499751203,NULL
+#
+# Results on Wednesday March 13 2019 18:28:38 UTC.
+# USER AGENT: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:65.0) Gecko/20100101 Firefox/65.0
+# Design number was non-random = 351
+#
+# Columns below this comment are as follows:
+# 1. Time results were received.
+# 2. MD5 hash of participant's IP address.
+# 3. Controller name.
+# 4. Item number.
+# 5. Element number.
+# 6. Type.
+# 7. Group.
+# 8. PennElementType.
+# 9. PennElementName.
+# 10. Parameter.
+# 11. Value.
+# 12. EventTime.
+# 13. Comments.
+1552501718,f59bad337aab65396fb7077d824f93d1,PennController,0,0,unlabeled,NULL,PennController,0,_Trial_,Start,1552501717676,NULL
+1552501718,f59bad337aab65396fb7077d824f93d1,PennController,0,0,unlabeled,NULL,DropDown,drop,Selected, ,Never,Default
+1552501718,f59bad337aab65396fb7077d824f93d1,PennController,0,0,unlabeled,NULL,PennController,0,_Trial_,End,1552501718216,NULL
+#
+# Results on Wednesday March 13 2019 18:28:40 UTC.
+# USER AGENT: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:65.0) Gecko/20100101 Firefox/65.0
+# Design number was non-random = 352
+#
+# Columns below this comment are as follows:
+# 1. Time results were received.
+# 2. MD5 hash of participant's IP address.
+# 3. Controller name.
+# 4. Item number.
+# 5. Element number.
+# 6. Type.
+# 7. Group.
+# 8. PennElementType.
+# 9. PennElementName.
+# 10. Parameter.
+# 11. Value.
+# 12. EventTime.
+# 13. Comments.
+1552501721,f59bad337aab65396fb7077d824f93d1,PennController,0,0,unlabeled,NULL,PennController,0,_Trial_,Start,1552501719362,NULL
+1552501721,f59bad337aab65396fb7077d824f93d1,PennController,0,0,unlabeled,NULL,DropDown,drop,Selected,Selected,be,1552501720444,0
+1552501721,f59bad337aab65396fb7077d824f93d1,PennController,0,0,unlabeled,NULL,PennController,0,_Trial_,End,1552501720770,NULL
+#
+# Results on Wednesday March 13 2019 18:29:21 UTC.
+# USER AGENT: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:65.0) Gecko/20100101 Firefox/65.0
+# Design number was non-random = 353
+#
+# Columns below this comment are as follows:
+# 1. Time results were received.
+# 2. MD5 hash of participant's IP address.
+# 3. Controller name.
+# 4. Item number.
+# 5. Element number.
+# 6. Type.
+# 7. Group.
+# 8. PennElementType.
+# 9. PennElementName.
+# 10. Parameter.
+# 11. Value.
+# 12. EventTime.
+# 13. Comments.
+1552501761,f59bad337aab65396fb7077d824f93d1,PennController,0,0,unlabeled,NULL,PennController,0,_Trial_,Start,1552501758546,NULL
+1552501761,f59bad337aab65396fb7077d824f93d1,PennController,0,0,unlabeled,NULL,DropDown,drop,Selected,Selected,be,1552501760725,0
+1552501761,f59bad337aab65396fb7077d824f93d1,PennController,0,0,unlabeled,NULL,PennController,0,_Trial_,End,1552501761256,NULL
+#
+# Results on Wednesday March 13 2019 18:30:19 UTC.
+# USER AGENT: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:65.0) Gecko/20100101 Firefox/65.0
+# Design number was non-random = 354
+#
+# Columns below this comment are as follows:
+# 1. Time results were received.
+# 2. MD5 hash of participant's IP address.
+# 3. Controller name.
+# 4. Item number.
+# 5. Element number.
+# 6. Type.
+# 7. Group.
+# 8. PennElementType.
+# 9. PennElementName.
+# 10. Parameter.
+# 11. Value.
+# 12. EventTime.
+# 13. Comments.
+1552501819,f59bad337aab65396fb7077d824f93d1,PennController,0,0,unlabeled,NULL,PennController,0,_Trial_,Start,1552501816552,NULL
+1552501819,f59bad337aab65396fb7077d824f93d1,PennController,0,0,unlabeled,NULL,DropDown,drop,Selected,Selected,will be,1552501819020,2
+1552501819,f59bad337aab65396fb7077d824f93d1,PennController,0,0,unlabeled,NULL,PennController,0,_Trial_,End,1552501819461,NULL
+#
+# Results on Wednesday March 13 2019 18:46:38 UTC.
+# USER AGENT: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:65.0) Gecko/20100101 Firefox/65.0
+# Design number was non-random = 355
+#
+# Columns below this comment are as follows:
+# 1. Time results were received.
+# 2. MD5 hash of participant's IP address.
+# 3. Controller name.
+# 4. Item number.
+# 5. Element number.
+# 6. Type.
+# 7. Group.
+# 8. PennElementType.
+# 9. PennElementName.
+# 10. Parameter.
+# 11. Value.
+# 12. EventTime.
+# 13. Comments.
+1552502799,f59bad337aab65396fb7077d824f93d1,PennController,0,0,unlabeled,NULL,PennController,0,_Trial_,Start,1552502794079,NULL
+1552502799,f59bad337aab65396fb7077d824f93d1,PennController,0,0,unlabeled,NULL,DropDown,drop,Selected,Selected,will be,1552502798414,2
+1552502799,f59bad337aab65396fb7077d824f93d1,PennController,0,0,unlabeled,NULL,PennController,0,_Trial_,End,1552502798908,NULL
+#
+# Results on Wednesday March 13 2019 18:46:58 UTC.
+# USER AGENT: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:65.0) Gecko/20100101 Firefox/65.0
+# Design number was non-random = 356
+#
+# Columns below this comment are as follows:
+# 1. Time results were received.
+# 2. MD5 hash of participant's IP address.
+# 3. Controller name.
+# 4. Item number.
+# 5. Element number.
+# 6. Type.
+# 7. Group.
+# 8. PennElementType.
+# 9. PennElementName.
+# 10. Parameter.
+# 11. Value.
+# 12. EventTime.
+# 13. Comments.
+1552502819,f59bad337aab65396fb7077d824f93d1,PennController,0,0,unlabeled,NULL,PennController,0,_Trial_,Start,1552502817110,NULL
+1552502819,f59bad337aab65396fb7077d824f93d1,PennController,0,0,unlabeled,NULL,DropDown,drop,Selected, ,Never,Default
+1552502819,f59bad337aab65396fb7077d824f93d1,PennController,0,0,unlabeled,NULL,PennController,0,_Trial_,End,1552502818685,NULL
+#
+# Results on Wednesday March 13 2019 18:47:16 UTC.
+# USER AGENT: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:65.0) Gecko/20100101 Firefox/65.0
+# Design number was non-random = 357
+#
+# Columns below this comment are as follows:
+# 1. Time results were received.
+# 2. MD5 hash of participant's IP address.
+# 3. Controller name.
+# 4. Item number.
+# 5. Element number.
+# 6. Type.
+# 7. Group.
+# 8. PennElementType.
+# 9. PennElementName.
+# 10. Parameter.
+# 11. Value.
+# 12. EventTime.
+# 13. Comments.
+1552502836,f59bad337aab65396fb7077d824f93d1,PennController,0,0,unlabeled,NULL,PennController,0,_Trial_,Start,1552502827820,NULL
+1552502836,f59bad337aab65396fb7077d824f93d1,PennController,0,0,unlabeled,NULL,DropDown,drop,Selected,Selected,is,1552502835806,2
+1552502836,f59bad337aab65396fb7077d824f93d1,PennController,0,0,unlabeled,NULL,PennController,0,_Trial_,End,1552502836118,NULL
+#
+# Results on Wednesday March 13 2019 18:47:33 UTC.
+# USER AGENT: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:65.0) Gecko/20100101 Firefox/65.0
+# Design number was non-random = 358
+#
+# Columns below this comment are as follows:
+# 1. Time results were received.
+# 2. MD5 hash of participant's IP address.
+# 3. Controller name.
+# 4. Item number.
+# 5. Element number.
+# 6. Type.
+# 7. Group.
+# 8. PennElementType.
+# 9. PennElementName.
+# 10. Parameter.
+# 11. Value.
+# 12. EventTime.
+# 13. Comments.
+1552502853,f59bad337aab65396fb7077d824f93d1,PennController,0,0,unlabeled,NULL,PennController,0,_Trial_,Start,1552502850998,NULL
+1552502853,f59bad337aab65396fb7077d824f93d1,PennController,0,0,unlabeled,NULL,DropDown,drop,Selected, ,Never,Default
+1552502853,f59bad337aab65396fb7077d824f93d1,PennController,0,0,unlabeled,NULL,PennController,0,_Trial_,End,1552502853107,NULL
+#
+# Results on Wednesday March 13 2019 18:51:34 UTC.
+# USER AGENT: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:65.0) Gecko/20100101 Firefox/65.0
+# Design number was non-random = 359
+#
+# Columns below this comment are as follows:
+# 1. Time results were received.
+# 2. MD5 hash of participant's IP address.
+# 3. Controller name.
+# 4. Item number.
+# 5. Element number.
+# 6. Type.
+# 7. Group.
+# 8. PennElementType.
+# 9. PennElementName.
+# 10. Parameter.
+# 11. Value.
+# 12. EventTime.
+# 13. Comments.
+1552503095,f59bad337aab65396fb7077d824f93d1,PennController,0,0,unlabeled,NULL,PennController,0,_Trial_,Start,1552503094108,NULL
+1552503095,f59bad337aab65396fb7077d824f93d1,PennController,0,0,unlabeled,NULL,DropDown,drop,Selected, ,Never,Default
+1552503095,f59bad337aab65396fb7077d824f93d1,PennController,0,0,unlabeled,NULL,PennController,0,_Trial_,End,1552503094699,NULL
+#
+# Results on Wednesday March 13 2019 18:51:46 UTC.
+# USER AGENT: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:65.0) Gecko/20100101 Firefox/65.0
+# Design number was non-random = 360
+#
+# Columns below this comment are as follows:
+# 1. Time results were received.
+# 2. MD5 hash of participant's IP address.
+# 3. Controller name.
+# 4. Item number.
+# 5. Element number.
+# 6. Type.
+# 7. Group.
+# 8. PennElementType.
+# 9. PennElementName.
+# 10. Parameter.
+# 11. Value.
+# 12. EventTime.
+# 13. Comments.
+1552503106,f59bad337aab65396fb7077d824f93d1,PennController,0,0,unlabeled,NULL,PennController,0,_Trial_,Start,1552503103218,NULL
+1552503106,f59bad337aab65396fb7077d824f93d1,PennController,0,0,unlabeled,NULL,DropDown,drop,Selected, ,Never,Default
+1552503106,f59bad337aab65396fb7077d824f93d1,PennController,0,0,unlabeled,NULL,PennController,0,_Trial_,End,1552503106229,NULL
+#
+# Results on Wednesday March 13 2019 18:52:23 UTC.
+# USER AGENT: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:65.0) Gecko/20100101 Firefox/65.0
+# Design number was non-random = 361
+#
+# Columns below this comment are as follows:
+# 1. Time results were received.
+# 2. MD5 hash of participant's IP address.
+# 3. Controller name.
+# 4. Item number.
+# 5. Element number.
+# 6. Type.
+# 7. Group.
+# 8. PennElementType.
+# 9. PennElementName.
+# 10. Parameter.
+# 11. Value.
+# 12. EventTime.
+# 13. Comments.
+1552503144,f59bad337aab65396fb7077d824f93d1,PennController,0,0,unlabeled,NULL,PennController,0,_Trial_,Start,1552503142777,NULL
+1552503144,f59bad337aab65396fb7077d824f93d1,PennController,0,0,unlabeled,NULL,DropDown,drop,Selected, ,Never,Default
+1552503144,f59bad337aab65396fb7077d824f93d1,PennController,0,0,unlabeled,NULL,PennController,0,_Trial_,End,1552503143705,NULL
+#
+# Results on Wednesday March 13 2019 18:52:54 UTC.
+# USER AGENT: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:65.0) Gecko/20100101 Firefox/65.0
+# Design number was non-random = 362
+#
+# Columns below this comment are as follows:
+# 1. Time results were received.
+# 2. MD5 hash of participant's IP address.
+# 3. Controller name.
+# 4. Item number.
+# 5. Element number.
+# 6. Type.
+# 7. Group.
+# 8. PennElementType.
+# 9. PennElementName.
+# 10. Parameter.
+# 11. Value.
+# 12. EventTime.
+# 13. Comments.
+1552503175,f59bad337aab65396fb7077d824f93d1,PennController,0,0,unlabeled,NULL,PennController,0,_Trial_,Start,1552503163115,NULL
+1552503175,f59bad337aab65396fb7077d824f93d1,PennController,0,0,unlabeled,NULL,DropDown,drop,Selected,Selected,was,1552503174163,0
+1552503175,f59bad337aab65396fb7077d824f93d1,PennController,0,0,unlabeled,NULL,PennController,0,_Trial_,End,1552503174613,NULL
+#
+# Results on Wednesday March 13 2019 18:53:00 UTC.
+# USER AGENT: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:65.0) Gecko/20100101 Firefox/65.0
+# Design number was non-random = 363
+#
+# Columns below this comment are as follows:
+# 1. Time results were received.
+# 2. MD5 hash of participant's IP address.
+# 3. Controller name.
+# 4. Item number.
+# 5. Element number.
+# 6. Type.
+# 7. Group.
+# 8. PennElementType.
+# 9. PennElementName.
+# 10. Parameter.
+# 11. Value.
+# 12. EventTime.
+# 13. Comments.
+1552503181,f59bad337aab65396fb7077d824f93d1,PennController,0,0,unlabeled,NULL,PennController,0,_Trial_,Start,1552503176294,NULL
+1552503181,f59bad337aab65396fb7077d824f93d1,PennController,0,0,unlabeled,NULL,DropDown,drop,Selected,Selected,is,1552503180572,0
+1552503181,f59bad337aab65396fb7077d824f93d1,PennController,0,0,unlabeled,NULL,PennController,0,_Trial_,End,1552503180907,NULL
+#
+# Results on Wednesday March 13 2019 18:53:38 UTC.
+# USER AGENT: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:65.0) Gecko/20100101 Firefox/65.0
+# Design number was non-random = 364
+#
+# Columns below this comment are as follows:
+# 1. Time results were received.
+# 2. MD5 hash of participant's IP address.
+# 3. Controller name.
+# 4. Item number.
+# 5. Element number.
+# 6. Type.
+# 7. Group.
+# 8. PennElementType.
+# 9. PennElementName.
+# 10. Parameter.
+# 11. Value.
+# 12. EventTime.
+# 13. Comments.
+1552503218,f59bad337aab65396fb7077d824f93d1,PennController,0,0,unlabeled,NULL,PennController,0,_Trial_,Start,1552503217328,NULL
+1552503218,f59bad337aab65396fb7077d824f93d1,PennController,0,0,unlabeled,NULL,DropDown,drop,Selected, ,Never,Default
+1552503218,f59bad337aab65396fb7077d824f93d1,PennController,0,0,unlabeled,NULL,PennController,0,_Trial_,End,1552503217996,NULL
+#
+# Results on Wednesday March 13 2019 18:53:43 UTC.
+# USER AGENT: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:65.0) Gecko/20100101 Firefox/65.0
+# Design number was non-random = 365
+#
+# Columns below this comment are as follows:
+# 1. Time results were received.
+# 2. MD5 hash of participant's IP address.
+# 3. Controller name.
+# 4. Item number.
+# 5. Element number.
+# 6. Type.
+# 7. Group.
+# 8. PennElementType.
+# 9. PennElementName.
+# 10. Parameter.
+# 11. Value.
+# 12. EventTime.
+# 13. Comments.
+1552503223,f59bad337aab65396fb7077d824f93d1,PennController,0,0,unlabeled,NULL,PennController,0,_Trial_,Start,1552503219164,NULL
+1552503223,f59bad337aab65396fb7077d824f93d1,PennController,0,0,unlabeled,NULL,DropDown,drop,Selected,Selected,was,1552503222653,2
+1552503223,f59bad337aab65396fb7077d824f93d1,PennController,0,0,unlabeled,NULL,PennController,0,_Trial_,End,1552503223068,NULL
+#
+# Results on Wednesday March 13 2019 18:59:52 UTC.
+# USER AGENT: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:65.0) Gecko/20100101 Firefox/65.0
+# Design number was non-random = 366
+#
+# Columns below this comment are as follows:
+# 1. Time results were received.
+# 2. MD5 hash of participant's IP address.
+# 3. Controller name.
+# 4. Item number.
+# 5. Element number.
+# 6. Type.
+# 7. Group.
+# 8. PennElementType.
+# 9. PennElementName.
+# 10. Parameter.
+# 11. Value.
+# 12. EventTime.
+# 13. Comments.
+1552503593,f59bad337aab65396fb7077d824f93d1,PennController,0,0,unlabeled,NULL,PennController,0,_Trial_,Start,1552503589659,NULL
+1552503593,f59bad337aab65396fb7077d824f93d1,PennController,0,0,unlabeled,NULL,DropDown,drop,Selected, ,Never,Default
+1552503593,f59bad337aab65396fb7077d824f93d1,PennController,0,0,unlabeled,NULL,PennController,0,_Trial_,End,1552503592842,NULL
+#
+# Results on Wednesday March 13 2019 19:24:05 UTC.
+# USER AGENT: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:65.0) Gecko/20100101 Firefox/65.0
+# Design number was non-random = 367
+#
+# Columns below this comment are as follows:
+# 1. Time results were received.
+# 2. MD5 hash of participant's IP address.
+# 3. Controller name.
+# 4. Item number.
+# 5. Element number.
+# 6. Type.
+# 7. Group.
+# 8. PennElementType.
+# 9. PennElementName.
+# 10. Parameter.
+# 11. Value.
+# 12. EventTime.
+# 13. Comments.
+1552505045,f59bad337aab65396fb7077d824f93d1,PennController,0,0,unlabeled,NULL,PennController,0,_Trial_,Start,1552505041992,NULL
+1552505045,f59bad337aab65396fb7077d824f93d1,PennController,0,0,unlabeled,NULL,DropDown,drop,Selected,Selected,be,1552505044189,1
+1552505045,f59bad337aab65396fb7077d824f93d1,PennController,0,0,unlabeled,NULL,PennController,0,_Trial_,End,1552505045140,NULL
+#
+# Results on Wednesday March 13 2019 19:28:14 UTC.
+# USER AGENT: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:65.0) Gecko/20100101 Firefox/65.0
+# Design number was non-random = 368
+#
+# Columns below this comment are as follows:
+# 1. Time results were received.
+# 2. MD5 hash of participant's IP address.
+# 3. Controller name.
+# 4. Item number.
+# 5. Element number.
+# 6. Type.
+# 7. Group.
+# 8. PennElementType.
+# 9. PennElementName.
+# 10. Parameter.
+# 11. Value.
+# 12. EventTime.
+# 13. Comments.
+1552505294,f59bad337aab65396fb7077d824f93d1,PennController,0,0,unlabeled,NULL,PennController,0,_Trial_,Start,1552505291087,NULL
+1552505294,f59bad337aab65396fb7077d824f93d1,PennController,0,0,unlabeled,NULL,DropDown,drop,Selected,Selected,was,1552505293046,1
+1552505294,f59bad337aab65396fb7077d824f93d1,PennController,0,0,unlabeled,NULL,PennController,0,_Trial_,End,1552505294008,NULL
+#
+# Results on Wednesday March 13 2019 19:30:00 UTC.
+# USER AGENT: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:65.0) Gecko/20100101 Firefox/65.0
+# Design number was non-random = 369
+#
+# Columns below this comment are as follows:
+# 1. Time results were received.
+# 2. MD5 hash of participant's IP address.
+# 3. Controller name.
+# 4. Item number.
+# 5. Element number.
+# 6. Type.
+# 7. Group.
+# 8. PennElementType.
+# 9. PennElementName.
+# 10. Parameter.
+# 11. Value.
+# 12. EventTime.
+# 13. Comments.
+1552505401,f59bad337aab65396fb7077d824f93d1,PennController,0,0,unlabeled,NULL,PennController,0,_Trial_,Start,1552505393164,NULL
+1552505401,f59bad337aab65396fb7077d824f93d1,PennController,0,0,unlabeled,NULL,DropDown,drop,Selected,Selected,will be,1552505400139,2
+1552505401,f59bad337aab65396fb7077d824f93d1,PennController,0,0,unlabeled,NULL,PennController,0,_Trial_,End,1552505400584,NULL
+#
+# Results on Wednesday March 13 2019 19:30:41 UTC.
+# USER AGENT: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:65.0) Gecko/20100101 Firefox/65.0
+# Design number was non-random = 370
+#
+# Columns below this comment are as follows:
+# 1. Time results were received.
+# 2. MD5 hash of participant's IP address.
+# 3. Controller name.
+# 4. Item number.
+# 5. Element number.
+# 6. Type.
+# 7. Group.
+# 8. PennElementType.
+# 9. PennElementName.
+# 10. Parameter.
+# 11. Value.
+# 12. EventTime.
+# 13. Comments.
+1552505441,f59bad337aab65396fb7077d824f93d1,PennController,0,0,unlabeled,NULL,PennController,0,_Trial_,Start,1552505439174,NULL
+1552505441,f59bad337aab65396fb7077d824f93d1,PennController,0,0,unlabeled,NULL,DropDown,drop,Selected,Selected,is,1552505440771,0
+1552505441,f59bad337aab65396fb7077d824f93d1,PennController,0,0,unlabeled,NULL,PennController,0,_Trial_,End,1552505441229,NULL
+#
+# Results on Thursday March 14 2019 21:54:19 UTC.
+# USER AGENT: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:65.0) Gecko/20100101 Firefox/65.0
+# Design number was non-random = 371
+#
+# Columns below this comment are as follows:
+# 1. Time results were received.
+# 2. MD5 hash of participant's IP address.
+# 3. Controller name.
+# 4. Item number.
+# 5. Element number.
+# 6. Type.
+# 7. Group.
+# 8. PennElementType.
+# 9. PennElementName.
+# 10. Parameter.
+# 11. Value.
+# 12. EventTime.
+# 13. Comments.
+1552600459,f59bad337aab65396fb7077d824f93d1,PennController,0,0,unlabeled,NULL,PennController,0,_Trial_,Start,1552600455342,NULL
+1552600459,f59bad337aab65396fb7077d824f93d1,PennController,0,0,unlabeled,NULL,DropDown,drop,Selected,Selected,be,1552600458564,0
+1552600459,f59bad337aab65396fb7077d824f93d1,PennController,0,0,unlabeled,NULL,PennController,0,_Trial_,End,1552600459216,NULL
+#
+# Results on Thursday March 14 2019 21:54:33 UTC.
+# USER AGENT: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:65.0) Gecko/20100101 Firefox/65.0
+# Design number was non-random = 372
+#
+# Columns below this comment are as follows:
+# 1. Time results were received.
+# 2. MD5 hash of participant's IP address.
+# 3. Controller name.
+# 4. Item number.
+# 5. Element number.
+# 6. Type.
+# 7. Group.
+# 8. PennElementType.
+# 9. PennElementName.
+# 10. Parameter.
+# 11. Value.
+# 12. EventTime.
+# 13. Comments.
+1552600474,f59bad337aab65396fb7077d824f93d1,PennController,0,0,unlabeled,NULL,PennController,0,_Trial_,Start,1552600468573,NULL
+1552600474,f59bad337aab65396fb7077d824f93d1,PennController,0,0,unlabeled,NULL,DropDown,drop,Selected,Selected,is,1552600473309,1
+1552600474,f59bad337aab65396fb7077d824f93d1,PennController,0,0,unlabeled,NULL,PennController,0,_Trial_,End,1552600473834,NULL
+#
+# Results on Friday March 15 2019 05:05:04 UTC.
+# USER AGENT: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:65.0) Gecko/20100101 Firefox/65.0
+# Design number was non-random = 373
+#
+# Columns below this comment are as follows:
+# 1. Time results were received.
+# 2. MD5 hash of participant's IP address.
+# 3. Controller name.
+# 4. Item number.
+# 5. Element number.
+# 6. Type.
+# 7. Group.
+# 8. PennElementType.
+# 9. PennElementName.
+# 10. Parameter.
+# 11. Value.
+# 12. EventTime.
+# 13. Comments.
+1552626305,f59bad337aab65396fb7077d824f93d1,PennController,1,0,unlabeled,NULL,PennController,0,_Trial_,Start,1552626299901,NULL
+1552626305,f59bad337aab65396fb7077d824f93d1,PennController,1,0,unlabeled,NULL,DropDown,drop,Selected,Selected,be,1552626304091,2
+1552626305,f59bad337aab65396fb7077d824f93d1,PennController,1,0,unlabeled,NULL,PennController,0,_Trial_,End,1552626304600,NULL
+#
+# Results on Friday March 15 2019 05:06:03 UTC.
+# USER AGENT: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:65.0) Gecko/20100101 Firefox/65.0
+# Design number was non-random = 374
+#
+# Columns below this comment are as follows:
+# 1. Time results were received.
+# 2. MD5 hash of participant's IP address.
+# 3. Controller name.
+# 4. Item number.
+# 5. Element number.
+# 6. Type.
+# 7. Group.
+# 8. Word number.
+# 9. Word.
+# 10. Reading time.
+1552626364,f59bad337aab65396fb7077d824f93d1,DashFlashDash,0,0,waf,NULL,2,The,606
+1552626364,f59bad337aab65396fb7077d824f93d1,DashFlashDash,0,0,waf,NULL,3,crocodile,456
+1552626364,f59bad337aab65396fb7077d824f93d1,DashFlashDash,0,0,waf,NULL,4,returned,577
+1552626364,f59bad337aab65396fb7077d824f93d1,DashFlashDash,0,0,waf,NULL,-5,to,52
+1552626364,f59bad337aab65396fb7077d824f93d1,DashFlashDash,0,0,waf,NULL,5,to,664
+1552626364,f59bad337aab65396fb7077d824f93d1,DashFlashDash,0,0,waf,NULL,6,the,479
+# Columns below this comment are as follows:
+# 1. Time results were received.
+# 2. MD5 hash of participant's IP address.
+# 3. Controller name.
+# 4. Item number.
+# 5. Element number.
+# 6. Type.
+# 7. Group.
+# 8. PennElementType.
+# 9. PennElementName.
+# 10. Parameter.
+# 11. Value.
+# 12. EventTime.
+# 13. Comments.
+1552626364,f59bad337aab65396fb7077d824f93d1,PennController,1,0,unlabeled,NULL,PennController,0,_Trial_,Start,1552626360073,NULL
+1552626364,f59bad337aab65396fb7077d824f93d1,PennController,1,0,unlabeled,NULL,DropDown,drop,Selected,Selected,is,1552626363092,0
+1552626364,f59bad337aab65396fb7077d824f93d1,PennController,1,0,unlabeled,NULL,PennController,0,_Trial_,End,1552626363600,NULL
+#
+# Results on Friday March 15 2019 05:07:21 UTC.
+# USER AGENT: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:65.0) Gecko/20100101 Firefox/65.0
+# Design number was non-random = 375
+#
+# Columns below this comment are as follows:
+# 1. Time results were received.
+# 2. MD5 hash of participant's IP address.
+# 3. Controller name.
+# 4. Item number.
+# 5. Element number.
+# 6. Type.
+# 7. Group.
+# 8. Word number.
+# 9. Word.
+# 10. Reading time.
+1552626442,f59bad337aab65396fb7077d824f93d1,DashFlashDash,0,0,waf,NULL,2,The,3319
+1552626442,f59bad337aab65396fb7077d824f93d1,DashFlashDash,0,0,waf,NULL,3,crocodile,185
+1552626442,f59bad337aab65396fb7077d824f93d1,DashFlashDash,0,0,waf,NULL,4,returned,2018
+1552626442,f59bad337aab65396fb7077d824f93d1,DashFlashDash,0,0,waf,NULL,-5,alligator,53
+1552626442,f59bad337aab65396fb7077d824f93d1,DashFlashDash,0,0,waf,NULL,5,to,710
+1552626442,f59bad337aab65396fb7077d824f93d1,DashFlashDash,0,0,waf,NULL,6,the,736
+# Columns below this comment are as follows:
+# 1. Time results were received.
+# 2. MD5 hash of participant's IP address.
+# 3. Controller name.
+# 4. Item number.
+# 5. Element number.
+# 6. Type.
+# 7. Group.
+# 8. PennElementType.
+# 9. PennElementName.
+# 10. Parameter.
+# 11. Value.
+# 12. EventTime.
+# 13. Comments.
+1552626442,f59bad337aab65396fb7077d824f93d1,PennController,1,0,unlabeled,NULL,PennController,0,_Trial_,Start,1552626437341,NULL
+1552626442,f59bad337aab65396fb7077d824f93d1,PennController,1,0,unlabeled,NULL,DropDown,drop,Selected,Selected,was,1552626441101,2
+1552626442,f59bad337aab65396fb7077d824f93d1,PennController,1,0,unlabeled,NULL,PennController,0,_Trial_,End,1552626441599,NULL
+#
+# Results on Friday March 15 2019 17:05:42 UTC.
+# USER AGENT: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:65.0) Gecko/20100101 Firefox/65.0
+# Design number was non-random = 376
+#
+# Columns below this comment are as follows:
+# 1. Time results were received.
+# 2. MD5 hash of participant's IP address.
+# 3. Controller name.
+# 4. Item number.
+# 5. Element number.
+# 6. Type.
+# 7. Group.
+# 8. Word number.
+# 9. Word.
+# 10. Reading time.
+1552669543,f59bad337aab65396fb7077d824f93d1,DashFlashDash,0,0,waf,NULL,2,The,366
+1552669543,f59bad337aab65396fb7077d824f93d1,DashFlashDash,0,0,waf,NULL,3,crocodile,481
+1552669543,f59bad337aab65396fb7077d824f93d1,DashFlashDash,0,0,waf,NULL,4,returned,311
+1552669543,f59bad337aab65396fb7077d824f93d1,DashFlashDash,0,0,waf,NULL,-5,alligator,52
+1552669543,f59bad337aab65396fb7077d824f93d1,DashFlashDash,0,0,waf,NULL,5,to,552
+1552669543,f59bad337aab65396fb7077d824f93d1,DashFlashDash,0,0,waf,NULL,6,the,385
+# Columns below this comment are as follows:
+# 1. Time results were received.
+# 2. MD5 hash of participant's IP address.
+# 3. Controller name.
+# 4. Item number.
+# 5. Element number.
+# 6. Type.
+# 7. Group.
+# 8. PennElementType.
+# 9. PennElementName.
+# 10. Parameter.
+# 11. Value.
+# 12. EventTime.
+# 13. Comments.
+1552669543,f59bad337aab65396fb7077d824f93d1,PennController,1,0,unlabeled,NULL,PennController,0,_Trial_,Start,1552669539068,NULL
+1552669543,f59bad337aab65396fb7077d824f93d1,PennController,1,0,unlabeled,NULL,DropDown,drop,Selected,Selected,was,1552669542394,3
+1552669543,f59bad337aab65396fb7077d824f93d1,PennController,1,0,unlabeled,NULL,PennController,0,_Trial_,End,1552669542929,NULL
+#
+# Results on Friday March 15 2019 17:08:22 UTC.
+# USER AGENT: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:65.0) Gecko/20100101 Firefox/65.0
+# Design number was non-random = 377
+#
+# Columns below this comment are as follows:
+# 1. Time results were received.
+# 2. MD5 hash of participant's IP address.
+# 3. Controller name.
+# 4. Item number.
+# 5. Element number.
+# 6. Type.
+# 7. Group.
+# 8. Word number.
+# 9. Word.
+# 10. Reading time.
+1552669703,f59bad337aab65396fb7077d824f93d1,DashFlashDash,0,0,label,NULL,2,The,239
+1552669703,f59bad337aab65396fb7077d824f93d1,DashFlashDash,0,0,label,NULL,3,crocodile,481
+1552669703,f59bad337aab65396fb7077d824f93d1,DashFlashDash,0,0,label,NULL,4,returned,176
+1552669703,f59bad337aab65396fb7077d824f93d1,DashFlashDash,0,0,label,NULL,-5,alligator,56
+1552669703,f59bad337aab65396fb7077d824f93d1,DashFlashDash,0,0,label,NULL,5,to,464
+1552669703,f59bad337aab65396fb7077d824f93d1,DashFlashDash,0,0,label,NULL,6,the,239
+1552669703,f59bad337aab65396fb7077d824f93d1,DashFlashDash,0,0,label,NULL,7,water,385
+# Columns below this comment are as follows:
+# 1. Time results were received.
+# 2. MD5 hash of participant's IP address.
+# 3. Controller name.
+# 4. Item number.
+# 5. Element number.
+# 6. Type.
+# 7. Group.
+# 8. PennElementType.
+# 9. PennElementName.
+# 10. Parameter.
+# 11. Value.
+# 12. EventTime.
+# 13. Comments.
+1552669703,f59bad337aab65396fb7077d824f93d1,PennController,1,0,unlabeled,NULL,PennController,0,_Trial_,Start,1552669699165,NULL
+1552669703,f59bad337aab65396fb7077d824f93d1,PennController,1,0,unlabeled,NULL,DropDown,drop,Selected,Selected,was,1552669702367,0
+1552669703,f59bad337aab65396fb7077d824f93d1,PennController,1,0,unlabeled,NULL,PennController,0,_Trial_,End,1552669702593,NULL
+#
+# Results on Friday April 05 2019 17:28:09 UTC.
+# USER AGENT: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:66.0) Gecko/20100101 Firefox/66.0
+# Design number was non-random = 378
+#
+# Columns below this comment are as follows:
+# 1. Time results were received.
+# 2. MD5 hash of participant's IP address.
+# 3. Controller name.
+# 4. Item number.
+# 5. Element number.
+# 6. Type.
+# 7. Group.
+# 8. PennElementType.
+# 9. PennElementName.
+# 10. Parameter.
+# 11. Value.
+# 12. EventTime.
+# 13. Comments.
+1554485290,664a7d314f2e86ff3e33203a6500cbdf,PennController,0,0,learn,NULL,PennController,1,_Trial_,Start,1554485284028,NULL
+1554485290,664a7d314f2e86ff3e33203a6500cbdf,PennController,0,0,learn,NULL,Selector,choice,Selection,image1,1554485285066,NULL
+1554485290,664a7d314f2e86ff3e33203a6500cbdf,PennController,0,0,learn,NULL,PennController,1,_Trial_,End,1554485285075,NULL
+1554485290,664a7d314f2e86ff3e33203a6500cbdf,PennController,1,0,learn,NULL,PennController,2,_Trial_,Start,1554485285081,NULL
+1554485290,664a7d314f2e86ff3e33203a6500cbdf,PennController,1,0,learn,NULL,Selector,choice,Selection,image2,1554485285568,NULL
+1554485290,664a7d314f2e86ff3e33203a6500cbdf,PennController,1,0,learn,NULL,PennController,2,_Trial_,End,1554485285572,NULL
+1554485290,664a7d314f2e86ff3e33203a6500cbdf,PennController,2,0,learn,NULL,PennController,3,_Trial_,Start,1554485285578,NULL
+1554485290,664a7d314f2e86ff3e33203a6500cbdf,PennController,2,0,learn,NULL,Selector,choice,Selection,image1,1554485286656,NULL
+1554485290,664a7d314f2e86ff3e33203a6500cbdf,PennController,2,0,learn,NULL,PennController,3,_Trial_,End,1554485286662,NULL
+1554485290,664a7d314f2e86ff3e33203a6500cbdf,PennController,3,0,transition,NULL,PennController,0,_Trial_,Start,1554485286668,NULL
+1554485290,664a7d314f2e86ff3e33203a6500cbdf,PennController,3,0,transition,NULL,PennController,0,_Trial_,End,1554485287427,NULL
+1554485290,664a7d314f2e86ff3e33203a6500cbdf,PennController,4,0,showwhatlearned,NULL,PennController,4,_Trial_,Start,1554485287431,NULL
+1554485290,664a7d314f2e86ff3e33203a6500cbdf,PennController,4,0,showwhatlearned,NULL,Selector,choice-test,Selection,image1,1554485288789,NULL
+1554485290,664a7d314f2e86ff3e33203a6500cbdf,PennController,4,0,showwhatlearned,NULL,PennController,4,_Trial_,End,1554485288795,NULL
+1554485290,664a7d314f2e86ff3e33203a6500cbdf,PennController,5,0,showwhatlearned,NULL,PennController,5,_Trial_,Start,1554485288803,NULL
+1554485290,664a7d314f2e86ff3e33203a6500cbdf,PennController,5,0,showwhatlearned,NULL,Selector,choice-test,Selection,distractor1,1554485289548,NULL
+1554485290,664a7d314f2e86ff3e33203a6500cbdf,PennController,5,0,showwhatlearned,NULL,PennController,5,_Trial_,End,1554485289550,NULL
+1554485290,664a7d314f2e86ff3e33203a6500cbdf,PennController,6,0,showwhatlearned,NULL,PennController,6,_Trial_,Start,1554485289553,NULL
+1554485290,664a7d314f2e86ff3e33203a6500cbdf,PennController,6,0,showwhatlearned,NULL,Selector,choice-test,Selection,image1,1554485289916,NULL
+1554485290,664a7d314f2e86ff3e33203a6500cbdf,PennController,6,0,showwhatlearned,NULL,PennController,6,_Trial_,End,1554485289919,NULL
+#
+# Results on Friday April 05 2019 17:32:13 UTC.
+# USER AGENT: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:66.0) Gecko/20100101 Firefox/66.0
+# Design number was non-random = 379
+#
+# Columns below this comment are as follows:
+# 1. Time results were received.
+# 2. MD5 hash of participant's IP address.
+# 3. Controller name.
+# 4. Item number.
+# 5. Element number.
+# 6. Type.
+# 7. Group.
+# 8. PennElementType.
+# 9. PennElementName.
+# 10. Parameter.
+# 11. Value.
+# 12. EventTime.
+# 13. Comments.
+1554485533,664a7d314f2e86ff3e33203a6500cbdf,PennController,0,0,learn,NULL,PennController,1,_Trial_,Start,1554485488815,NULL
+1554485533,664a7d314f2e86ff3e33203a6500cbdf,PennController,0,0,learn,NULL,Selector,choice,Selection,image4,1554485491041,NULL
+1554485533,664a7d314f2e86ff3e33203a6500cbdf,PennController,0,0,learn,NULL,PennController,1,_Trial_,End,1554485491048,NULL
+1554485533,664a7d314f2e86ff3e33203a6500cbdf,PennController,1,0,learn,NULL,PennController,2,_Trial_,Start,1554485491054,NULL
+1554485533,664a7d314f2e86ff3e33203a6500cbdf,PennController,1,0,learn,NULL,Selector,choice,Selection,image3,1554485492278,NULL
+1554485533,664a7d314f2e86ff3e33203a6500cbdf,PennController,1,0,learn,NULL,PennController,2,_Trial_,End,1554485492282,NULL
+1554485533,664a7d314f2e86ff3e33203a6500cbdf,PennController,2,0,learn,NULL,PennController,3,_Trial_,Start,1554485492286,NULL
+1554485533,664a7d314f2e86ff3e33203a6500cbdf,PennController,2,0,learn,NULL,Selector,choice,Selection,image2,1554485493557,NULL
+1554485533,664a7d314f2e86ff3e33203a6500cbdf,PennController,2,0,learn,NULL,PennController,3,_Trial_,End,1554485493562,NULL
+1554485533,664a7d314f2e86ff3e33203a6500cbdf,PennController,3,0,transition,NULL,PennController,0,_Trial_,Start,1554485493569,NULL
+1554485533,664a7d314f2e86ff3e33203a6500cbdf,PennController,3,0,transition,NULL,PennController,0,_Trial_,End,1554485503037,NULL
+1554485533,664a7d314f2e86ff3e33203a6500cbdf,PennController,4,0,showwhatlearned,NULL,PennController,4,_Trial_,Start,1554485503047,NULL
+1554485533,664a7d314f2e86ff3e33203a6500cbdf,PennController,4,0,showwhatlearned,NULL,Selector,choice-test,Selection,nonchoice,1554485511553,NULL
+1554485533,664a7d314f2e86ff3e33203a6500cbdf,PennController,4,0,showwhatlearned,NULL,PennController,4,_Trial_,End,1554485511556,NULL
+1554485533,664a7d314f2e86ff3e33203a6500cbdf,PennController,5,0,showwhatlearned,NULL,PennController,5,_Trial_,Start,1554485511562,NULL
+1554485533,664a7d314f2e86ff3e33203a6500cbdf,PennController,5,0,showwhatlearned,NULL,Selector,choice-test,Selection,image3,1554485513703,NULL
+1554485533,664a7d314f2e86ff3e33203a6500cbdf,PennController,5,0,showwhatlearned,NULL,PennController,5,_Trial_,End,1554485513706,NULL
+1554485533,664a7d314f2e86ff3e33203a6500cbdf,PennController,6,0,showwhatlearned,NULL,PennController,6,_Trial_,Start,1554485513711,NULL
+1554485533,664a7d314f2e86ff3e33203a6500cbdf,PennController,6,0,showwhatlearned,NULL,Selector,choice-test,Selection,nonchoice,1554485533247,NULL
+1554485533,664a7d314f2e86ff3e33203a6500cbdf,PennController,6,0,showwhatlearned,NULL,PennController,6,_Trial_,End,1554485533249,NULL
+#
+# Results on Friday April 05 2019 17:38:06 UTC.
+# USER AGENT: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:66.0) Gecko/20100101 Firefox/66.0
+# Design number was non-random = 380
+#
+# Columns below this comment are as follows:
+# 1. Time results were received.
+# 2. MD5 hash of participant's IP address.
+# 3. Controller name.
+# 4. Item number.
+# 5. Element number.
+# 6. Type.
+# 7. Group.
+# 8. PennElementType.
+# 9. PennElementName.
+# 10. Parameter.
+# 11. Value.
+# 12. EventTime.
+# 13. Comments.
+1554485887,664a7d314f2e86ff3e33203a6500cbdf,PennController,0,0,learn,NULL,PennController,0,_Trial_,Start,1554485884480,NULL
+1554485887,664a7d314f2e86ff3e33203a6500cbdf,PennController,0,0,learn,NULL,Selector,choice,Selection,image2,1554485885767,NULL
+1554485887,664a7d314f2e86ff3e33203a6500cbdf,PennController,0,0,learn,NULL,PennController,0,_Trial_,End,1554485885771,NULL
+1554485887,664a7d314f2e86ff3e33203a6500cbdf,PennController,1,0,learn,NULL,PennController,1,_Trial_,Start,1554485885779,NULL
+1554485887,664a7d314f2e86ff3e33203a6500cbdf,PennController,1,0,learn,NULL,Selector,choice,Selection,image2,1554485886313,NULL
+1554485887,664a7d314f2e86ff3e33203a6500cbdf,PennController,1,0,learn,NULL,PennController,1,_Trial_,End,1554485886316,NULL
+1554485887,664a7d314f2e86ff3e33203a6500cbdf,PennController,2,0,learn,NULL,PennController,2,_Trial_,Start,1554485886321,NULL
+1554485887,664a7d314f2e86ff3e33203a6500cbdf,PennController,2,0,learn,NULL,Selector,choice,Selection,image3,1554485886710,NULL
+1554485887,664a7d314f2e86ff3e33203a6500cbdf,PennController,2,0,learn,NULL,PennController,2,_Trial_,End,1554485886715,NULL
+#
+# Results on Friday April 05 2019 17:40:54 UTC.
+# USER AGENT: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:66.0) Gecko/20100101 Firefox/66.0
+# Design number was non-random = 381
+#
+# Columns below this comment are as follows:
+# 1. Time results were received.
+# 2. MD5 hash of participant's IP address.
+# 3. Controller name.
+# 4. Item number.
+# 5. Element number.
+# 6. Type.
+# 7. Group.
+# 8. PennElementType.
+# 9. PennElementName.
+# 10. Parameter.
+# 11. Value.
+# 12. EventTime.
+# 13. Comments.
+1554486054,664a7d314f2e86ff3e33203a6500cbdf,PennController,0,0,learn,NULL,PennController,1,_Trial_,Start,1554486041348,NULL
+1554486054,664a7d314f2e86ff3e33203a6500cbdf,PennController,0,0,learn,NULL,Selector,choice,Selection,image4,1554486042097,NULL
+1554486054,664a7d314f2e86ff3e33203a6500cbdf,PennController,0,0,learn,NULL,PennController,1,_Trial_,End,1554486042105,NULL
+1554486054,664a7d314f2e86ff3e33203a6500cbdf,PennController,1,0,learn,NULL,PennController,2,_Trial_,Start,1554486042111,NULL
+1554486054,664a7d314f2e86ff3e33203a6500cbdf,PennController,1,0,learn,NULL,Selector,choice,Selection,image2,1554486042232,NULL
+1554486054,664a7d314f2e86ff3e33203a6500cbdf,PennController,1,0,learn,NULL,PennController,2,_Trial_,End,1554486042236,NULL
+1554486054,664a7d314f2e86ff3e33203a6500cbdf,PennController,2,0,learn,NULL,PennController,3,_Trial_,Start,1554486042242,NULL
+1554486054,664a7d314f2e86ff3e33203a6500cbdf,PennController,2,0,learn,NULL,Selector,choice,Selection,image2,1554486042352,NULL
+1554486054,664a7d314f2e86ff3e33203a6500cbdf,PennController,2,0,learn,NULL,PennController,3,_Trial_,End,1554486042355,NULL
+1554486054,664a7d314f2e86ff3e33203a6500cbdf,PennController,3,0,transition,NULL,PennController,0,_Trial_,Start,1554486042364,NULL
+1554486054,664a7d314f2e86ff3e33203a6500cbdf,PennController,3,0,transition,NULL,PennController,0,_Trial_,End,1554486052718,NULL
+1554486054,664a7d314f2e86ff3e33203a6500cbdf,PennController,4,0,showwhatlearned,NULL,PennController,4,_Trial_,Start,1554486052727,NULL
+1554486054,664a7d314f2e86ff3e33203a6500cbdf,PennController,4,0,showwhatlearned,NULL,Selector,choice-test,Selection,distractor1,1554486053501,NULL
+1554486054,664a7d314f2e86ff3e33203a6500cbdf,PennController,4,0,showwhatlearned,NULL,PennController,4,_Trial_,End,1554486053503,NULL
+1554486054,664a7d314f2e86ff3e33203a6500cbdf,PennController,5,0,showwhatlearned,NULL,PennController,5,_Trial_,Start,1554486053507,NULL
+1554486054,664a7d314f2e86ff3e33203a6500cbdf,PennController,5,0,showwhatlearned,NULL,Selector,choice-test,Selection,distractor1,1554486054008,NULL
+1554486054,664a7d314f2e86ff3e33203a6500cbdf,PennController,5,0,showwhatlearned,NULL,PennController,5,_Trial_,End,1554486054009,NULL
+1554486054,664a7d314f2e86ff3e33203a6500cbdf,PennController,6,0,showwhatlearned,NULL,PennController,6,_Trial_,Start,1554486054014,NULL
+1554486054,664a7d314f2e86ff3e33203a6500cbdf,PennController,6,0,showwhatlearned,NULL,Selector,choice-test,Selection,distractor1,1554486054408,NULL
+1554486054,664a7d314f2e86ff3e33203a6500cbdf,PennController,6,0,showwhatlearned,NULL,PennController,6,_Trial_,End,1554486054409,NULL

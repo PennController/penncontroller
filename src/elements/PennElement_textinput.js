@@ -1,8 +1,12 @@
 // TEXTINPUT element
+/* $AC$ PennController.newTextInput(name,text) Creates a new TextInput element $AC$ */
+/* $AC$ PennController.getTextInput(name) Retrieves an existing TextInput element $AC$ */
 window.PennController._AddElementType("TextInput", function(PennEngine) {
 
     // This is executed when Ibex runs the script in data_includes (not a promise, no need to resolve)
     this.immediate = function(id, text){
+        if (id===undefined)
+            this.id = PennEngine.utils.guidGenerator();
         this.initialText = text;                            // In case this gets changed later
     };
 
@@ -107,7 +111,7 @@ window.PennController._AddElementType("TextInput", function(PennEngine) {
             }
             PennEngine.elements.standardCommands.actions.print.apply(this, [afterPrint, where]);
         },
-        wait: function(resolve, test){
+        wait: function(resolve, test){  /* $AC$ TextInput PElement.wait() Waits until Enter is pressed in the input box before proceeding $AC$ */
             if (test == "first" && this.entered)    // If first and already entered, resolve already
                 resolve();
             else {                                  // Else, extend pressEnter and do the checks
@@ -139,20 +143,20 @@ window.PennController._AddElementType("TextInput", function(PennEngine) {
     };
     
     this.settings = {
-        length: function(resolve, n){
+        length: function(resolve, n){  /* $AC$ TextInput PElement.settings.length(number) Limits the maximum number of characters in the input box to the specified number $AC$ */
             this.length = Number(n);
             if (isNaN(this.length))
                 this.length = 0;
             resolve();
         },
-        lines: function(resolve, n){
+        lines: function(resolve, n){  /* $AC$ TextInput PElement.settings.lines(number) Limits the maximum number of lines in the input box to the specified number $AC$ */
             this.rows = Number(n);
             if (isNaN(this.rows))
                 this.rows = 0;
             this.jQueryElement.attr("rows", this.rows);
             resolve();
         },
-        log: function(resolve, ...what){
+        log: function(resolve, ...what){  /* $AC$ TextInput PElement.settings.log() Will log the text from the input box in the results file $AC$ */
             if (!what.length)
                 what = ["final", "validate", "first"];
             this.log = what;
@@ -163,7 +167,7 @@ window.PennController._AddElementType("TextInput", function(PennEngine) {
                              "</div>");
             resolve();
         },
-        once: function(resolve){
+        once: function(resolve){  /* $AC$ TextInput PElement.settings.once() Will disable the input box after the first keypress on Enter/Return $AC$ */
             if (this.entered)
                 this.jQueryElement.attr("disabled", true);
             else{
@@ -175,7 +179,7 @@ window.PennController._AddElementType("TextInput", function(PennEngine) {
             }
             resolve();
         },
-        text: function(resolve, text){
+        text: function(resolve, text){  /* $AC$ TextInput PElement.settings.text(value) Replaces whatever is in the input box with the specified value $AC$ */
             this.text = text;
             this.jQueryElement.val(text);
             resolve();
@@ -183,7 +187,7 @@ window.PennController._AddElementType("TextInput", function(PennEngine) {
     };
 
     this.test = {
-        text: function(text){
+        text: function(text){  /* $AC$ TextInput PElement.test.text(value) Checks that the content of the input box corresponds to the specified value $AC$ */
             if (text instanceof RegExp)
                 return this.jQueryElement.val().match(text);
             else

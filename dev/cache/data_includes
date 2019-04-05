@@ -1,22 +1,171 @@
-const FONTSIZE = 15;
-const SPEED = 1.5;
-const UPDATEBLURRATE = 10;
-const LEFTRIGHTGAP = 0;
-const BLURSIZE = 50;
-let Xs = [];
+// const FONTSIZE = 15;
+// const SPEED = 1.5;
+// const UPDATEBLURRATE = 10;
+// const LEFTRIGHTGAP = 0;
+// const BLURSIZE = 50;
+// let Xs = [];
 
 PennController.ResetPrefix(null);
 PennController.Debug();
+//PennController.PreloadZip("https://sprouse.uconn.edu/downloads/syllabicity/mixed.zip");
 
-PennController(
-    newDropDown("drop", "")
-        .settings.log("first")
-        .settings.add("A", "B", "C", "D")
-        .shuffle()
+//PennController.AddHost("http://localhost/");
+PennController.AddHost("http://files.lab.florianschwarz.net/ibexfiles/Pictures/");
+
+PennController.AddTable("wordlearning",
+    "item,group,condition,image1,image2,image3,image4,imageSwitch,word\n"+
+    "1,A,same,candy.png,cardigan.png,checkmark.png,chips.png,coffee.png,wug\n"+
+    "2,A,switch,coffee.png,computer.png,cookie.png,digital_watch.png,dress.png,dax\n"+
+    "3,A,same,dress.png,dress_shirt.png,dress_socks.png,drums.png,candy.png,spleg\n"+
+    "1,B,switch,candy.png,cardigan.png,checkmark.png,chips.png,coffee.png,wug\n"+
+    "2,B,same,coffee.png,computer.png,cookie.png,digital_watch.png,dress.png,dax\n"+
+    "3,B,switch,dress.png,dress_shirt.png,dress_socks.png,drums.png,candy.png,spleg"
+);
+
+PennController.Template( "wordlearning" ,
+    row => PennController( "learn" ,
+        newVar("choice-"+row.item)
+            .settings.global()
+        ,
+        newVar("nonchoice-"+row.item)
+            .settings.global()
+        ,
+        newSelector("choice")
+            .settings.log()
+        ,
+        newText(row.word)
+            .settings.center()
+            .print()
+        ,
+        newCanvas("images", 630, 150)
+            .print()
+            .settings.add(   0 , 0 , newImage("image1", row.image1).settings.selector("choice") )
+            .settings.add( 160 , 0 , newImage("image2", row.image2).settings.selector("choice") )
+            .settings.add( 320 , 0 , newImage("image3", row.image3).settings.selector("choice") )
+            .settings.add( 480 , 0 , newImage("image4", row.image4).settings.selector("choice") )
+        ,
+        getSelector("choice")
+            .shuffle()
+            .wait()
+            .setVar("choice-"+row.item)
+            .test.selected( getImage("image1") )
+                .success( getVar("nonchoice-"+row.item).set(row.image2) )
+                .failure( getVar("nonchoice-"+row.item).set(row.image1) )
+    )
+)
+
+PennController( "transition",
+    newVar("times7")
+    ,
+    newText("Enter a number between 3 and 9")
         .print()
     ,
-    newButton("wait").print().wait()
+    newTextInput("number")
+        .settings.center()
+        .print()
+        .wait( getTextInput("number").test.text(/^[3-9]$/) )
+        .settings.disable()
+        .setVar("times7")
+    ,
+    getVar("times7")
+        .set(v=>v*7)
+    ,
+    newText("Multiply this number by 7 and enter it below")
+        .print()
+    ,
+    newTextInput("answer")
+        .settings.center()
+        .print()
+        .wait( getTextInput("answer").test.text(getVar("times7")) )
+        .settings.disable()
+    ,
+    newButton("Good, now click to continue")
+        .print()
+        .wait()
 )
+
+
+PennController.Template( "wordlearning" ,
+    row => PennController( "showwhatlearned" ,
+        newText(row.word)
+            .settings.center()
+            .print()
+        ,
+        newCanvas( "show" , 320 , 150 )
+            .settings.add( 0 , 0 , row.condition=="same"?getVar("choice-"+row.item):newImage("nonchoice",row.imageSwitch) )
+            .print()
+        ,
+        newSelector("choice-test")
+            .settings.log()
+            .settings.add( row.condition=="same"?getVar("choice-"+row.item):getImage("nonchoice") )
+        ,
+        getVar("nonchoice-"+row.item)
+            .test.is(row.image1)
+            .success( getCanvas("show")
+                .settings.add( 160 , 0 , newImage("distractor1",row.image1).settings.selector("choice-test") )
+            )
+            .failure( getCanvas("show")
+                .settings.add( 160 , 0 , newImage("distractor2",row.image2).settings.selector("choice-test") )
+            )
+        ,
+        getSelector("choice-test")
+            .shuffle()
+            .wait()
+    )
+)
+
+
+// PennController(
+//     newImage("sound", "http://localhost:3000/server.py?resource=blackboard.png")
+//         .print()
+//     ,
+//     newTextInput("waf", "wouf wouf")
+//         .print()
+//     ,
+//     newButton("Continue")
+//         .print()
+//         .wait( getTextInput("waf").testNot.text(/^\W*$/) )
+//     ,
+//     //...DashFlashDash("The crocodile returned", "alligator", 50, "to the water")
+//     //,
+//     newVar("wouf", 0)
+//     ,
+//     newDropDown("drop", " ")          // Default text (not an option) is an empty space
+//         .settings.log()               // Log the last selection (default; alternatively pass "first" or "all")
+//         .settings.add("was", "is", "will be", "be")     // The options
+//         .shuffle(true)                // Shuffle the order in which the options are presented
+//     ,
+//     newText("beginning", "The little boy &nbsp;")
+//         .settings.after(
+//             getDropDown("drop").settings.after( newText("end", "&nbsp; sick all day long.") )
+//         )
+//     ,
+//     newSelector("test")
+//         .settings.add( getText("beginning") , getText("end") )
+//         .settings.keys( "A"                 ,    "B"     )
+//         .select( getText("end") )
+//     ,
+//     getText("beginning")
+//         .print()
+//     ,
+//     getDropDown("drop")
+//         .wait()
+//     ,
+//     getVar("wouf")
+//         .set(2)
+//     ,
+//     newButton("continue", "Continue")
+//         .print()
+//         .wait( getVar("wouf").test.is(2) )
+//     ,
+//     newText("link", "<p><a href='https://app.prolific.ac/submissions/complete?cc=G5NNLD6T' target='_'>"+
+//                     "Click here to validate your submission and receive your compensation.</a></p>")
+//         .settings.css({"font-weight": "bold", "font-size": "1.5em", "font-family": "sans-serif"})
+//         .settings.center()
+//         .print()
+// )
+
+
 
 // PennController(
 //     newButton("validate","validate")

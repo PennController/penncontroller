@@ -1,4 +1,6 @@
 // AUDIO element
+/* $AC$ PennController.newAudio(name,file) Creates a new Audio element $AC$ */
+/* $AC$ PennController.getAudio(name) Retrieves an existing Audio element $AC$ */
 window.PennController._AddElementType("Audio", function(PennEngine) {
 
     // This is executed when Ibex runs the script in data_includes (not a promise, no need to resolve)
@@ -105,19 +107,19 @@ window.PennController._AddElementType("Audio", function(PennEngine) {
 
     this.actions = {
         // Every method is converted into a Promise (so need to resolve)
-        play: function(resolve){
+        play: function(resolve){        /* $AC$ Audio PElement.play() Starts the audio playback $AC$ */
             if (this.hasOwnProperty("audio") && this.audio instanceof Audio)
                 this.audio.play();
             else
                 PennEngine.debug.error("No audio to play for element ", this.id);
             resolve();
         },
-        pause: function(resolve){
+        pause: function(resolve){      /* $AC$ Audio PElement.pause() Pauses the audio playback $AC$ */
             this.audio.pause();
             resolve();
         }
         ,
-        print: function(resolve, where){
+        print: function(resolve, where){      /* $AC$ Audio PElement.print() Prints an interface to control the audio playback $AC$ */
             let afterPrint = ()=>{
                 if (this.disabled)
                     this.printDisable();
@@ -125,14 +127,14 @@ window.PennController._AddElementType("Audio", function(PennEngine) {
             };
             PennEngine.elements.standardCommands.actions.print.apply(this, [afterPrint, where]);
         },
-        stop: function(resolve){
+        stop: function(resolve){      /* $AC$ Audio PElement.stop() Stops the audio playback $AC$ */
             this.audio.pause();
             this.audio.currentTime = 0;
             resolve();
         }
         ,
         // Here, we resolve only when the audio ends (and the test is felicitous, if provided)
-        wait: function(resolve, test){
+        wait: function(resolve, test){      /* $AC$ Audio PElement.wait() Waits until the audio playback has ended $AC$ */
             if (test == "first" && this.hasPlayed)  // If first and has already played, resolve already
                 resolve();
             else {                                  // Else, extend onend and do the checks
@@ -164,13 +166,13 @@ window.PennController._AddElementType("Audio", function(PennEngine) {
     };
     
     this.settings = {
-        disable: function(resolve){
+        disable: function(resolve){      /* $AC$ Audio PElement.settings.disable() Disables the interface $AC$ */
             this.printDisable();
             this.disabled = true;
             resolve();
         }
         ,
-        enable: function(resolve){
+        enable: function(resolve){      /* $AC$ Audio PElement.settings.enable() Enables the interface $AC$ */
             if (this.jQueryDisable instanceof jQuery){
                 this.disabled = false;
                 this.jQueryDisable.remove();
@@ -181,7 +183,7 @@ window.PennController._AddElementType("Audio", function(PennEngine) {
         }
         ,
         // Every setting is converted into a Promise (so resolve)
-        once: function(resolve){
+        once: function(resolve){      /* $AC$ Audio PElement.settings.once() The interface will be disabled after the first playback $AC$ */
             if (this.hasPlayed){
                 this.disabled = true;
                 this.printDisable();
@@ -197,7 +199,7 @@ window.PennController._AddElementType("Audio", function(PennEngine) {
             resolve();
         }
         ,
-        log: function(resolve,  ...what){
+        log: function(resolve,  ...what){      /* $AC$ Audio PElement.settings.log() Logs playback events $AC$ */
             if (what.length==1 && typeof(what[0])=="string")
                 this.whatToSave.push(what);
             else if (what.length>1)
@@ -210,11 +212,11 @@ window.PennController._AddElementType("Audio", function(PennEngine) {
     
     this.test = {
         // Every test is used within a Promise back-end, but it should simply return true/false
-        hasPlayed: function(){
+        hasPlayed: function(){      /* $AC$ Audio PElement.test.hasPlayed() Checks whether the audio has ever been played fully $AC$ */
             return this.hasPlayed;
         }
         ,
-        playing: function(){
+        playing: function(){      /* $AC$ Audio PElement.test.playing() Checks whether the audio is currently playing $AC$ */
             return this.audio.currentTime&&!this.audio.paused;
         }
     };

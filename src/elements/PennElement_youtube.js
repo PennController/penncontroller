@@ -1,4 +1,6 @@
 // YOUTUBE element
+/* $AC$ PennController.newYoutube(name,url) Creates a new Youtube element with the specified URL $AC$ */
+/* $AC$ PennController.getYoutube(name) Retrieves an existing Youtube element $AC$ */
 window.PennController._AddElementType("Youtube", function(PennEngine) {
 
     const MutationObserver =
@@ -175,15 +177,15 @@ window.PennController._AddElementType("Youtube", function(PennEngine) {
     };
 
     this.actions = {
-        play: function(resolve){
+        play: function(resolve){    /* $AC$ Youtube PElement.play() Starts playing the video (visible only if print was called) $AC$ */
             this.player.playVideo();
             resolve();
         },
-        pause: function(resolve){
+        pause: function(resolve){    /* $AC$ Youtube PElement.pause() Pauses the video $AC$ */
             this.player.pauseVideo();
             resolve();
         },
-        print: function(resolve, where){
+        print: function(resolve, where){    /* $AC$ Youtube PElement.print() Shows Youtube's video player $AC$ */
             let afterPrint = ()=>{
                 let pos = this.jQueryElement.offset();
                 this.iframe.css({position:"absolute", left: pos.left, top: pos.top, display: "inline-block"});
@@ -216,16 +218,16 @@ window.PennController._AddElementType("Youtube", function(PennEngine) {
             };
             PennEngine.elements.standardCommands.actions.print.apply(this, [afterPrint, where]);
         },
-        remove: function(resolve){
+        remove: function(resolve){    /* $AC$ Youtube PElement.remove() Removes Youtube's video player $AC$ */
             this.iframe.css("display","none");
             PennEngine.elements.standardCommands.actions.remove.apply(this, [resolve]);
         },
-        stop: function(resolve){
+        stop: function(resolve){    /* $AC$ Youtube PElement.stop() Stops the video and goes back to the beginning $AC$ */
             this.player.pauseVideo();
             this.player.seekTo(0);
             resolve();
         },
-        wait: function(resolve, test){
+        wait: function(resolve, test){    /* $AC$ Youtube PElement.wait() Wait until the video reaches the end before proceeding $AC$ */
             if (test == "first" && this.hasPlayed)  // If first and has already played, resolve already
                 resolve();
             else {                                  // Else, extend onend and do the checks
@@ -257,12 +259,12 @@ window.PennController._AddElementType("Youtube", function(PennEngine) {
     };
     
     this.settings = {
-        disable: function(resolve){
+        disable: function(resolve){    /* $AC$ Youtube PElement.settings.disable() Disables the Youtube video player $AC$ */
             this.printDisable();
             this.disabled = true;
             resolve();
         },
-        enable: function(resolve){
+        enable: function(resolve){    /* $AC$ Youtube PElement.settings.enable() Enables the Youtube video player (again) $AC$ */
             if (this.jQueryDisable instanceof jQuery){
                 this.disabled = false;
                 this.jQueryDisable.remove();
@@ -271,7 +273,7 @@ window.PennController._AddElementType("Youtube", function(PennEngine) {
             }
             resolve();
         },
-        once: function(resolve){
+        once: function(resolve){    /* $AC$ Youtube PElement.settings.once() Will disable the Youtube video player after the video has played once $AC$ */
             if (this.hasPlayed)
                 this.disabled = true;
             else {
@@ -284,7 +286,7 @@ window.PennController._AddElementType("Youtube", function(PennEngine) {
             }
             resolve();
         },
-        log: function(resolve,  ...what){
+        log: function(resolve,  ...what){    /* $AC$ Youtube PElement.settings.log() Will log play and/or stop events in the results file $AC$ */
             if (what.length)
                 this.log = what;
             else
@@ -303,10 +305,10 @@ window.PennController._AddElementType("Youtube", function(PennEngine) {
     };
     
     this.test = {
-        hasPlayed: function(){
+        hasPlayed: function(){    /* $AC$ Youtube PElement.test.hasPlayed() Checks that the video has ever played through before $AC$ */
             return this.hasPlayed;
         },
-        playing: function(){
+        playing: function(){    /* $AC$ Youtube PElement.test.playing() Checks that the video is currently playing $AC$ */
             return this.player.getPlayerState()==1;
         }
     };

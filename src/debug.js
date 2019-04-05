@@ -46,7 +46,7 @@ class PopIn {
                 cursor: "pointer",
                 overflow: "hidden"
             }).click(function(){
-                t.container.detach();
+                t.popOut();
             }).mouseenter(function(){ $(this).css({border: "solid 1px lightgray", 'border-radius': "2px"}); })
             .mouseleave(function(){ $(this).css({border: "none"}); })
         ).mousedown(function(e){
@@ -118,7 +118,6 @@ class PopIn {
         this.container.append(this.titleBar);
         this.container.append(this.tabBar);
         this.container.append(this.content);
-        $(document.body).append(this.container);
         this.container.css({left: x, top: y});
         $(document).mousemove(function(e){
             if (t.updatePosition){
@@ -132,6 +131,12 @@ class PopIn {
                 t.container.css({width: t.width, height: t.height});
             }
         }).mouseup(function(){ t.updatePosition = false; t.updateSize = false; });
+    }
+    popIn() {
+        $(document.body).append(this.container);
+    }
+    popOut() {
+        this.container.detach();
     }
 }
 
@@ -265,8 +270,10 @@ let showTables = table=>{
 let oldAddSafeBindMethodPair = window.addSafeBindMethodPair;
 window.addSafeBindMethodPair = controllerType => {
     oldAddSafeBindMethodPair(controllerType);
-    if (!PennEngine.debug.on)
+    if (!PennEngine.debug.on){
+        window.items = undefined;
         return;
+    }
     if (controllerType == "__SendResults__")
         HAS_REACHED_SEND_RESULTS = true;
     if (debug.runningIndex<0)
@@ -316,20 +323,23 @@ window.addSafeBindMethodPair = controllerType => {
         $(debug.logTab.controls.children()[1]).css("display","none")
 };
 
+
+
+// Creation of the debug popin
+debug.popin = new PopIn("Debug", 290, 190, window.innerWidth - 300, window.innerHeight - 200);
+debug.logTab = debug.popin.newTab("Log");               // First tab: console
+debug.logTab.controls = $("<div>")
+    .append( $("<button>Next screen</button>").click(()=>debug.currentController._finishedCallback()) )
+    .append( $("<button>Next command</button>").click(()=>PennEngine.debug.forceResolve()) )
+    .css({background: "lightgray", "border-bottom": "dotted 1px black"})
+    .appendTo( debug.logTab.content );
+debug.logTab.log = $("<div>").appendTo( debug.logTab.content );
+debug.errorsTab = debug.popin.newTab("Errors");         // Second tab: errors
+
 PennEngine.Prerun(
     ()=>{
         if (!PennEngine.debug.on)
             return;
-        // Creation of the debug popin
-        debug.popin = new PopIn("Debug", 290, 190, window.innerWidth - 300, window.innerHeight - 200);
-        debug.logTab = debug.popin.newTab("Log");               // First tab: console
-        debug.logTab.controls = $("<div>")
-            .append( $("<button>Next screen</button>").click(()=>debug.currentController._finishedCallback()) )
-            .append( $("<button>Next command</button>").click(()=>PennEngine.debug.forceResolve()) )
-            .css({background: "lightgray", "border-bottom": "dotted 1px black"})
-            .appendTo( debug.logTab.content );
-        debug.logTab.log = $("<div>").appendTo( debug.logTab.content );
-        debug.errorsTab = debug.popin.newTab("Errors");         // Second tab: errors
         // Retrieve the list of trials
         let oldRunShuffleSequence = window.runShuffleSequence;
         window.runShuffleSequence = function(...args) {         // runShuffle... = just before call to conf_modify...
@@ -396,6 +406,8 @@ PennEngine.Prerun(
                 return;
             return "Your results have not been sent yet. Do you really want to leave the page?";
         };
+
+        debug.popin.popIn();
 
     }
 );

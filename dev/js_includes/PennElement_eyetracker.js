@@ -1,4 +1,6 @@
 // EYETRACKER element
+/* $AC$ PennController.newEyeTracker(name) Creates a new EyeTracker element $AC$ */
+/* $AC$ PennController.getEyeTracker(name) Retrieves an existing EyeTracker element $AC$ */
 window.PennController._AddElementType("EyeTracker", function(PennEngine) {
 
     let tracker;
@@ -10,44 +12,44 @@ window.PennController._AddElementType("EyeTracker", function(PennEngine) {
     let calibrated = false;
     let moveEvent = null;
 
-    $(window.document).keypress(e=>{
-        if (e.which==32){
-            let target = $("<div>").css({position: "absolute", background: "green",
-                                        width: 20, height: 20, "border-radius": 10, top: 400, left: 400});
-            $("#bod").append(target);
-            let horizontal = "right", vertical = "none";
-            let cycle = function(){
-                let pos = target.offset();
-                if (horizontal == "right"){
-                    target.offset({left: pos.left+2, top: pos.top});
-                    if (pos.left > 700)
-                        horizontal = "left";
-                } 
-                else if (horizontal == "left"){
-                    target.offset({left: pos.left-2, top: pos.top});
-                    if (pos.left < 200){
-                        horizontal = "none";
-                        vertical = "up";
-                    }
-                }
-                else if (vertical == "up"){
-                    target.offset({left: pos.left, top: pos.top-2});
-                    if (pos.top < 100)
-                        vertical = "down";
-                }
-                else if (vertical == "down"){
-                    target.offset({left: pos.left, top: pos.top+2});
-                    if (pos.top > 600)
-                        vertical = "none";
-                }
-                else
-                    return;
-                moveEvent({clientX: pos.left, clientY: pos.top});
-                setTimeout(cycle, 5);
-            };
-            cycle();
-        }
-    })
+    // $(window.document).keypress(e=>{
+    //     if (e.which==32){
+    //         let target = $("<div>").css({position: "absolute", background: "green",
+    //                                     width: 20, height: 20, "border-radius": 10, top: 400, left: 400});
+    //         $("#bod").append(target);
+    //         let horizontal = "right", vertical = "none";
+    //         let cycle = function(){
+    //             let pos = target.offset();
+    //             if (horizontal == "right"){
+    //                 target.offset({left: pos.left+2, top: pos.top});
+    //                 if (pos.left > 700)
+    //                     horizontal = "left";
+    //             } 
+    //             else if (horizontal == "left"){
+    //                 target.offset({left: pos.left-2, top: pos.top});
+    //                 if (pos.left < 200){
+    //                     horizontal = "none";
+    //                     vertical = "up";
+    //                 }
+    //             }
+    //             else if (vertical == "up"){
+    //                 target.offset({left: pos.left, top: pos.top-2});
+    //                 if (pos.top < 100)
+    //                     vertical = "down";
+    //             }
+    //             else if (vertical == "down"){
+    //                 target.offset({left: pos.left, top: pos.top+2});
+    //                 if (pos.top > 600)
+    //                     vertical = "none";
+    //             }
+    //             else
+    //                 return;
+    //             moveEvent({clientX: pos.left, clientY: pos.top});
+    //             setTimeout(cycle, 5);
+    //         };
+    //         cycle();
+    //     }
+    // })
 
     // GENERIC FUNCTIONS
     //
@@ -425,35 +427,35 @@ window.PennController._AddElementType("EyeTracker", function(PennEngine) {
     };
 
     this.actions = {
-        calibrate(resolve, threshold, attempts){
+        calibrate(resolve, threshold, attempts){    /* $AC$ EyeTracker PElement.calibrate(threshold,attempts) Starts a sequence of calibration $AC$ */
             if (!(Number(attempts)>0))
                 attempts = -1;
             calibrate(resolve, this, threshold, attempts);
         },
-        hideFeedback: function(resolve){
+        hideFeedback: function(resolve){    /* $AC$ EyeTracker PElement.hideFeedback() Hides the red dot estimating the position of the eyes on the page $AC$ */
             showTracker(false);
             resolve();
         },
-        start: function(resolve){
+        start: function(resolve){    /* $AC$ EyeTracker PElement.start() Starts parsing eye movements $AC$ */
             this.enabled = true;
             currentTracker = this;
             resolve();
         },
-        stop: function(resolve){
+        stop: function(resolve){    /* $AC$ EyeTracker PElement.stop() Stops parsing eye movements $AC$ */
             this.enabled = false;
             currentTracker = undefined;
             resolve();
         },
-        stopTraining: function(resolve){
+        stopTraining: function(resolve){    /* $AC$ EyeTracker PElement.stopTraining() Stop training the model whenever the mouse moves or clicks $AC$ */
             getGazer().removeMouseEventListeners();
             getGazer().showPredictionPoints(false);
             resolve();
         },
-        showFeedback: function(resolve){
+        showFeedback: function(resolve){    /* $AC$ EyeTracker PElement.showFeedback() Shows the red dot estimating the position of the eyes on the page $AC$ */
             showTracker();
             resolve();
         },
-        train: function(resolve, showDot){
+        train: function(resolve, showDot){    /* $AC$ EyeTracker PElement.train() Starts training the model on every click and mouse movement (default) $AC$ */
             getGazer().addMouseEventListeners();
             if (!this.trainOnMouseMove)
                 document.removeEventListener("mousemove", moveEvent, true);
@@ -463,7 +465,7 @@ window.PennController._AddElementType("EyeTracker", function(PennEngine) {
     }
 
     this.settings = {
-        add: function(resolve, ...elements){
+        add: function(resolve, ...elements){    /* $AC$ EyeTracker PElement.settings.add(elements) Adds one or more elements of interest to the EyeTracker $AC$ */
             for (let e = 0; e < elements.length; e++){
                 let element = elements[e];
                 if (element && element._element && this.elements.indexOf(element._element)<0){
@@ -473,16 +475,16 @@ window.PennController._AddElementType("EyeTracker", function(PennEngine) {
             }
             resolve();
         },
-        callback: function(resolve, func){
+        callback: function(resolve, func){    /* $AC$ EyeTracker PElement.settings.callback(function) Runs the specified javascript function whenever the eyes look at an element of interest $AC$ */
             if (func instanceof Function)
                 this.callback = func;
             resolve();
         },
-        log: function(resolve){
+        log: function(resolve){    /* $AC$ EyeTracker PElement.settings.log() Logs the X and Y positions of the eyes every N milliseconds (see documentation) $AC$ */
             this.log = true;
             resolve();
         },
-        trainOnMouseMove: function(resolve, yesNo){
+        trainOnMouseMove: function(resolve, yesNo){    /* $AC$ EyeTracker PElement.settings.trainOnMouseMove(true) Tells the model whether to use mouse movements to improve its estimations $AC$ */
             this.trainOnMouseMove = yesNo===undefined||yesNo;
             if (!this.trainOnMouseMove)
                 document.removeEventListener("mousemove", moveEvent, true);

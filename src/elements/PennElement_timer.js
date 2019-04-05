@@ -1,4 +1,6 @@
 // TIMER element
+/* $AC$ PennController.newTimer(name,duration) Creates a new Timer element $AC$ */
+/* $AC$ PennController.getTimer(name) Retrieves an existing Timer element $AC$ */
 window.PennController._AddElementType("Timer", function(PennEngine) {
 
     // This is executed when Ibex runs the script in data_includes (not a promise, no need to resolve)
@@ -52,18 +54,18 @@ window.PennController._AddElementType("Timer", function(PennEngine) {
     };
     
     this.actions = {
-        start: function(resolve){
+        start: function(resolve){   /* $AC$ Timer PElement.start() Starts the timer $AC$ */
             this.start();
             resolve();
         },
-        stop: function(resolve){
+        stop: function(resolve){   /* $AC$ Timer PElement.stop() Stops the timer $AC$ */
             if (!this.instance)
                 return resolve();
             clearTimeout(this.instance);
             this.done();
             resolve();
         },
-        wait: function(resolve, test){
+        wait: function(resolve, test){   /* $AC$ Timer PElement.wait() Waits until the timer elapses before proceeding $AC$ */
             if (test == "first" && this.elapsed)            // If first and already elapsed, resolve already
                 resolve();
             else {                                          // Else, extend remove and do the checks
@@ -90,7 +92,7 @@ window.PennController._AddElementType("Timer", function(PennEngine) {
     };
     
     this.settings = {
-        callback: function(resolve, ...elementCommands){
+        callback: function(resolve, ...elementCommands){   /* $AC$ Timer PElement.settings.callback(commands) Will execute the specified command(s) whenever the timer elapses $AC$ */
             let oldDone = this.done;
             this.done = async function() {
                 oldDone.apply(this);
@@ -99,17 +101,17 @@ window.PennController._AddElementType("Timer", function(PennEngine) {
             };
             resolve();
         },
-        log: function(resolve){
+        log: function(resolve){   /* $AC$ Timer PElement.settings.log() Will log when the timer starts and ends in the results file $AC$ */
             this.log = true;
             resolve();
         }
     };
 
     this.test = {
-        ended: function(){
+        ended: function(){   /* $AC$ Timer PElement.test.ended() Checks that the timer has ever elapsed before $AC$ */
             return this.elapsed;
         },
-        running: function(){
+        running: function(){   /* $AC$ Timer PElement.test.running() Checks that the timer is currently running $AC$ */
             return this.running;
         }
     };

@@ -1578,6 +1578,8 @@ def control(env, start_response):
                 for fname in os.listdir(os.path.join(PWD, CFG['CHUNK_INCLUDES_DIR'])):
                     if fname.endswith(".wav") or fname.endswith(".mp3") or fname.endswith("m4a"):
                         continue
+                    if fname.endswith(".png") or fname.endswith(".jpg") or fname.endswith(".bmp"):
+                        continue
                     f = None
                     try:
                         try:
@@ -1617,8 +1619,10 @@ def control(env, start_response):
                             f.close()
                             raise StopIteration
                         yield block
-
-                start_response('200 OK', [('Content-Type', 'audio/mpeg'), ('Content-Length', stats.st_size)])
+                if qs_hash['resource'][0].endswith(".wav")  or qs_hash['resource'][0].endswith(".mp3") or qs_hash['resource'][0].endswith(".m4a"):
+                    start_response('200 OK', [('Content-Type', 'audio/mpeg'), ('Content-Length', stats.st_size)])
+                elif qs_hash['resource'][0].endswith(".png") or qs_hash['resource'][0].endswith(".jpg") or qs_hash['resource'][0].endswith(".bmp"):
+                    start_response('200 OK', [('Content-Type', 'image/*'), ('Content-Length', stats.st_size)])
                 return it()
             except IOError, e:
                 start_response('500 Internal Server Error' [('Content-Type', 'text/html; charset=UTF-8')])

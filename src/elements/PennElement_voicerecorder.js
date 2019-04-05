@@ -1,4 +1,6 @@
 // VOICERECORDER element
+/* $AC$ PennController.newVoiceRecorder(name,file) Creates a new VoiceRecorder element $AC$ */
+/* $AC$ PennController.getVoiceRecorder(name) Retrieves an existing Video element $AC$ */
 window.PennController._AddElementType("VoiceRecorder", function(PennEngine) {
 
     // ====== INTERNAL SETTINGS AND FUNCTIONS ====== //
@@ -29,7 +31,7 @@ window.PennController._AddElementType("VoiceRecorder", function(PennEngine) {
     let resolveStop = [];           // List of promises to resolve on stop
 
     // This controller MUST be manually added to items and specify a URL to a PHP file for uploading the archive
-    window.PennController.InitiateRecorder = function(saveURL, message) {
+    window.PennController.InitiateRecorder = function(saveURL, message) {    /* $AC$ global.PennController.InitiateRecorder(url,message) Sets the URL where to upload the recordings and creates a trial inviting the user to activate their microphone $AC$ */
         if (!typeof(url)=="string" || !saveURL.match(/^http.+/i))
             PennEngine.debug.error("VoiceRecorder's save URL is incorrect", saveURL);
         uploadURL = saveURL;                                    // Assign a URL
@@ -317,7 +319,7 @@ window.PennController._AddElementType("VoiceRecorder", function(PennEngine) {
     
 
     this.actions = {
-        play: function(resolve){
+        play: function(resolve){    /* $AC$ VoiceRecorder PElement.play() Starts playing back the recording $AC$ */
             if (this.audioPlayer && this.audioPlayer.src){
                 if (this.audioPlayer.currentTime && this.audioPlayer.currentTime != 0)
                     this.audioPlayer.currentTime = 0;
@@ -326,11 +328,11 @@ window.PennController._AddElementType("VoiceRecorder", function(PennEngine) {
             else
                 resolve();
         },
-        record: async function(resolve){
+        record: async function(resolve){    /* $AC$ VoiceRecorder PElement.record() Starts recording $AC$ */
             await this.start();
             resolve();
         },
-        stop: async function(resolve){
+        stop: async function(resolve){    /* $AC$ VoiceRecorder PElement.stop() Stops playback or recording $AC$ */
             await this.stop();
             if (this.audioPlayer && this.audioPlayer.src){
                 this.audioPlayer.pause();
@@ -339,7 +341,7 @@ window.PennController._AddElementType("VoiceRecorder", function(PennEngine) {
             }
             resolve();
         },
-        wait: function(resolve, test){
+        wait: function(resolve, test){    /* $AC$ VoiceRecorder PElement.wait() Waits until recording stops before proceeding $AC$ */
             if (test && typeof(test)=="string" && test.match(/first/i) && this.recordings.length)
                 resolve();                                  // If first and has already recorded, resolve already
             else if (test && typeof(test)=="string" && test.match(/play/i) && this.audioPlayer){
@@ -395,7 +397,7 @@ window.PennController._AddElementType("VoiceRecorder", function(PennEngine) {
                 .css("background-color", "red");
             resolve();
         },
-        once: function(resolve){
+        once: function(resolve){    /* $AC$ VoiceRecorder PElement.settings.once() Will disable the recording interface after the first recording is complete $AC$ */
             if (this.recordings.length){
                 this.disabled = true;
                 this.jQueryElement.find("button.PennController-"+this.type+"-record")
@@ -417,7 +419,7 @@ window.PennController._AddElementType("VoiceRecorder", function(PennEngine) {
             }
             resolve();
         },
-        log: function(resolve){
+        log: function(resolve){    /* $AC$ VoiceRecorder PElement.settings.log() Will log events in the results file $AC$ */
             this.log = true;
             resolve();
         }
@@ -425,15 +427,15 @@ window.PennController._AddElementType("VoiceRecorder", function(PennEngine) {
     
     this.test = {
         // Every test is used within a Promise back-end, but it should simply return true/false
-        hasPlayed: function(){
+        hasPlayed: function(){    /* $AC$ VoiceRecorder PElement.test.hasPlayed() Checks that the recording was fully played back before $AC$ */
             return this.hasPlayed;
         }
         ,
-        playing: function(){
+        playing: function(){    /* $AC$ VoiceRecorder PElement.test.playing() Checks that the recording is currently being played back $AC$ */
             return this.audio.currentTime&&!this.audio.paused;
         }
         ,
-        recorded: function(){
+        recorded: function(){    /* $AC$ VoiceRecorder PElement.test.recorded() Checks that recording has happened $AC$ */
             return this.blob;
         }
     };
@@ -441,7 +443,7 @@ window.PennController._AddElementType("VoiceRecorder", function(PennEngine) {
 });
 
 // Handler generating a HTML button to download the zip archive containing the voice recordings
-window.PennController.DownloadVoiceButton = function (text) {
+window.PennController.DownloadVoiceButton = function (text) {    /* $AC$ global.PennController.DownloadVoiceButton(text) Returns an HTML string representing a button to download an archive of the recordings $AC$ */
     return "<button type=\"button\" onclick=\""+
            "if (PennController.hasOwnProperty('downloadVoiceRecordingsArchive'))"+
            "  PennController.downloadVoiceRecordingsArchive();"+

@@ -14,7 +14,7 @@ PennEngine.utils.saveAs = saveAs;                               // saveAs is als
 
 // Loads the file at each URL passed as an argument
 // Files can be ZIP files, image files or audio files
-PennController.PreloadZip = function () {
+PennController.PreloadZip = function () {   /* $AC$ global.PennController.PreloadZip() Silently downloads a ZIP file containing resources $AC$ */
     for (let url in arguments)
         _URLsToLoad.push(arguments[url]);
 };

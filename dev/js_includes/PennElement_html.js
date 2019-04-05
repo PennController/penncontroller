@@ -1,4 +1,6 @@
 // HTML element
+/* $AC$ PennController.newHtml(name,file) Creates a new Html element $AC$ */
+/* $AC$ PennController.getHtml(name) Retrieves an existing Html element $AC$ */
 window.PennController._AddElementType("Html", function(PennEngine) {
 
     // Imported from Form.js
@@ -68,7 +70,7 @@ window.PennController._AddElementType("Html", function(PennEngine) {
     }
 
     this.immediate = function(id, html){
-        if (typeof(id)=="string" && html===undefined){
+        if (html===undefined){
             this.id = PennEngine.utils.guidGenerator();
             html = id;
         }
@@ -79,7 +81,7 @@ window.PennController._AddElementType("Html", function(PennEngine) {
         if (CHUNKS_DICT.hasOwnProperty(this.html))      // Check CHUNKS_DICT upon creation of element
             this.jQueryElement = $("<div>").html(htmlCodeToDOM({include: this.html}));
         else
-            this.jQueryElement = $("<div>").html(this.html);
+            this.jQueryElement = $("<div>").append(this.html);
         this.log = false;
         this.checkboxWarningMessage = "You must check the %name% checkbox to continue.";
         this.inputWarningMessage = "The \u2018%name%\u2019 field is obligatory.";
@@ -162,7 +164,7 @@ window.PennController._AddElementType("Html", function(PennEngine) {
     };
 
     this.actions = {
-        warn: function(resolve){
+        warn: function(resolve){    /* $AC$ Html PElement.warn() Displays warning messages if some obligatory fields were not filled $AC$ */
             var dom = this.jQueryElement[0];
 
             var inps = $(dom).find("input[type=text]");
@@ -214,26 +216,26 @@ window.PennController._AddElementType("Html", function(PennEngine) {
     };
 
     this.settings = {
-        checkboxWarning: function(resolve, message){
+        checkboxWarning: function(resolve, message){    /* $AC$ Html PElement.settings.checkboxWarning(message) Defines the warning message displayed when an obligatory checkbox group is not checked $AC$ */
             this.checkboxWarningMessage = message;
             resolve();
         },
-        inputWarning: function(resolve,message){
+        inputWarning: function(resolve,message){    /* $AC$ Html PElement.settings.inputWarning(message) Defines the warning message displayed when an obligatory input is not filled $AC$ */
             this.inputWarningMessage = message;
             resolve();
         },
-        log: function(resolve){
+        log: function(resolve){    /* $AC$ Html PElement.settings.log() Logs the values of the fields from the Html in the results file $AC$ */
             this.log = true;
             resolve();
         },
-        radioWarning: function(resolve, message){
+        radioWarning: function(resolve, message){    /* $AC$ Html PElement.settings.radioWarning(message) Defines the warning message displayed when an radio button group input is not selected $AC$ */
             this.radioWarningMessage = message;
             resolve();
         }
     };
 
     this.test = {
-        complete: function(){
+        complete: function(){    /* $AC$ Html PElement.test.complete() Checks that all the obligatory fields have been filled $AC$ */
             return isComplete.apply(this);
         }
     }

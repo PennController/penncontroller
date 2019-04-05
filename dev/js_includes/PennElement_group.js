@@ -11,6 +11,8 @@ window.PennController.ResetPrefix = function(prefixName) {
 };
 
 // GROUP element
+/* $AC$ PennController.newGroup(name,elements) Creates a new Group element $AC$ */
+/* $AC$ PennController.getGroup(name) Retrieves an existing Group element $AC$ */
 window.PennController._AddElementType("Group", function(PennEngine) {
 
     PennEngine.Prerun(()=>{
@@ -135,7 +137,7 @@ window.PennController._AddElementType("Group", function(PennEngine) {
     };
     
     this.actions = {
-        shuffle: function(resolve, ...elementCommands){
+        shuffle: function(resolve, ...elementCommands){ /* $AC$ Group PElement.shuffle() Shuffles the positions of the elements on the page $AC$ */
             shuffle.apply(this, [resolve].concat(elementCommands));
         }
     };
@@ -146,7 +148,7 @@ window.PennController._AddElementType("Group", function(PennEngine) {
     };
 
     this.settings = {
-        add: function(resolve, ...elementCommands){
+        add: function(resolve, ...elementCommands){ /* $AC$ Group PElement.settings.add(elements) Adds one or more elements to the group $AC$ */
             for (e in elementCommands) {
                 let element = elementCommands[e]._element;
                 if (element == undefined || element.id == undefined)
@@ -158,7 +160,7 @@ window.PennController._AddElementType("Group", function(PennEngine) {
             }
             resolve();
         },
-        remove: function(resolve, ...elementCommands){
+        remove: function(resolve, ...elementCommands){ /* $AC$ Group PElement.settings.remove(elements) Removes one or more elements from the group $AC$ */
             for (e in elementCommands) {
                 let element = elementCommands[e]._element;
                 let index = this.elements.indexOf(element);
@@ -187,7 +189,7 @@ window.PennController._AddElementType("Group", function(PennEngine) {
     }
 
     this.test = {
-        index: function(elementCommand, index){
+        index: function(elementCommand, index){     /* $AC$ Group PElement.test.index(element,index) Checks the index of the specified element in the group $AC$ */
             if (elementCommand == undefined || elementCommand._element == undefined)
                 return PennEngine.debug.error("Invalid element tested for Group "+this.id, elementCommand._element.id);
             else if (Number(index) >= 0)
@@ -202,7 +204,7 @@ window.PennController._AddElementType("Group", function(PennEngine) {
 // Add a .settings.group command to all elements
 window.PennController._AddStandardCommands(function(PennEngine){
     this.settings = {
-        group: async function(resolve, groupRef){
+        group: async function(resolve, groupRef){     /* $AC$ all PElements.settings.group(name) Adds the element to the Group element with the specified name $AC$ */
             var group;
             if (typeof(groupRef)=="string"){
                 let elements = PennEngine.controllers.running.options.elements;

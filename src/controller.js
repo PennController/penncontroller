@@ -51,7 +51,7 @@ export class Controller {
         return this.elements[type][id];
     }
     //  PUBLIC METHODS  (return the instance)
-    label(text){
+    label(text){        /* $AC$ PennController().label(label) Assigns a label to the generated PennController trial $AC$ */
         this.useLabel = text;
         return this;
     }
@@ -59,21 +59,21 @@ export class Controller {
         this.linesToSave.push(["PennController", this.id,  parameter, value, Date.now(), comments]);
         return this;
     }
-    log(name, value) {              // Adds a column to each line in the results file (value can be a function/promise)
+    log(name, value) {        /* $AC$ PennController().log(name,value) Adds value to each line of this trial in the results file $AC$ */
         if (value==undefined)
             value = name;
         this.appendResultLine.push([name, value]);
         return this;
     }
-    noHeader(){
+    noHeader(){         /* $AC$ PennController().noHeader() Will not run commands from the header at the beginning of this trial $AC$ */
         this.runHeader = false;
         return this;
     }
-    noFooter(){
+    noFooter(){         /* $AC$ PennController().noFooter() Will not run commands from the footer at the end of this trial $AC$ */
         this.runFooter = false;
         return this;
     }
-    setOption(option, value){
+    setOption(option, value){   /* $AC$ PennController().setOption(option,value) Sets options for the controller (see Ibex manual) $AC$ */
         this[option] = value;
         return this;
     }
@@ -111,18 +111,18 @@ export var PennController = function(...rest) {
 };
 
 // Whether to print debug information
-PennController.Debug = function (onOff) {
+PennController.Debug = function (onOff) {   /* $AC$ global.PennController.Debug() Enables the debug mode for testing your experiment $AC$ */
     PennEngine.debug.on = onOff==undefined||onOff;
 };
 
 // Handler for definition of shuffleSequence
-PennController.Sequence = function(...seq) {
+PennController.Sequence = function(...seq) {   /* $AC$ global.PennController.Sequence(sequence) Defines the running order of your trials, based on their labels (see documentation) $AC$ */
     window.shuffleSequence = window.seq(...seq);
 };
 
 // A handler for retrieving parameters passed in the URL
 let Parameters = {};                                        // URL will never change, so no need to recreate at each call
-PennController.GetURLParameter = function(parameter){
+PennController.GetURLParameter = function(parameter){       /* $AC$ global.PennController.GetURLParameter(parameter) Returns the value of the parameter from the URL $AC$ */
     if (!Object.keys(Parameters).length){                   // Feed Parameters only once
         let URLParameters = window.location.search.replace("?", "").split("&");
         for (let param in URLParameters)                    // Go through each param in the URL
@@ -133,7 +133,7 @@ PennController.GetURLParameter = function(parameter){
 }
 
 // This adds a URL where resources will be looked for
-PennController.AddHost = function(...rest) {
+PennController.AddHost = function(...rest) {       /* $AC$ global.PennController.AddHost(url) Will look resources at the specified URL $AC$ */
     for (let a in rest) {
         if (typeof(rest[a])=="string" && rest[a].match(/^https?:\/\//i))
             PennEngine.URLs.push(rest[a]);
@@ -143,7 +143,7 @@ PennController.AddHost = function(...rest) {
 };
 
 // Creates an item checking that the resources (used by the items with matching labels, if specified) are preloaded
-PennController.CheckPreloaded = function(...rest) {
+PennController.CheckPreloaded = function(...rest) {       /* $AC$ global.PennController.CheckPreloaded() Creates a trial that is validated when the resources are preloaded $AC$ */
     let controller = new Controller();                  // Create a new controller
     controller.id = "Preloader-"+preloaders.length;
     controller.runHeader = false;                       // Don't run header and footer
@@ -203,7 +203,7 @@ PennController.CheckPreloaded = function(...rest) {
 };
 
 
-PennController.SendResults = function(label){
+PennController.SendResults = function(label){       /* $AC$ global.PennController.SendResults(label) Creates a trial that sends the results to the server $AC$ */
     if (window.items == undefined)
         window.items = [];
     if (window.manualSendResults == undefined || window.manualSendResults != false)
@@ -217,7 +217,7 @@ PennController.SendResults = function(label){
 };
 
 
-PennController.SetCounter = function(...args){
+PennController.SetCounter = function(...args){       /* $AC$ global.PennController.SetCounter(value) Set Ibex's internal counter to a specified value (see Ibex manual) $AC$ */
     if (window.items == undefined)
         window.items = [];
     let label = "setCounter", options = {};
@@ -237,7 +237,7 @@ PennController.SetCounter = function(...args){
 };
 
 
-PennController.Header = function(...rest){
+PennController.Header = function(...rest){       /* $AC$ global.PennController.Header(commands) Will run the commands at the beginning of every PennController trial $AC$ */
     let controller = PennEngine.controllers.underConstruction;                      // To be returned
     controller.id = "Header";                                                       // Special controller
     controller.addToItems = false;                                                  // Do no add to 'items'
@@ -260,7 +260,7 @@ PennController.Header = function(...rest){
     return headerController;                                                        // Return Header controller
 };
 
-PennController.Footer = function(...rest){
+PennController.Footer = function(...rest){       /* $AC$ global.PennController.Footer(commands) Will run the commands at the end of every PennController trial $AC$ */
     let controller = PennEngine.controllers.underConstruction;                      // To be returned
     controller.id = "Footer";                                                       // Special controller
     controller.addToItems = false;                                                  // Do no add to 'items'

@@ -1,4 +1,6 @@
 // SCALE element
+/* $AC$ PennController.newScale(name,numberOrValues) Creates a new Scale element $AC$ */
+/* $AC$ PennController.getScale(name) Retrieves an existing Scale element $AC$ */
 window.PennController._AddElementType("Scale", function(PennEngine) {
 
     // SCALE-SPECIFIC FUNCTIONS & METHODS
@@ -281,7 +283,7 @@ window.PennController._AddElementType("Scale", function(PennEngine) {
             };                                              // Standard print, then afterPrint resolves
             PennEngine.elements.standardCommands.actions.print.apply(this, [afterPrint, where]);
         },
-        select: function(resolve, option, simulate){
+        select: function(resolve, option, simulate){    /* $AC$ Scale PElement.select(option) Selects the specified option on the scale $AC$ */
             for (var b  = 0; b < this.buttons.length; b++){
                 let button = this.buttons[b];
                 if (button && button == option)
@@ -296,7 +298,7 @@ window.PennController._AddElementType("Scale", function(PennEngine) {
             selectIndex.apply(this, [b, simulate]);
             resolve();
         },
-        wait: function(resolve, test){
+        wait: function(resolve, test){    /* $AC$ Scale PElement.wait() Waits until a selection happens before proceeding $AC$ */
             if (test == "first" && this.choices.length)     // If first and already chosen, resolve already
                 resolve();
             else {                                          // Else, extend choice and do the checks
@@ -328,12 +330,12 @@ window.PennController._AddElementType("Scale", function(PennEngine) {
     };
     
     this.settings = {
-        button: function(resolve){
+        button: function(resolve){    /* $AC$ Scale PElement.settings.button() Transforms the scale options into buttons $AC$ */
             this.scaleType = "buttons";
             buildScale.apply(this);                         // Rebuild the scale as a button scale
             resolve();
         },
-        callback: function(resolve, ...elementCommands){
+        callback: function(resolve, ...elementCommands){    /* $AC$ Scale PElement.settings.callback(commands) Will execute the specified command(s) whenever selection happens $AC$ */
             let originalChoice = this.choice;
             this.choice = async function(value) {
                 let disabled = this.disabled;
@@ -345,7 +347,7 @@ window.PennController._AddElementType("Scale", function(PennEngine) {
             };
             resolve();
         },
-        default: function(resolve, value){
+        default: function(resolve, value){    /* $AC$ Scale PElement.settings.default(value) Sets the specified value to be selected by default $AC$ */
             if (this.buttons.indexOf(value)>-1||(Number(value)>=0&&Number(value)<this.buttons.length)){
                 this.defaultValue = value;
                 if (value._element)
@@ -364,7 +366,7 @@ window.PennController._AddElementType("Scale", function(PennEngine) {
             enable.apply(this);
             resolve();
         },
-        horizontal: function(resolve){
+        horizontal: function(resolve){    /* $AC$ Scale PElement.settings.horizontal() Aligns the scale's options horizontally (again) $AC$ */
             this.orientation = "horizontal";
             if (this.jQueryElement.parent().length){
                 buildScale.apply(this);
@@ -372,7 +374,7 @@ window.PennController._AddElementType("Scale", function(PennEngine) {
             }
             resolve();
         },
-        keys: function(resolve, ...keys){
+        keys: function(resolve, ...keys){    /* $AC$ Scale PElement.settings.keys(keys) Associates the scale's options with the specified keys for selection $AC$ */
             if (keys instanceof Array && keys.length == this.buttons.length){
                 if (keys.filter(e=>typeof(e)=="string"&&e.length==1).length!=keys.length)
                     return resolve(PennEngine.debug.error("Every key should be a string of length 1 in Scale "+this.id, keys));
@@ -384,7 +386,7 @@ window.PennController._AddElementType("Scale", function(PennEngine) {
                 this.keys = Array.from({length:this.buttons.length},(v,k)=>k+1);
             resolve();
         },
-        label: function(resolve, index, value){
+        label: function(resolve, index, value){    /* $AC$ Scale PElement.settings.label(index,label) Gives the specified label to the option at the specified index on the scale $AC$ */
             if (isNaN(Number(index)) || index<0 || index>=this.buttons.length)
                 return resolve();
             this.buttons[index] = value;
@@ -405,18 +407,18 @@ window.PennController._AddElementType("Scale", function(PennEngine) {
             this.labels = position;                     // Replaced with labelsPosition
             resolve();
         },
-        labelsPosition: function(resolve, position){
+        labelsPosition: function(resolve, position){    /* $AC$ Scale PElement.settings.labelsPosition(position) Will show the labels on top, at the bottom, to the left or to the right of the options $AC$ */
             this.labels = position;
             resolve();
         },
-        log: function(resolve,  ...what){
+        log: function(resolve,  ...what){    /* $AC$ Scale PElement.settings.log() Will log the selected option in the results file $AC$ */
             if (what.length)
                 this.log = what;
             else
                 this.log = ["last"];
             resolve();
         },
-        once: function(resolve){
+        once: function(resolve){    /* $AC$ Scale PElement.settings.once() Will disable the scale after the first selection $AC$ */
             if (this.hasClicked)
                 disable.apply(this);
             else{
@@ -428,7 +430,7 @@ window.PennController._AddElementType("Scale", function(PennEngine) {
             }
             resolve();
         },
-        radio: function(resolve){
+        radio: function(resolve){    /* $AC$ Scale PElement.settings.radio() Will show the scale's options as radio buttons $AC$ */
             this.scaleType = "radio";
             buildScale.apply(this);                      // Rebuild the scale as a radio scale
             resolve();
@@ -437,12 +439,12 @@ window.PennController._AddElementType("Scale", function(PennEngine) {
             this.width = width;
             PennEngine.elements.standardCommands.settings.size.apply(this, [resolve, width, height]);
         },
-        slider: function(resolve, value){                // Rebuild the scale as a slider scale
+        slider: function(resolve){    /* $AC$ Scale PElement.settings.slider() Will show the scale as a slider $AC$ */
             this.scaleType = "slider";
             buildScale.apply(this);
             resolve();
         },
-        vertical: function(resolve){
+        vertical: function(resolve){    /* $AC$ Scale PElement.settings.horizontal() Aligns the scale's options vertically $AC$ */
             this.orientation = "vertical";
             if (this.jQueryElement.parent().length){
                 buildScale.apply(this);
@@ -453,7 +455,7 @@ window.PennController._AddElementType("Scale", function(PennEngine) {
     };
 
     this.test = {
-        selected: function(value){
+        selected: function(value){    /* $AC$ Scale PElement.test.selected(option) Checks that the option, or any option if none specified, is selected $AC$ */
             if (!this.choices.length)
                 return false;
             else if (value == undefined)

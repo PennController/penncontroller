@@ -1,4 +1,6 @@
 // TOOLTIP element
+/* $AC$ PennController.newTooltip(name,text) Creates a new Tooltip element $AC$ */
+/* $AC$ PennController.getTooltip(name) Retrieves an existing Tooltip element $AC$ */
 window.PennController._AddElementType("Tooltip", function(PennEngine) {
 
     function remove(){                          // Special function to remove element from DOM
@@ -60,7 +62,7 @@ window.PennController._AddElementType("Tooltip", function(PennEngine) {
     };
     
     this.actions = {
-        print: function(resolve, element){
+        print: function(resolve, element){  /* $AC$ Tooltip PElement.print(element) Prints the tooltip attached to the specified element $AC$ */
             if (element && element.hasOwnProperty("_element") && element._element.jQueryElement instanceof jQuery)
                 element = element._element.jQueryElement;
             this.jQueryElement.append(this.jQueryLabel);                        // Label, aligned to the right
@@ -147,7 +149,7 @@ window.PennController._AddElementType("Tooltip", function(PennEngine) {
             remove.apply(this);
             resolve()
         },
-        wait: function(resolve, test){
+        wait: function(resolve, test){  /* $AC$ Tooltip PElement.wait() Waits until the tooltip gets validated before proceeding $AC$ */
             if (test == "first" && this.wasValidated) // If first and already validated, resolve already
                 resolve();
             else {                                  // Else, extend validate and do the checks
@@ -189,14 +191,14 @@ window.PennController._AddElementType("Tooltip", function(PennEngine) {
             this.jQueryElement.removeClass("PennController-"+this.type.replace(/[\s_]/g,'')+"-disabled");
             resolve();
         },
-        frame: function(resolve, css){
+        frame: function(resolve, css){  /* $AC$ Tooltip PElement.settings.css(css) Applies the specified CSS to the frame around the target element $AC$ */
             if (typeof(css)=="string" && css.length)
                 this.frameParent = css;
             else
                 this.frameParent = "dotted 1px gray";       // By default
             resolve();
         },
-        key: function(resolve, keys, noclick){              // noclick is optional
+        key: function(resolve, keys, noclick){  /* $AC$ Tooltip PElement.settings.key(key) Will validate (and remove) the tooltip whenever the specified key is pressed $AC$ */
             if (Number(keys)>0)                             // If keycode
                 PennEngine.events.keypress(e=>{
                     if (!this.jQueryElement.parent().length)
@@ -220,22 +222,22 @@ window.PennController._AddElementType("Tooltip", function(PennEngine) {
             }
             resolve();
         },
-        label: function(resolve, text){
+        label: function(resolve, text){  /* $AC$ Tooltip PElement.settings.label(text) Defines the text used for the validation label $AC$ */
             this.label = text;
             this.resetLabel = true;
             this.jQueryLabel.html(text);
             this.jQueryLabel.css("display","inherit");
             resolve();
         },
-        log: function(resolve,  ...what){
+        log: function(resolve) {  /* $AC$ Tooltip PElement.settings.log() Will log when the tooltip is validated in the results file $AC$ */
             this.log = true;
             resolve();
         },
-        position: function(resolve, positionString){
+        position: function(resolve, positionString){  /* $AC$ Tooltip PElement.settings.position(position) Will show the tooltip at the top, at the bottom, to the left or to the right of the element it attaches to $AC$ */
             this.relativePosition = positionString;
             resolve();
         },
-        text: function(resolve, text){
+        text: function(resolve, text){  /* $AC$ Tooltip PElement.settings.text(value) Redefines the text of the tooltip $AC$ */
             this.text = text;
             this.jQueryElement.html(text);
             this.jQueryElement.append(this.jQueryLabel);

@@ -7,13 +7,7 @@ var config = {
   resolve: {
     extensions: ['.js']
   },
-  plugins: [
-    new webpack.BannerPlugin({
-      banner: fs.readFileSync('./src/banner', 'utf8'),
-      exclude: /.*PennElement.*/
-    }),
-    //new BundleAnalyzerPlugin()
-  ]
+  plugins: []
 };
 
 module.exports = (env, argv) => {
@@ -41,3 +35,55 @@ module.exports = (env, argv) => {
   }
   return config;
 };
+
+
+var ACstringAll = "";
+var ACstringElement = {};
+var ACpattern = new RegExp("/[*] ([$]AC[$] ([^.]+?)\.([^\\s]+?) (.+?) [$]AC[$]) [*]/", "g");
+var ACdir = function(dir){
+  fs.readdirSync(dir).forEach(file => {
+      file = path.resolve(dir, file);      
+      var stat = fs.statSync(file);
+      if (stat && stat.isDirectory())
+        ACdir(file);
+      else{
+        var content = fs.readFileSync(file, 'utf8');
+        var AC;
+        while ((AC = ACpattern.exec(content)) !== null){
+          let isElement = file.match(/PennElement_.+\.js/);
+          if (isElement){
+            if (!ACstringElement.hasOwnProperty(isElement[0]))
+              ACstringElement[isElement[0]] = "";
+            ACstringElement[isElement[0]] += AC[1];
+          }
+          else
+            ACstringAll += AC[1];
+        }
+      }
+  });
+}
+ACdir('./src/');
+
+config.plugins.push(
+  new webpack.BannerPlugin({
+    banner: ACstringAll,
+    include: /.*PennCo.*/
+  })
+);
+
+for (let el in ACstringElement){
+  config.plugins.push(
+    new webpack.BannerPlugin({
+      banner: ACstringElement[el],
+      include: [new RegExp(".*"+el+".*"), /.*PennController.*/]
+    })
+  );
+}
+
+// Add main banner
+config.plugins.push(
+  new webpack.BannerPlugin({
+    banner: fs.readFileSync('./src/banner', 'utf8'),
+    exclude: /.*PennElement.*/
+  })
+);

@@ -1,4 +1,6 @@
 // PALETTE element
+/* $AC$ PennController.newPalette(name) Creates a new Palette element $AC$ */
+/* $AC$ PennController.getPalette(name) Retrieves an existing Palette element $AC$ */
 window.PennController._AddElementType("Palette", function(PennEngine) {
 
     this.immediate = function(id, mode){
@@ -58,7 +60,7 @@ window.PennController._AddElementType("Palette", function(PennEngine) {
     };
     
     this.actions = {
-        brush: function(resolve, element, color){
+        brush: function(resolve, element, color){   /* $AC$ Palette PElement.brush(element,color) Colors the specified element with the specified color $AC$ */
             if (element._element){
                 let oldCurrent = this.currentColor;
                 this.currentColor = color;
@@ -67,7 +69,7 @@ window.PennController._AddElementType("Palette", function(PennEngine) {
             }
             resolve();
         },
-        clear: function(resolve){
+        clear: function(resolve){   /* $AC$ Palette PElement.clear() Makes all the elements of the palette transparent $AC$ */
             for (let e in this.elements){
                 if (this.mode=="background")
                     this.elements[e][0].jQueryElement.css('background-color', 'transparent');
@@ -77,13 +79,13 @@ window.PennController._AddElementType("Palette", function(PennEngine) {
             }
             resolve();
         },
-        unselect: function(resolve){
+        unselect: function(resolve){   /* $AC$ Palette PElement.unselect() Unselects the color from the palette that was currently selected $AC$ */
             $('.PennController-'+this.type+'-palette-selected').removeClass('PennController-'+this.type+'-palette-selected');
             $('#bod').css('cursor','default');
             this.currentColor = null;
             resolve();
         },
-        wait: function(resolve, test){
+        wait: function(resolve, test){   /* $AC$ Palette PElement.wait() Waits until an element is clicked and colored before proceeding $AC$ */
             if (test=="first" && this.brushes.length)
                 resolve();
             else {
@@ -110,7 +112,7 @@ window.PennController._AddElementType("Palette", function(PennEngine) {
     };
 
     this.settings = {
-        addColor: function(resolve, color, ...elementsOrKeys){
+        addColor: function(resolve, color, ...elementsOrKeys){   /* $AC$ Palette PElement.settings.addColor(color,element) Adds the specified color to the palette, to be selected by clicking on the specified element $AC$ */
             let index = this.colors.indexOf(color);
             if (index<0)
                 this.colors.push(color);
@@ -144,7 +146,7 @@ window.PennController._AddElementType("Palette", function(PennEngine) {
             }
             resolve();
         },
-        addElement: function(resolve, ...elements){
+        addElement: function(resolve, ...elements){   /* $AC$ Palette PElement.settings.addElement(elements) Adds the specified element(s) as targets for coloration $AC$ */
             for (let e in elements){
                 let element = elements[e];
                 if (element._element && element._element.jQueryElement){
@@ -157,7 +159,7 @@ window.PennController._AddElementType("Palette", function(PennEngine) {
             }
             resolve();
         },
-        callback: function(resolve, ...commands){
+        callback: function(resolve, ...commands){   /* $AC$ Palette PElement.settings.callback(commands) Will execute the specified command(s) whenever an element is colored $AC$ */
             let oldSelect = this.select;
             this.select = async function(element) {
                 oldSelect.apply(this, [element]);
@@ -168,19 +170,19 @@ window.PennController._AddElementType("Palette", function(PennEngine) {
             };
             resolve();
         },
-        enable: function(resolve){
+        enable: function(resolve){   /* $AC$ Palette PElement.settings.enable() Enables the palette $AC$ */
             this.enabled = true;
             resolve();
         },
-        disable: function(resolve){
+        disable: function(resolve){   /* $AC$ Palette PElement.settings.disable() Disables the palette $AC$ */
             this.enabled = false;
             resolve();
         },
-        log: function(resolve, what){
+        log: function(resolve, what){   /* $AC$ Palette PElement.settings.log() Will log any coloration to the results file $AC$ */
             this.log = what||"all";
             resolve();
         },
-        once: function(resolve){
+        once: function(resolve){   /* $AC$ Palette PElement.settings.once() Will disable the palette after the first coloration $AC$ */
             if (this.brushes.length){
                 this.enabled = false;
                 $('.PennController-'+this.type+'-palette-selected').removeClass('PennController-'+this.type+'-palette-selected');
@@ -202,7 +204,7 @@ window.PennController._AddElementType("Palette", function(PennEngine) {
             }
             resolve();
         },
-        removeColor: function(resolve, color){
+        removeColor: function(resolve, color){   /* $AC$ Palette PElement.settings.remove(color) Removes the specified color from the palette (leaving any associated element on the page) $AC$ */
             let index = this.colors.indexOf(color);
             if (index>-1)
                 this.colors.splice(index,1);
@@ -211,7 +213,7 @@ window.PennController._AddElementType("Palette", function(PennEngine) {
     };
 
     this.test = {
-        color: function( element , color ) {
+        color: function( element , color ) {   /* $AC$ Palette PElement.test.color(element,color) Checks that the specified element has been colored with the specified color $AC$ */
             if ( element._element && element._element){
                 let index = this.elements.map(e=>e[0]).indexOf(element._element);
                 if (index<0) 
