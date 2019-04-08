@@ -94,7 +94,7 @@ export var PennEngine = {
         }
     }
     ,
-    URLs: []
+    URLs: ["server.py?resource="]
     ,
     utils: {
         guidGenerator: guidGenerator

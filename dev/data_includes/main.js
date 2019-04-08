@@ -9,6 +9,92 @@ PennController.ResetPrefix(null);
 PennController.Debug();
 //PennController.PreloadZip("https://sprouse.uconn.edu/downloads/syllabicity/mixed.zip");
 
+PennController(
+    newVideo("testVideo", "bee_ram_giraffe.mp4")
+        .print()
+    ,   
+    newText("instructions", "Press F if you think 0.999... = 1, press J otherwise.")
+        .print()
+    ,
+    newKey("forj", "fj")
+        .wait()
+    ,
+    newText("text", "f")
+        .print()
+    ,
+    getKey("forj")
+        .test.pressed("f")
+        .success( newText("success", "You're right!").print() )
+        .failure( newText("failure", "You're wrong, 0.999... and 1 do refer to the same number").print() )
+    ,
+    newButton("continue", "Continue")
+        .print()
+        .wait()
+)
+
+PennController.AddTable("keys",
+    "item,key\n"+
+    "item,f\n"+
+    "item,j"
+);
+
+PennController.Template( "keys" ,
+    row => PennController(
+        newText("instructions", "Press F if you think 0.999... = 1, press J otherwise.")
+            .print()
+        ,
+        newKey("forj", "fj")
+            .wait()
+        ,
+        newText("text", row.key)
+            .print()
+        ,
+        getKey("forj")
+            .test.pressed(row.key)
+            .success( newText("success", "You're right!").print() )
+            .failure( newText("failure", "You're wrong, 0.999... and 1 do refer to the same number").print() )
+        ,
+        newButton("continue", "Continue")
+            .print()
+            .wait()
+    )
+)
+
+PennController(
+    newDropDown("drop", " ")          // Default text (not an option) is an empty space
+        .settings.log()               // Log the last selection (default; alternatively pass "first" or "all")
+        .settings.add("was", "is", "will be", "be")     // The options
+        .shuffle()                    // Shuffle the order in which the options are presented
+    ,
+    newText("beginning", "The little boy &nbsp;")
+        .settings.after(
+            getDropDown("drop").settings.after( newText("end", "&nbsp; sick all day long.") )
+        )
+        .print()
+    ,
+    getDropDown("drop")
+        .wait()
+    ,
+    newVar("SelectionRank",0)         // We will store the rank in this variable
+        .settings.log()               // And we will log its value
+    ,
+    getDropDown("drop")
+        .test.selected(0)             // If option at rank 0 was selected...
+        .success( getVar("SelectionRank").set("First") ) // ... then we selected the first option
+    ,
+    getDropDown("drop")
+        .test.selected(1)             // If option at rank 1 was selected...
+        .success( getVar("SelectionRank").set("Second") ) // ... then we selected the first option
+    ,
+    getDropDown("drop")
+        .test.selected(2)             // If option at rank 2 was selected...
+        .success( getVar("SelectionRank").set("Third") ) // ... then we selected the first option
+    ,
+    getDropDown("drop")
+        .test.selected(3)             // If option at rank 3 was selected...
+        .success( getVar("SelectionRank").set("Fourth") ) // ... then we selected the first option
+)
+
 //PennController.AddHost("http://localhost/");
 PennController.AddHost("http://files.lab.florianschwarz.net/ibexfiles/Pictures/");
 

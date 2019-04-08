@@ -1,3 +1,5 @@
+- Implement window.onerror and new Proxy on PennController objects to track errors and print in debug
+- Shuffle and containers: remove after shuffle removes the wrong element
 - Add newCanvas(getElement())?
 - Create a Canvas for the whole page by default, and make .print("center at 50%", "center at 50%") possible?
         > getCanvas("screen")? getCanvas(PennController)? getCanvas(PennController.trial)? getCanvas(PennController.screen)?

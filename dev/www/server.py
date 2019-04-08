@@ -1576,9 +1576,11 @@ def control(env, start_response):
             f = None
             try:
                 for fname in os.listdir(os.path.join(PWD, CFG['CHUNK_INCLUDES_DIR'])):
-                    if fname.endswith(".wav") or fname.endswith(".mp3") or fname.endswith("m4a"):
+                    if fname.endswith(".wav") or fname.endswith(".mp3") or fname.endswith("m4a") or fname.endswith(".ogg"):
                         continue
                     if fname.endswith(".png") or fname.endswith(".jpg") or fname.endswith(".bmp"):
+                        continue
+                    if fname.endswith(".mp4") or fname.endswith(".webm") or fname.endswith(".ogv"):
                         continue
                     f = None
                     try:
@@ -1619,10 +1621,12 @@ def control(env, start_response):
                             f.close()
                             raise StopIteration
                         yield block
-                if qs_hash['resource'][0].endswith(".wav")  or qs_hash['resource'][0].endswith(".mp3") or qs_hash['resource'][0].endswith(".m4a"):
-                    start_response('200 OK', [('Content-Type', 'audio/mpeg'), ('Content-Length', stats.st_size)])
+                if qs_hash['resource'][0].endswith(".wav") or qs_hash['resource'][0].endswith(".mp3") or qs_hash['resource'][0].endswith(".m4a") or qs_hash['resource'][0].endswith(".ogg"):
+                    start_response('200 OK', [('Content-Type', 'audio/*'), ('Content-Length', stats.st_size)])
                 elif qs_hash['resource'][0].endswith(".png") or qs_hash['resource'][0].endswith(".jpg") or qs_hash['resource'][0].endswith(".bmp"):
                     start_response('200 OK', [('Content-Type', 'image/*'), ('Content-Length', stats.st_size)])
+                elif qs_hash['resource'][0].endswith(".mp4") or qs_hash['resource'][0].endswith(".webm") or qs_hash['resource'][0].endswith(".ogv"):
+                    start_response('200 OK', [('Content-Type', 'video/*'), ('Content-Length', stats.st_size)])
                 return it()
             except IOError, e:
                 start_response('500 Internal Server Error' [('Content-Type', 'text/html; charset=UTF-8')])

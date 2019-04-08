@@ -2,7 +2,7 @@ PennController for IBEX
 This software is licensed under a BSD license; see the LICENSE file for details.
 
  - Version 1.2
- - Last Update:  2019, March 27
+ - Last Update:  2019, April 8
  - Major changes in version 1.2:
     * Fixed: CSS classes no longer rely on dashes (Ibex-internal problems)
     * Fixed: Var elements passed to tests are now properly evaluated

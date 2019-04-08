@@ -238,7 +238,7 @@ let toContent = table=>{
             row.append($("<td>").html(table.table[r][keys[c]]).css({width: 70, 'overflow': "hidden"}));
         bodyTable.append(row);
     }
-    let bodyDiv = $("<div>").css({height: "100%", overflow: "auto"})
+    let bodyDiv = $("<div>").css({height: "calc(100% - 1.5em)", overflow: "auto"})
                         .append(bodyTable);
     let ghostDiv = $("<div>").css({height: "1.5em", width: "100%"});
     let headerDiv = $("<div>").css({width: "100%", position: "absolute", left: 0, top: 0})
