@@ -7,7 +7,9 @@ window.PennController._AddElementType("Button", function(PennEngine) {
     this.immediate = function(id, text){
         if (text===undefined){
             text = id;
-            this.id = PennEngine.utils.guidGenerator();
+            if (id===undefined||typeof(id)!="string"||id.length==0)
+                id = "Button";
+            this.id = id;
         }
         this.initialText = text;                            // In case this gets changed later
     };
@@ -86,7 +88,7 @@ window.PennController._AddElementType("Button", function(PennEngine) {
     };
     
     this.settings = {
-        callback: function(resolve, ...elementCommands){   /* $AC$ Button PElement.settings.callback(commands) Tell the button to run a (series of) command(s) whenever it is clicked $AC$ */
+        callback: function(resolve, ...elementCommands){   /* $AC$ Button PElement.callback(commands) Tell the button to run a (series of) command(s) whenever it is clicked $AC$ */
             let oldClick = this.click;
             this.click = async function () {
                 if (!this.disabled)
@@ -96,11 +98,11 @@ window.PennController._AddElementType("Button", function(PennEngine) {
             };
             resolve();
         },
-        log: function(resolve){   /* $AC$ Button PElement.settings.log() Logs clicks on the button in the results file $AC$ */
+        log: function(resolve){   /* $AC$ Button PElement.log() Logs clicks on the button in the results file $AC$ */
             this.log = true;
             resolve();
         },
-        once: function(resolve){   /* $AC$ Button PElement.settings.once() Will disable the button after the first click $AC$ */
+        once: function(resolve){   /* $AC$ Button PElement.once() Will disable the button after the first click $AC$ */
             if (this.hasClicked){
                 this.disabled = true;
                 this.jQueryElement.attr("disabled", true);

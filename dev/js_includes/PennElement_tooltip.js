@@ -6,15 +6,20 @@ window.PennController._AddElementType("Tooltip", function(PennEngine) {
     function remove(){                          // Special function to remove element from DOM
         this.jQueryElement.remove();
         if (this.jQueryContainer instanceof jQuery)
-            this.jQueryContainer.remove();
+            this.jQueryContainer.detach();
         if (this.frame && this.frame instanceof jQuery)
-            this.frame.remove();
+            this.frame.detach();
     }
 
     // This is executed when Ibex runs the script in data_includes (not a promise, no need to resolve)
     this.immediate = function(id, text, optionalOKLabel){
+        if (text===undefined)
+            text = id;
         this.initialText = text;                            // In case this gets changed later
         this.initialLabel = optionalOKLabel;
+        if (id===undefined||typeof(id)!="string"||id.length==0)
+            id = "Tooltip";
+        this.id = id;
     };
 
     // This is executed when 'newAudio' is executed in the trial (converted into a Promise, so call resolve)
@@ -62,7 +67,7 @@ window.PennController._AddElementType("Tooltip", function(PennEngine) {
     };
     
     this.actions = {
-        print: function(resolve, element){  /* $AC$ Tooltip PElement.print(element) Prints the tooltip attached to the specified element $AC$ */
+        print: function(resolve, element, ...more){  /* $AC$ Tooltip PElement.print(element) Prints the tooltip attached to the specified element $AC$ */
             if (element && element.hasOwnProperty("_element") && element._element.jQueryElement instanceof jQuery)
                 element = element._element.jQueryElement;
             this.jQueryElement.append(this.jQueryLabel);                        // Label, aligned to the right
@@ -142,7 +147,7 @@ window.PennController._AddElementType("Tooltip", function(PennEngine) {
                 this.jQueryElement.css({position: "relative", left: "", top: "", margin: 0, display:"inline-block"});
                 if (this.jQueryLabel.css("display")!="none")
                     this.jQueryElement.css("padding-bottom", "20px");
-                PennEngine.elements.standardCommands.actions.print.apply(this, [resolve, element]);  // standard print
+                PennEngine.elements.standardCommands.actions.print.apply(this, [resolve, element, ...more]);  // standard print
             }
         },
         remove: function(resolve){
@@ -183,35 +188,38 @@ window.PennController._AddElementType("Tooltip", function(PennEngine) {
     this.settings = {
         disable: function(resolve){
             this.disabled = true;
-            this.jQueryElement.addClass("PennController-"+this.type.replace(/[\s_]/g,'')+"-disabled");
+            this.jQueryContainer.addClass("PennController-disabled");
+            this.jQueryElement.addClass("PennController-disabled");
             resolve();
         },
         enable: function(resolve){
             this.disabled = false;
-            this.jQueryElement.removeClass("PennController-"+this.type.replace(/[\s_]/g,'')+"-disabled");
+            this.jQueryContainer.removeClass("PennController-disabled");
+            this.jQueryElement.removeClass("PennController-disabled");
             resolve();
         },
-        frame: function(resolve, css){  /* $AC$ Tooltip PElement.settings.css(css) Applies the specified CSS to the frame around the target element $AC$ */
+        frame: function(resolve, css){  /* $AC$ Tooltip PElement.css(css) Applies the specified CSS to the frame around the target element $AC$ */
             if (typeof(css)=="string" && css.length)
                 this.frameParent = css;
             else
                 this.frameParent = "dotted 1px gray";       // By default
             resolve();
         },
-        key: function(resolve, keys, noclick){  /* $AC$ Tooltip PElement.settings.key(key) Will validate (and remove) the tooltip whenever the specified key is pressed $AC$ */
-            if (Number(keys)>0)                             // If keycode
-                PennEngine.events.keypress(e=>{
-                    if (!this.jQueryElement.parent().length)
-                        return;
-                    if (e.keyCode==keys)
-                        this.validate();
-                });
-            else if (typeof(keys)=="string")                // If string of key(s)
-                PennEngine.events.keypress(e=>{
-                    if (!this.jQueryElement.parent().length)
-                        return;
-                    let key = e.keyCode;
-                    if (!keys.length||keys.toUpperCase().includes(String.fromCharCode(key).toUpperCase()))
+        key: function(resolve, keys, noclick){  /* $AC$ Tooltip PElement.key(key) Will validate (and remove) the tooltip whenever the specified key is pressed $AC$ */
+            if (keys != " " && !isNaN(Number(keys)))    // If keycode
+            keys = String.fromCharCode(keys);
+            if (typeof(keys) != "string")
+                resolve(PennEngine.debug.error("Invalid key(s) passed to Tooltip &quot;"+id+"&quot; (should be a string or a key code number)", keys));
+            keys = keys.toUpperCase();
+            PennEngine.events.keypress(e=>{
+                if (!this.jQueryElement.parent().length)
+                    return;
+                let isSpecialKey = e.key.isSpecialKey();
+                let upperE = e.key.toUpperCase();
+                let side = {0: "", 1: "LEFT", 2: "RIGHT"};
+                if ((keys===undefined||keys.length==0) || // If no key specified, any key press will do
+                    (isSpecialKey && (keys==upperE||keys==side[e.location]+upperE)) || // Special key
+                    (!isSpecialKey && keys.indexOf(upperE)>-1) ) // Regular list of keys
                         this.validate();
                 });
             if (noclick){                                   // If noclick was specified
@@ -222,22 +230,26 @@ window.PennController._AddElementType("Tooltip", function(PennEngine) {
             }
             resolve();
         },
-        label: function(resolve, text){  /* $AC$ Tooltip PElement.settings.label(text) Defines the text used for the validation label $AC$ */
+        label: function(resolve, text){  /* $AC$ Tooltip PElement.label(text) Defines the text used for the validation label $AC$ */
             this.label = text;
             this.resetLabel = true;
-            this.jQueryLabel.html(text);
-            this.jQueryLabel.css("display","inherit");
+            if (typeof(text)!="string" || text.match(/^[\s\t]*$/))
+                this.jQueryLabel.css("display","none");
+            else{
+                this.jQueryLabel.html(text);
+                this.jQueryLabel.css("display","inherit");
+            }
             resolve();
         },
-        log: function(resolve) {  /* $AC$ Tooltip PElement.settings.log() Will log when the tooltip is validated in the results file $AC$ */
+        log: function(resolve) {  /* $AC$ Tooltip PElement.log() Will log when the tooltip is validated in the results file $AC$ */
             this.log = true;
             resolve();
         },
-        position: function(resolve, positionString){  /* $AC$ Tooltip PElement.settings.position(position) Will show the tooltip at the top, at the bottom, to the left or to the right of the element it attaches to $AC$ */
+        position: function(resolve, positionString){  /* $AC$ Tooltip PElement.position(position) Will show the tooltip at the top, at the bottom, to the left or to the right of the element it attaches to $AC$ */
             this.relativePosition = positionString;
             resolve();
         },
-        text: function(resolve, text){  /* $AC$ Tooltip PElement.settings.text(value) Redefines the text of the tooltip $AC$ */
+        text: function(resolve, text){  /* $AC$ Tooltip PElement.text(value) Redefines the text of the tooltip $AC$ */
             this.text = text;
             this.jQueryElement.html(text);
             this.jQueryElement.append(this.jQueryLabel);

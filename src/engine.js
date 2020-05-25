@@ -1,4 +1,4 @@
-import { lazyPromiseFromArrayOfLazyPromises, guidGenerator } from "./utils";
+import { lazyPromiseFromArrayOfLazyPromises, guidGenerator, parseCoordinates, levensthein } from "./utils";
 
 let preRunningFunctions = [];       // Functions to be run before Ibex processes window.items
 let functionsDictionary = {
@@ -94,10 +94,12 @@ export var PennEngine = {
         }
     }
     ,
-    URLs: ["server.py?resource="]
+    URLs: []
     ,
     utils: {
-        guidGenerator: guidGenerator
+        guidGenerator: guidGenerator,
+        parseCoordinates: parseCoordinates,
+        levensthein: levensthein
     }
     ,
     tmpItems: []        //  PennController() adds {PennController: id}, PennController.Template adds {PennTemplate: [...]}
@@ -121,21 +123,15 @@ window.ibex_controller_set_properties = function (name, options) {
         return;
 
     // Keypress events
-    let keysDown = {};                                      // Keep track of which keys are down
-    $(document).bind('keydown', e=>{
-        if (keysDown[e.keyCode])                            // If key already down, don't fire event
+    document.addEventListener('keydown', e=>{
+        if (e.repeat)                                       // If this is a key holding, don't fire
             return;
-        keysDown[e.keyCode] = true;
         if (PennEngine.controllers.running)                 // Fire event: run functions
             for (let f = 0; f < functionsDictionary.keypress.length; f++)
                 if ( PennEngine.controllers.running == functionsDictionary.keypress[f][1] ||
                      PennEngine.controllers.running.id == functionsDictionary.keypress[f][1]
                     )
                         functionsDictionary.keypress[f][0].apply(this, [e]);
-    });
-    $(document).bind('keyup', e=>{
-        if (keysDown[e.keyCode])                            // Keep track of which keys are no longer down
-            keysDown[e.keyCode] = false;
     });
 
     // Pre-running functions

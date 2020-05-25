@@ -71,8 +71,10 @@ window.PennController._AddElementType("Html", function(PennEngine) {
 
     this.immediate = function(id, html){
         if (html===undefined){
-            this.id = PennEngine.utils.guidGenerator();
             html = id;
+            if (id===undefined||typeof(id)!="string"||id.length==0)
+                id = "Html";
+            this.id = id;
         }
         this.html = html;
     };
@@ -216,19 +218,19 @@ window.PennController._AddElementType("Html", function(PennEngine) {
     };
 
     this.settings = {
-        checkboxWarning: function(resolve, message){    /* $AC$ Html PElement.settings.checkboxWarning(message) Defines the warning message displayed when an obligatory checkbox group is not checked $AC$ */
+        checkboxWarning: function(resolve, message){    /* $AC$ Html PElement.checkboxWarning(message) Defines the warning message displayed when an obligatory checkbox group is not checked $AC$ */
             this.checkboxWarningMessage = message;
             resolve();
         },
-        inputWarning: function(resolve,message){    /* $AC$ Html PElement.settings.inputWarning(message) Defines the warning message displayed when an obligatory input is not filled $AC$ */
+        inputWarning: function(resolve,message){    /* $AC$ Html PElement.inputWarning(message) Defines the warning message displayed when an obligatory input is not filled $AC$ */
             this.inputWarningMessage = message;
             resolve();
         },
-        log: function(resolve){    /* $AC$ Html PElement.settings.log() Logs the values of the fields from the Html in the results file $AC$ */
+        log: function(resolve){    /* $AC$ Html PElement.log() Logs the values of the fields from the Html in the results file $AC$ */
             this.log = true;
             resolve();
         },
-        radioWarning: function(resolve, message){    /* $AC$ Html PElement.settings.radioWarning(message) Defines the warning message displayed when an radio button group input is not selected $AC$ */
+        radioWarning: function(resolve, message){    /* $AC$ Html PElement.radioWarning(message) Defines the warning message displayed when an radio button group input is not selected $AC$ */
             this.radioWarningMessage = message;
             resolve();
         }

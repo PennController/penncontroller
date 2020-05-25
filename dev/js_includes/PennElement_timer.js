@@ -6,9 +6,11 @@ window.PennController._AddElementType("Timer", function(PennEngine) {
     // This is executed when Ibex runs the script in data_includes (not a promise, no need to resolve)
     this.immediate = function(id, duration){
         if (duration===undefined&&Number(id)>0){
-            this.id = PennEngine.utils.guidGenerator();
             duration = id;
+            if (id===undefined||typeof(id)!="string"||id.length==0)
+                id = "Timer";
         }
+        this.id = id;
         this.duration = 0;
         if (Number(duration)>0)
             this.duration = Number(duration);
@@ -19,29 +21,37 @@ window.PennController._AddElementType("Timer", function(PennEngine) {
     // This is executed when 'newAudio' is executed in the trial (converted into a Promise, so call resolve)
     this.uponCreation = function(resolve){
         this.elapsed = false;
-        this.instance = undefined;          // The timeout instance
         this.events = [];
         this.log = false;
         this.running = false;
         this.start = ()=>{                  // Starts the timer
-            if (this.instance)
-                clearTimeout(this.instance);// Clear any previous running
-            this.events.push(["Start","Start",Date.now(),"NULL"]);
-            this.instance = setTimeout(()=>this.done(), this.duration);
+            this.startTime = Date.now();
             this.running = true;
+            this.events.push(["Start","Start",this.startTime,"NULL"]);
+            let check = ()=>{
+                if (!this.running)
+                    return;
+                if (Date.now()-this.startTime >= this.duration)
+                    this.done();
+                else
+                    setTimeout(check, 0);
+                    // window.requestAnimationFrame(check);
+            };
+            check();
         };
         this.done = ()=>{                   // Called when finished running
+            this.running = false;
             this.events.push(["End","End",Date.now(),"NULL"]);
             this.elapsed = true;
-            this.running = false;
+            this.startTime = null;
         };
         resolve();
     }
 
     // This is executed at the end of a trial
     this.end = function(){
-        if (this.instance){
-            clearTimeout(this.instance);                 // Clear any unfinished timer
+        if (this.running){
+            this.running = false;
             this.events.push(["End","NA","Never","Had to halt the timer at the end of the trial"]);
         }
         if (this.log)
@@ -59,10 +69,8 @@ window.PennController._AddElementType("Timer", function(PennEngine) {
             resolve();
         },
         stop: function(resolve){   /* $AC$ Timer PElement.stop() Stops the timer $AC$ */
-            if (!this.instance)
-                return resolve();
-            clearTimeout(this.instance);
-            this.done();
+            if (this.running)   
+                this.done();
             resolve();
         },
         wait: function(resolve, test){   /* $AC$ Timer PElement.wait() Waits until the timer elapses before proceeding $AC$ */
@@ -92,7 +100,7 @@ window.PennController._AddElementType("Timer", function(PennEngine) {
     };
     
     this.settings = {
-        callback: function(resolve, ...elementCommands){   /* $AC$ Timer PElement.settings.callback(commands) Will execute the specified command(s) whenever the timer elapses $AC$ */
+        callback: function(resolve, ...elementCommands){   /* $AC$ Timer PElement.callback(commands) Will execute the specified command(s) whenever the timer elapses $AC$ */
             let oldDone = this.done;
             this.done = async function() {
                 oldDone.apply(this);
@@ -101,7 +109,7 @@ window.PennController._AddElementType("Timer", function(PennEngine) {
             };
             resolve();
         },
-        log: function(resolve){   /* $AC$ Timer PElement.settings.log() Will log when the timer starts and ends in the results file $AC$ */
+        log: function(resolve){   /* $AC$ Timer PElement.log() Will log when the timer starts and ends in the results file $AC$ */
             this.log = true;
             resolve();
         }

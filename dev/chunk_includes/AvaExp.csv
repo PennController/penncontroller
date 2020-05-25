@@ -1,0 +1,9 @@
+Prime,Target,PrePrimeISI,PrimeToTargetISI,PostTargetISI,Correct,Type,Group
+w_butterfly_R.wav,w_hotdog_R.wav,200,100,200,word,Experimental1,A
+w_catwalk_R.wav,w_butterfly_R.wav,200,100,200,word,Experimental1,B
+w_chopstick_R.wav,w_catwalk_R.wav,200,100,200,nonword,Experimental1,C
+w_weekday_R.wav,w_chopstick_R.wav,200,100,200,nonword,Experimental1,D
+w_lifeguard_R.wav,w_weekday_R.wav,200,100,200,nonword,Experimental2,B
+w_fingertip_R.wav,w_lifeguard_R.wav,200,100,200,nonword,Experimental2,C
+w_airline_R.wav,w_fingertip_R.wav,200,100,200,word,Experimental2,D
+w_hotdog_R.wav,w_airline_R.wav,200,100,200,word,Experimental2,A

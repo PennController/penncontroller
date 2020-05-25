@@ -4,7 +4,9 @@ import "./debug.js";                    // the debug object
 import "./controller.js";               // defines PennController and calls define_ibex_controller
 import "./elements.js";                 // constructor for element types [fed with PennEngine]
 import "./zip.js";                      // adds the PreloadZip global command [imports jszip and jszip-utils]
-import "./tables.js";                   // defines FeedItems    [imports jquery-csv]
+import "./tables.js";                   // defines Template    [imports jquery-csv]
+
+import "./resetprefix.js";              // defines ResetPrefix
 
 import "./items.js";
 
@@ -12,12 +14,14 @@ import "./items.js";
 import "./elements/PennElement_audio.js";
 import "./elements/PennElement_button.js";
 import "./elements/PennElement_canvas.js";
+import "./elements/PennElement_controller.js";
 import "./elements/PennElement_dropdown.js";
 import "./elements/PennElement_eyetracker.js";
 import "./elements/PennElement_function.js";
 import "./elements/PennElement_html.js";
 import "./elements/PennElement_image.js";
 import "./elements/PennElement_key.js";
+import "./elements/PennElement_mousetracker.js";
 import "./elements/PennElement_palette.js";
 import "./elements/PennElement_scale.js";
 import "./elements/PennElement_selector.js";
@@ -27,5 +31,6 @@ import "./elements/PennElement_timer.js";
 import "./elements/PennElement_tooltip.js";
 import "./elements/PennElement_var.js";
 import "./elements/PennElement_video.js";
-import "./elements/PennElement_voicerecorder.js";
+// import "./elements/PennElement_voicerecorder.js";
+import "./elements/PennElement_mediarecorder.js";
 import "./elements/PennElement_youtube.js";

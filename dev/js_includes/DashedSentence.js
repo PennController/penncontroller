@@ -102,6 +102,9 @@ jqueryWidget: {
             this.showWord = this.showWord_inplace;
         }
         else { // dashed
+            this.blankTextSpan = $("<span>").text(this.blankText);
+            this.mainDiv.append(this.blankTextSpan.css("position","absolute"));
+
             this.blankWord = this.blankWord_dashed;
             this.showWord = this.showWord_dashed;
 
@@ -254,6 +257,7 @@ jqueryWidget: {
         }
     },
     showWord_dashed: function(w) {
+        this.blankTextSpan.remove();
         if (this.currentWord < this.stoppingPoint) {
             if (this.showAhead || this.showBehind)
                 this.owsnjq[w].style.borderColor = this.shownBorderColor;

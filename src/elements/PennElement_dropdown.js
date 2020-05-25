@@ -6,10 +6,12 @@ window.PennController._AddElementType("DropDown", function(PennEngine) {
     this.immediate = function(id, text){
         if (text===undefined){
             text = id;
-            this.id = PennEngine.utils.guidGenerator();
+            if (id===undefined||typeof(id)!="string"||id.length==0)
+                id = "DropDown";
+            this.id = id;
         }
+        this.id = id;
         this.initialText = text;                                        // Keep track of this for reset
-        this.text = text;
     };
 
     this.uponCreation = function(resolve){
@@ -33,19 +35,21 @@ window.PennController._AddElementType("DropDown", function(PennEngine) {
     };
 
     this.value = function(){                                            // Value is text
-        return this.text;
+        let s = this.selections;
+        if (s instanceof Array && s.length>0) return s[s.length-1][1];
+        else return "";
     };
 
     this.end = function(){
         if (this.log){
             if (this.selections.length){
                 if (typeof(this.log)=="string" && this.log.match(/^\W*first\W*$/i))
-                    PennEngine.controllers.running.save(this.type, this.id, "Selected", ...this.selections[0]);
+                    PennEngine.controllers.running.save(this.type, this.id, ...this.selections[0]);
                 else if (typeof(this.log)=="string" && this.log.match(/^\W*all\W*$/i))
                     for (let i=0; i<this.selections.length; i++)
                         PennEngine.controllers.running.save(this.type, this.id, ...this.selections[i]);
                 else    // last
-                    PennEngine.controllers.running.save(this.type, this.id, "Selected", ...this.selections[this.selections.length-1]);
+                    PennEngine.controllers.running.save(this.type, this.id, ...this.selections[this.selections.length-1]);
             }
             else
                 PennEngine.controllers.running.save(this.type, this.id, "Selected", 
@@ -53,6 +57,7 @@ window.PennController._AddElementType("DropDown", function(PennEngine) {
         }
     }
     
+    let t = this;       // Needed to call settings form actions
     this.actions = {
         shuffle: function(resolve, keepSelected){   /* $AC$ DropDown PElement.shuffle() Shuffles the options currently in the drop-down $AC$ */
             if (keepSelected){
@@ -73,6 +78,12 @@ window.PennController._AddElementType("DropDown", function(PennEngine) {
             if (keepSelected)
                 this.jQueryElement.find("option[value='"+keepSelected+"']").attr("selected",true);
             resolve();
+        },
+        remove: function(resolve, ...options){
+            if (options.length)
+                t.settings.remove.call(this, resolve, ...options);
+            else
+                PennEngine.elements.standardCommands.actions.remove.call(this, resolve);
         },
         select: function(resolve,  option){   /* $AC$ DropDown PElement.select(option) Selects the specified option $AC$ */
             let index = this.options.indexOf(option);
@@ -121,7 +132,7 @@ window.PennController._AddElementType("DropDown", function(PennEngine) {
     };
 
     this.settings = {
-        add: function(resolve,  ...options){   /* $AC$ DropDown PElement.settings.add(options) Adds one or more options to the drop-down $AC$ */
+        add: function(resolve,  ...options){   /* $AC$ DropDown PElement.add(options) Adds one or more options to the drop-down $AC$ */
             for (let i = 0; i < options.length; i++){
                 options[i] = String(options[i]);
                 if (this.options.indexOf(options[i])<0){
@@ -131,7 +142,31 @@ window.PennController._AddElementType("DropDown", function(PennEngine) {
             }
             resolve();
         },
-        remove: function(resolve,  option){   /* $AC$ DropDown PElement.settings.remove(option) Removes the specified option from the drop-down $AC$ */
+        callback: function(resolve, ...commands){
+            let oldChange = this.change;
+            this.change = async function () {
+                let disabled = this.jQueryElement.attr("disabled");
+                await oldChange.apply(this);
+                if (disabled)
+                    return;
+                for (let i = 0; i < commands.length; i++){
+                    if (commands[i]._runPromises)
+                        await commands[i]._runPromises();
+                    else if (commands[i] instanceof Function)
+                        await commands[i]();
+                }
+            }
+            resolve();
+        },
+        once: function (resolve) {
+            let oldChange = this.change;
+            this.change = ()=>{
+                oldChange.apply(this);
+                this.jQueryElement.attr("disabled", true);
+            }
+            resolve();
+        },
+        remove: function(resolve,  option){   /* $AC$ DropDown PElement.remove(option) Removes the specified option from the drop-down $AC$ */
             let index = this.options.indexOf(option);
             if (index>-1){
                 this.jQueryElement.find("option[value='"+option+"']").remove();

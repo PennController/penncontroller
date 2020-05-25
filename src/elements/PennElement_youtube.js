@@ -24,10 +24,8 @@ window.PennController._AddElementType("Youtube", function(PennEngine) {
 
     // This is executed when Ibex runs the script in data_includes (not a promise, no need to resolve)
     this.immediate = function(id, code, showControls){
-        if (code === undefined && typeof(id)=="string"){
-            this.id = PennEngine.utils.guidGenerator();
+        if (code === undefined && typeof(id)=="string")
             code = id;
-        }
         if (!(code && typeof(code)=="string"))
             PennEngine.debug.error("Invalid code for Youtube element "+id, code);
         if (showControls && !showControls.match(/^\W*no\W*controls?\W*$/i))
@@ -86,6 +84,7 @@ window.PennController._AddElementType("Youtube", function(PennEngine) {
             });
             this.object = iframe;
         }, false);                                      // Do not try to add host urls
+        this.id = id;
     };
 
     this.uponCreation = function(resolve){
@@ -185,7 +184,7 @@ window.PennController._AddElementType("Youtube", function(PennEngine) {
             this.player.pauseVideo();
             resolve();
         },
-        print: function(resolve, where){    /* $AC$ Youtube PElement.print() Shows Youtube's video player $AC$ */
+        print: function(resolve, ...where){    /* $AC$ Youtube PElement.print() Shows Youtube's video player $AC$ */
             let afterPrint = ()=>{
                 let pos = this.jQueryElement.offset();
                 this.iframe.css({position:"absolute", left: pos.left, top: pos.top, display: "inline-block"});
@@ -216,7 +215,7 @@ window.PennController._AddElementType("Youtube", function(PennEngine) {
                     this.printDisable();
                 resolve();
             };
-            PennEngine.elements.standardCommands.actions.print.apply(this, [afterPrint, where]);
+            PennEngine.elements.standardCommands.actions.print.apply(this, [afterPrint, ...where]);
         },
         remove: function(resolve){    /* $AC$ Youtube PElement.remove() Removes Youtube's video player $AC$ */
             this.iframe.css("display","none");
@@ -259,21 +258,24 @@ window.PennController._AddElementType("Youtube", function(PennEngine) {
     };
     
     this.settings = {
-        disable: function(resolve){    /* $AC$ Youtube PElement.settings.disable() Disables the Youtube video player $AC$ */
+        disable: function(resolve){    /* $AC$ Youtube PElement.disable() Disables the Youtube video player $AC$ */
             this.printDisable();
             this.disabled = true;
+            this.jQueryContainer.addClass("PennController-disabled");
+            this.jQueryElement.addClass("PennController-disabled");
             resolve();
         },
-        enable: function(resolve){    /* $AC$ Youtube PElement.settings.enable() Enables the Youtube video player (again) $AC$ */
+        enable: function(resolve){    /* $AC$ Youtube PElement.enable() Enables the Youtube video player (again) $AC$ */
             if (this.jQueryDisable instanceof jQuery){
                 this.disabled = false;
                 this.jQueryDisable.remove();
                 this.jQueryDisable = null;
-                this.jQueryElement.removeClass("PennController-"+this.type+"-disabled");
+                this.jQueryContainer.removeClass("PennController-disabled");
+                this.jQueryElement.removeClass("PennController-disabled");
             }
             resolve();
         },
-        once: function(resolve){    /* $AC$ Youtube PElement.settings.once() Will disable the Youtube video player after the video has played once $AC$ */
+        once: function(resolve){    /* $AC$ Youtube PElement.once() Will disable the Youtube video player after the video has played once $AC$ */
             if (this.hasPlayed)
                 this.disabled = true;
             else {
@@ -286,7 +288,7 @@ window.PennController._AddElementType("Youtube", function(PennEngine) {
             }
             resolve();
         },
-        log: function(resolve,  ...what){    /* $AC$ Youtube PElement.settings.log() Will log play and/or stop events in the results file $AC$ */
+        log: function(resolve,  ...what){    /* $AC$ Youtube PElement.log() Will log play and/or stop events in the results file $AC$ */
             if (what.length)
                 this.log = what;
             else

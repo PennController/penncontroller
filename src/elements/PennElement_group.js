@@ -117,8 +117,10 @@ window.PennController._AddElementType("Group", function(PennEngine) {
 
     this.immediate = function(id, ...elements){
         if (typeof(id) != "string" && id instanceof Object && id.hasOwnProperty("_element")){
-            this.id = PennEngine.utils.guidGenerator();
             elements = [id, ...elements];
+            if (id===undefined||typeof(id)!="string"||id.length==0)
+                id = "Group";
+            this.id = id;
         }
         this.initialElements = elements;
     };
@@ -142,13 +144,18 @@ window.PennController._AddElementType("Group", function(PennEngine) {
         }
     };
     
-    
+    let t = this;   // Needed to call settings from actions
     this.actions = {
-        // void
+        remove: function(resolve, ...elementCommands){
+            if (elementCommands.length)
+                t.settings.remove.call(this, resolve, ...elementCommands);
+            else
+                PennEngine.elements.standardCommands.actions.remove.call(this, resolve);
+        }
     };
 
     this.settings = {
-        add: function(resolve, ...elementCommands){ /* $AC$ Group PElement.settings.add(elements) Adds one or more elements to the group $AC$ */
+        add: function(resolve, ...elementCommands){ /* $AC$ Group PElement.add(elements) Adds one or more elements to the group $AC$ */
             for (e in elementCommands) {
                 let element = elementCommands[e]._element;
                 if (element == undefined || element.id == undefined)
@@ -160,7 +167,7 @@ window.PennController._AddElementType("Group", function(PennEngine) {
             }
             resolve();
         },
-        remove: function(resolve, ...elementCommands){ /* $AC$ Group PElement.settings.remove(elements) Removes one or more elements from the group $AC$ */
+        remove: function(resolve, ...elementCommands){ /* $AC$ Group PElement.remove(elements) Removes one or more elements from the group $AC$ */
             for (e in elementCommands) {
                 let element = elementCommands[e]._element;
                 let index = this.elements.indexOf(element);
@@ -204,7 +211,7 @@ window.PennController._AddElementType("Group", function(PennEngine) {
 // Add a .settings.group command to all elements
 window.PennController._AddStandardCommands(function(PennEngine){
     this.settings = {
-        group: async function(resolve, groupRef){     /* $AC$ all PElements.settings.group(name) Adds the element to the Group element with the specified name $AC$ */
+        group: async function(resolve, groupRef){     /* $AC$ all PElements.group(name) Adds the element to the Group element with the specified name $AC$ */
             var group;
             if (typeof(groupRef)=="string"){
                 let elements = PennEngine.controllers.running.options.elements;

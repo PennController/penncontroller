@@ -3,11 +3,26 @@
 /* $AC$ PennController.getCanvas(name) Retrieves an existing Canvas element $AC$ */
 window.PennController._AddElementType("Canvas", function(PennEngine) {
 
+    let isCoordinate = exp => exp.match(/^\s*\d+(\.\d+)?(px|pt|pc|vw|vh|em|ex|ch|rem|cm|mm|in|vmin|vmax|[%])?\s*?/);
+
     this.immediate = function(id, width, height){
-        if (typeof(id)=="number" && typeof(width)=="number" && height===undefined){
-            height = width;
-            width = id;
-            this.id = PennEngine.utils.guidGenerator();
+        if (id===undefined){
+            id = "Canvas";
+            this.id = id;
+        }
+        else if (height===undefined){
+            if (isCoordinate(String(id)) && isCoordinate(String(width))){
+                height = width;
+                width = id;
+                id = "Canvas";
+                let controller = PennEngine.controllers.underConstruction; // Controller under construction
+                if (PennEngine.controllers.running)                     // Or running, if in running phase
+                    controller = PennEngine.controllers.list[PennEngine.controllers.running.id];
+                let n = 2;
+                while (controller.elements.hasOwnProperty("Canvas") && controller.elements.Canvas.hasOwnProperty(id))
+                    id = id + String(n);
+                this.id = id;
+            }
         }
         this.width = width;
         this.height = height;
@@ -20,45 +35,26 @@ window.PennController._AddElementType("Canvas", function(PennEngine) {
         });
         this.elementCommands = [];
         this.showElement = (elementCommand, x, y, z)=>new Promise(resolve=>{
-                let afterPrint = ()=>{
-                    let element = elementCommand._element;
-                    let jQueryElement = element.jQueryElement;
-                    let anchorX = String(x).match(/^(.+)\s+at\s+(.+)$/i);
-                    let anchorY = String(y).match(/^(.+)\s+at\s+(.+)$/i);
-                    if (anchorX && anchorX[2].match(/^\d+(\.\d+)?$/))
-                        anchorX[2] = String(anchorX[2]) + "px";
-                    if (anchorY && anchorY[2].match(/^\d+(\.\d+)?$/))
-                        anchorY[2] = String(anchorY[2]) + "px";
-                    if (anchorX){
-                        if (anchorX[1].match(/center|middle/i))
-                            x = "calc("+anchorX[2]+" - "+(element.jQueryContainer.width()/2)+"px)";
-                        else if (anchorX[1].match(/right/i))
-                            x = "calc("+anchorX[2]+" - "+element.jQueryContainer.width()+"px)";
-                        else
-                            x = anchorX[2];
-                    }
-                    if (anchorY){
-                        if (anchorY[1].match(/center|middle/i))
-                            y = "calc("+anchorY[2]+" - "+(element.jQueryContainer.height()/2)+"px)";
-                        else if (anchorY[1].match(/bottom/i))
-                            y = "calc("+anchorY[2]+" - "+element.jQueryContainer.height()+"px)";
-                        else
-                            y = anchorY[2];
-                    }
-                    if (element.jQueryContainer){
-                        element.jQueryContainer.css({position: "absolute", left: x, top: y});
-                        if (Number(z)>0||Number(z)>0)
-                            element.jQueryContainer.css("z-index", z);    // Only if number (i.e. not NaN)
-                    }
-                    else{
-                        jQueryElement.css({position: "absolute", left: x, top: y});
-                        if (Number(z)>0||Number(z)>0)
-                            jQueryElement.css("z-index", z);    // Only if number (i.e. not NaN)
-                    }
-                    resolve();
+            let afterPrint = ()=>{
+                let element = elementCommand._element;
+                let jQueryElement = element.jQueryElement;
+                let coordinates = PennEngine.utils.parseCoordinates(x,y,element.jQueryContainer);
+                x = coordinates.x;
+                y = coordinates.y;
+                if (element.jQueryContainer){
+                    element.jQueryContainer.css({position: "absolute", left: x, top: y});
+                    if (Number(z)>0||Number(z)>0)
+                        element.jQueryContainer.css("z-index", z);    // Only if number (i.e. not NaN)
                 }
-                elementCommand.print( this.jQueryElement )._runPromises().then(afterPrint);
-            });
+                else{
+                    jQueryElement.css({position: "absolute", left: x, top: y});
+                    if (Number(z)>0||Number(z)>0)
+                        jQueryElement.css("z-index", z);    // Only if number (i.e. not NaN)
+                }
+                resolve();
+            }
+            elementCommand.print( this.jQueryElement )._runPromises().then(afterPrint);
+        });
         resolve();
     };
 
@@ -75,19 +71,27 @@ window.PennController._AddElementType("Canvas", function(PennEngine) {
         return this.elementCommands.length;
     };
     
+    let t = this;       // Needed to call settings form actions
     this.actions = {
-        print: async function(resolve, where){
+        print: async function(resolve, ...where){
             let t=this, showElements = async function(){
                 for (let e in t.elementCommands)
                     await t.showElement(...t.elementCommands[e]);
                 resolve();
             };
-            PennEngine.elements.standardCommands.actions.print.apply(this, [showElements, where]);
+            PennEngine.elements.standardCommands.actions.print.apply(this, [showElements, ...where]);
+        }
+        ,
+        remove: async function(resolve, ...elementCommands){    // Merged with settings since 1.7
+            if (elementCommands.length)
+                t.settings.remove.call(this, resolve, ...elementCommands);
+            else
+                PennEngine.elements.standardCommands.actions.remove.call(this, resolve);
         }
     };
 
     this.settings = {
-        add: function(resolve, x, y, elementCommand, z){    /* $AC$ Canvas PElement.settings.add(x,y,element) Places an element at (X,Y) on the canvas $AC$ */
+        add: function(resolve, x, y, elementCommand, z){    /* $AC$ Canvas PElement.add(x,y,element) Places an element at (X,Y) on the canvas $AC$ */
             if (elementCommand.hasOwnProperty("_element") && elementCommand._element.jQueryElement instanceof jQuery){
                 this.elementCommands.push([elementCommand, x, y, z]);
                 if (this.jQueryElement.parent().length)

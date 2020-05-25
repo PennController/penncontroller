@@ -1,11 +1,13 @@
 import "jquery-csv";
 import { PennController } from "./controller.js";
 import { PennEngine } from "./engine.js";
+import { levensthein } from "./utils.js";
 
 PennEngine.tables = {};         // Dictionary of named tables
 var defaultTable = {};          // A dummy object representing the default table handler
+let groupLists = [];            // An array index all the list of groups from the different tables along with which is running
 
-// The TABLE class contains an 2x2 Array-Object and defines Item, Group and Label
+// The TABLE class contains an 2x2 Array-Object and defines Item, Group/List and Label
 class Table {
     constructor(table, id) {
         if (!(table instanceof Array) || table.length < 1 || !Object.keys(table[0]).length)
@@ -15,7 +17,7 @@ class Table {
         for (let col in table[0]) {
             if (col.match(/^item$/i))
                 this.item = col;
-            if (col.match(/^group$/i))
+            if (col.match(/^(group|list)$/i))
                 this.group = col;
             if (col.match(/^label$/i))
                 this.label = col;
@@ -58,7 +60,7 @@ class Table {
                 returnTable = new Table(returnTable, this.id);
                 if (this.group)
                     returnTable.setGroup(this.group);
-                    if (this.label)
+                if (this.label)
                     returnTable.setLabel(this.label);
                 return returnTable;
             }
@@ -153,12 +155,44 @@ function _checkTable(table){
 }
 
 
+// Injects ajax requests to CSV files inside ajax request to CHUNKS_INCLUDES
+let ajaxTables = [];
+let oldAjax = window["$"].ajax;
+window["$"].ajax = function(...args){
+    if (args[0] && args[0].url && args[0].url.match(/allchunks=1$/)){
+        let oldSuccess = args[0].success;
+        args[0].success = d=>{
+            if (ajaxTables.length==0)
+                return oldSuccess(d);
+            let ajaxRequests = [], success;
+            for (let i = ajaxTables.length-1; i >= 0; i--){
+                if (i == ajaxTables.length-1)
+                    success = data => { PennController.AddTable(ajaxTables[i].name, data); oldSuccess(d); };
+                else
+                    success = data => { PennController.AddTable(ajaxTables[i].name, data); ajaxRequests[0](); };
+                ajaxRequests.push( ()=>$.ajax({
+                    url: ajaxTables[i].table,
+                    cache: false,
+                    dataType: 'text',
+                    success: success
+                }) );
+            }
+            ajaxRequests[0]();
+        }
+    }
+    return oldAjax(...args);
+}
+
 // Adds a table to the dictionary
 PennController.AddTable = function(name, table) {
     if (typeof(name)!="string"||typeof(table)!="string")
         return PennEngine.debug.error("Table "+name+" not added: tables and table names should be strings");
     if (PennEngine.tables.hasOwnProperty(name))
         PennEngine.debug.log("A table named "+name+" already exists; overriding it");
+    if (table.match(/^http/)) {
+        ajaxTables.push({name: name, table: table});
+        return;
+    }
     table = _checkTable(table);
     if (table)
         table = new Table(table, name);
@@ -194,7 +228,7 @@ PennController.Template = function (tableName, func) {       /* $AC$ global.Penn
     let templateItems = {PennTemplate: []};
     PennEngine.tmpItems.push(templateItems);
     
-    asyncFeedItems.push(function(){                                 // The code below will be executed after setup
+    asyncFeedItems.push(function(){                                 // The code below will be executed after setup        
         let tmpItemsLength = PennEngine.tmpItems.length;            // Any PennController() in template pushes indesirably
         let table;
         if (tableName instanceof Function) {                        // No table name specified, try to automatically detect
@@ -212,8 +246,15 @@ PennController.Template = function (tableName, func) {       /* $AC$ global.Penn
                 else
                     return PennEngine.debug.error("Table "+tableName+" does not have the right format.");
             }
-            else                                                    // If not added, return an error
-                return PennEngine.debug.error("No table found with name "+tableName);
+            else {                                                  // If not added, return an error
+                let tableList = Object.keys(PennEngine.tables);
+                let add = "";
+                for (let i = 0; i < tableList.length; i++){
+                    if ((levensthein(tableName,tableList[i]) / tableList[i].length) < 0.5)
+                        add = " Did you mean to type &lsquo;<strong>"+tableList[i]+"</strong>&rsquo;?";
+                }
+                return PennEngine.debug.error("No table found with name "+tableName+"."+add);
+            }
         }
         else if (tableName instanceof TableHandler){                // TableHandler: retrieve Table instance
             if (Object.keys(PennEngine.tables).length<1)
@@ -223,8 +264,15 @@ PennController.Template = function (tableName, func) {       /* $AC$ global.Penn
                     table = PennEngine.tables[Object.keys(PennEngine.tables)[0]];
                 else if (tableName.name && PennEngine.tables.hasOwnProperty(tableName.name))
                     table = PennEngine.tables[tableName.name];                 // Take table with corresponding name
-                else
-                    return PennEngine.debug.error("No table named "+tableName.name+" was found");
+                else {
+                    let tableList = Object.keys(PennEngine.tables);
+                    let add = "";
+                    for (let i = 0; i < tableList.length; i++){
+                        if ((levensthein(tableName.name,tableList[i]) / tableList[i].length) < 0.5)
+                            add = " Did you mean to type &lsquo;</strong>"+tableList[i]+"</strong>&rsquo;?";
+                    }
+                    return PennEngine.debug.error("No table named "+tableName.name+" was found."+add);
+                }
                 for (let a = 0; a < tableName.actions.length; a++){
                     let arg = tableName.actions[a][1];
                     switch (tableName.actions[a][0]){
@@ -247,29 +295,74 @@ PennController.Template = function (tableName, func) {       /* $AC$ global.Penn
         else
             return PennEngine.debug.error("Bad format for Template's first argument (should be a PennController table, table name or function from rows to Ibex elements)");
 
-        let groups = [];
-        if (table.group)
+        if (!(func instanceof Function))
+            return PennEngine.debug.error("The function passed to PennController.Template is ill-defined");
+
+        let groups = [];                                            // The different groups listed in the table
+        let runningGroup;                                           // Which group will be running now
+        if (table.group){
             for (let row = 0; row < table.table.length; row++)
                 if (groups.indexOf(table.table[row][table.group])<0)
                     groups.push(table.table[row][table.group]);
+            groups.sort();                                              // Sort the groups
+
+            groupLists.map(g=> {                                        // Check in previous tables
+                let overlap = groups.filter((v,i)=>v==g.groups[i]);     // Keep the values in both tables' groups
+                if (groups.indexOf(g.runningGroup)>-1 && overlap.length==g.groups.length && overlap.length==groups.length)
+                    runningGroup = g.runningGroup;                      // If the groups are the same, use the same runningGroup
+            });
+            if (runningGroup===undefined){
+                let counter = window.__counter_value_from_server__;     // Retrieve counter value from server
+                if (typeof(window.counterOverride)=="number")
+                    counter = counterOverride;                          // If user defined custom counter value
+                runningGroup = groups[counter % groups.length];         // Find out the group currently running
+            }
+            groupLists.push({                                           // Add the current groups list
+                runningGroup: runningGroup,
+                groups: groups
+            });
+        }
 
         let itemsToAdd = [];
         for (let row = 0; row < table.table.length; row++) {        // Going through the table
             if (table.group){                                       // GROUP DESIGN
                 let rowGroup = table.table[row][table.group];       // The group of this row
-                let counter = window.__counter_value_from_server__; // Retrieve counter value from server
-                if (typeof(window.counterOverride)=="number")
-                    counter = counterOverride;                      // If user defined custom counter value
-                let runningGroup = groups[counter % groups.length]; // Find out the group currently running
                 if (rowGroup != runningGroup)
                     continue;                                       // Ignore this row if not the right group
             }
             let label = undefined;                                  // The label
-            let content = func(table.table[row]);                   // Create each item's content by calling func on each row
+            let line = new Proxy(table.table[row], {                // Creating a proxy to catch column reference errors
+                get: (obj, prop) => {
+                    if (prop in table.table[row])
+                        return obj[prop];
+                    else{
+                        let columns = Object.keys(table.table[row]);
+                        let add = "";
+                        for (let i = 0; i < columns.length; i++){
+                            if ((levensthein(prop,columns[i]) / columns[i].length) < 0.5)
+                                add = " Did you mean to type &lsquo;<strong>"+columns[i]+"</strong>&rsquo;?";
+                        }
+                        PennEngine.debug.error("No column named &lsquo;"+prop+"&rsquo; found in table "+table.id+"."+add);
+                    }
+                    return "";
+                }
+            });
+            let content;
+            try {
+                content = func.call(null, line);                   // Create each item's content by calling func on each row
+            }
+            catch(err){
+                window.onerror(err.name+": "+err.message, "include=data", "inside PennController.Template");
+            }
+            //let content = func(line);                             // Create each item's content by calling func on each row
             if (!(content instanceof Array)){                       // The PennController function returns an object (must be PennController)
                 label = content.useLabel;                           // Use the (Penn)Controller's label
                 content.addToItems = false;                         // Adding it right here, right now
                 content = ["PennController", content];              // Pass it along with "PennController"
+            }
+            else if (content.length%2 && typeof(content[0])=="string"){
+                label = content[0];                                 // If content is an odd array, its first member is the label
+                content.splice(0,1);                                // Remove the label from content
             }
             if (!label){
                 if (table.label && table.table[row].hasOwnProperty(table.label))
@@ -299,7 +392,14 @@ PennController.Template = function (tableName, func) {       /* $AC$ global.Penn
     if (!window.items)
         window.items = [];                                      // Create items so it can be fed later
 
-    return;
+    // Handle inappropriate calls
+    return {
+        log: ()=>PennEngine.debug.error("Tried to call .log command on PennController.Template(); .log commands should be called on PennController()"),
+        label: ()=>PennEngine.debug.error("Tried to call .label command on PennController.Template(); .label commands should be called on PennController()"),
+        setOption: ()=>PennEngine.debug.error("Tried to call .setOption command on PennController.Template(); .setOption commands should be called on PennController()"),
+        noHeader: ()=>PennEngine.debug.error("Tried to call .noHeader command on PennController.Template(); .noHeader commands should be called on PennController()"),
+        noFooter: ()=>PennEngine.debug.error("Tried to call .noFooter command on PennController.Template(); .noFooter commands should be called on PennController()")
+    };
 };
 PennController.FeedItems = (tableName, func) => PennController.Template(tableName, func);
 
@@ -311,7 +411,6 @@ $(document).ready(function(){
     loadingMessageElement.id = "FirstLoadingMessage";
     document.body.appendChild(loadingMessageElement);
 });
-
 
 // Inject items with Template before sequence is generated (no need to mess with latin-square designs)
 PennEngine.Prerun(()=>{

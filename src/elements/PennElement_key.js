@@ -4,17 +4,27 @@
 window.PennController._AddElementType("Key", function(PennEngine) {
 
     // This is executed when Ibex runs the script in data_includes (not a promise, no need to resolve)
-    this.immediate = function(id, keys){
-        if (keys===undefined){
-            this.id = PennEngine.utils.guidGenerator();
-            keys = id;
+    this.immediate = function(id, ...keys){
+        if (keys.length<1){
+            keys = [id];
+            if (id===undefined||typeof(id)!="string"||id.length==0)
+                id = "Key";
+            this.id = id;
         }
-        if (typeof(keys)=="string")
-            this.keys = keys.toUpperCase();
-        else if (Number(keys)>0)
-            this.keys = String.fromCharCode(keys).toUpperCase();
-        else
-            PennEngine.debug.error("Invalid key(s) passed to new Key &quot;"+id+"&quot; (should be a string or a key code number)", keys);
+        this.keys = [];
+        this.specialKeys = [];
+        for (let i = 0 ; i < keys.length ; i++) {
+            if (Number(keys[i])>0)
+                this.keys.push(String.fromCharCode(keys[i]));
+            else if (typeof(keys[i])!="string")
+                PennEngine.debug.error("Invalid key(s) passed to new Key &quot;"+id+"&quot; (should be a string or a key code number)", keys[i]);
+            else if (keys[i].isSpecialKey() || keys[i].replace(/^(Left|Right)/i,'').isSpecialKey())
+                this.specialKeys.push(keys[i].toUpperCase());
+            else if (keys[i].length)
+                this.keys.push(keys[i].toUpperCase());
+        }
+        //this.keys = keys;
+        //this.keys.replace(/shift/i,String.fromCharCode(16));
     };
 
     // This is executed when 'newAudio' is executed in the trial (converted into a Promise, so call resolve)
@@ -24,11 +34,18 @@ window.PennController._AddElementType("Key", function(PennEngine) {
         this.log = false;
         this.enabled = true;
         PennEngine.events.keypress(e=>{
-            if (this.enabled && (this.keys.length==0 || this.keys.match(RegExp(String.fromCharCode(e.which),"i"))))
-                this.press(e.which);
+            if (!this.enabled)
+                return;
+            let isSpecialKey = e.key.isSpecialKey();
+            let upperE = e.key.toUpperCase();
+            let side = {0: "", 1: "LEFT", 2: "RIGHT"};
+            if ((this.keys.length==0&&this.specialKeys.length==0) || // If no key specified, any key press will do
+                (isSpecialKey && this.specialKeys.filter(k =>(k==upperE||k===side[e.location]+upperE)).length) || // Special key
+                (!isSpecialKey && this.keys.filter(k=>k.indexOf(upperE)>-1).length)) // Regular list of keys
+                    this.press(e.key);
         });
         this.press = key=>{                                 // (Re)set press upon creation for it can be modified during trial
-            this.pressed.push(["Key", key, Date.now(), "NULL"]);
+            this.pressed.push(["PressedKey", key.toUpperCase(), Date.now(), "NULL"]);
         };
         resolve();
     }
@@ -42,7 +59,7 @@ window.PennController._AddElementType("Key", function(PennEngine) {
                 for (let key in this.pressed)                   // Save any clicks if logging
                     PennEngine.controllers.running.save(this.type, this.id, ...this.pressed[key]);
             }
-            else if (this.log.indexOf("wait")) {
+            else if (this.log.indexOf("wait")>-1) {
                 let atleastone = false;
                 for (let key in this.pressed)
                     if (this.pressed[key][3]=="Wait success"){
@@ -65,7 +82,7 @@ window.PennController._AddElementType("Key", function(PennEngine) {
 
     this.value = function(){                                // Value is last key that was pressed
         if (this.pressed.length)
-            return String.fromCharCode(this.pressed[this.pressed.length-1][1]).toUpperCase();
+            return this.pressed[this.pressed.length-1][1];
         else
             return "";
     };
@@ -77,6 +94,16 @@ window.PennController._AddElementType("Key", function(PennEngine) {
             else {                                          // Else, extend remove and do the checks
                 let resolved = false;
                 let oldPress = this.press;
+                // Unfocus the active element if disabled, as it would prevent keydown events
+                let el = document.activeElement;
+                while (el){
+                    if (el.disabled){
+                        el.blur();
+                        el = null;
+                    }
+                    else
+                        el = el.parentElement;
+                }
                 this.press = key => {
                     oldPress.apply(this, [key]);
                     if (resolved)
@@ -97,6 +124,7 @@ window.PennController._AddElementType("Key", function(PennEngine) {
                         });
                     }
                     else{                                   // If no (valid) test command was provided
+                        this.pressed[this.pressed.length-1][3] = "Wait success";
                         resolved = true;
                         resolve();                          // resolve anyway  
                     }
@@ -106,25 +134,25 @@ window.PennController._AddElementType("Key", function(PennEngine) {
     };
     
     this.settings = {
-        callback: function(resolve, ...elementCommands){  /* $AC$ Key PElement.settings.callback(commands) Will run the specified command(s) whenever a valid keypress happens $AC$ */
+        callback: function(resolve, ...elementCommands){  /* $AC$ Key PElement.callback(commands) Will run the specified command(s) whenever a valid keypress happens $AC$ */
             let oldPress = this.press;
             this.press = async function (key) {
-                if (!this.disabled)
+                oldPress.apply(this, [key]);
+                if (this.enabled)
                     for (let c in elementCommands)
                         await elementCommands[c]._runPromises();
-                oldPress.apply(this, [key]);
             };
             resolve();
         },
-        disable: function(resolve){ /* since 1.2 */   /* $AC$ Key PElement.settings.disable() Stops listening to keypresses $AC$ */
+        disable: function(resolve){ /* since 1.2 */   /* $AC$ Key PElement.disable() Stops listening to keypresses $AC$ */
             this.enabled = false;
             resolve();
         },
-        enable: function(resolve){ /* since 1.2 */   /* $AC$ Key PElement.settings.enable() Starts listening to keypresses (again) $AC$ */
+        enable: function(resolve){ /* since 1.2 */   /* $AC$ Key PElement.enable() Starts listening to keypresses (again) $AC$ */
             this.enabled = true;
             resolve();
         },
-        log: function(resolve,  ...what){   /* $AC$ Key PElement.settings.log() Will log any valid keypress in the results file $AC$ */
+        log: function(resolve,  ...what){   /* $AC$ Key PElement.log() Will log any valid keypress in the results file $AC$ */
             if (what.length)
                 this.log = what;
             else
@@ -136,10 +164,10 @@ window.PennController._AddElementType("Key", function(PennEngine) {
     this.test = {
         pressed: function(keys, first){   /* $AC$ Key PElement.test.pressed(key) Checks that the key, or any key if none specified, has been pressed before $AC$ */
             for (let k in this.pressed){
-                let keyCode = this.pressed[k][1];
-                if (Number(keys)>0 && keyCode == key)       // If one keycode matches, true
-                    return true;
-                else if (typeof(keys)=="string" && keys.match(new RegExp(String.fromCharCode(keyCode),"i")))
+                let key = this.pressed[k][1];
+                if (Number(keys)>0 && key.toUpperCase() == String.fromCharCode(keys).toUpperCase())
+                    return true;                            // If one keycode matches, true
+                else if (typeof(keys)=="string" && keys.toUpperCase() == key.toUpperCase())
                     return true;                            // If one key that was pressed is contained in keys, true
                 else if (typeof(keys)=="undefined")
                     return true;                            // Inside the for loop: at least one key was pressed, true

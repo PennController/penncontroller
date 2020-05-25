@@ -31,31 +31,49 @@ window.PennController._AddElementType("Selector", function(PennEngine) {
         map.map((m,i)=>{
             this.elements[m.old.index] = m.new.element;
             let shuf = $("<shuffle>").attr("i", i);         // Indicate the position in the map
-            m.old.element[0].jQueryElement.before(shuf);    // Place a shuffle tag before the unshuffled element
+            // m.old.element[0].jQueryElement.before(shuf);    // Place a shuffle tag before the unshuffled element
+            // shuf.css({                                      // Store unshuffled element's style to apply to new element later
+            //             position: m.old.element[0].jQueryElement.css("position"),
+            //             left: m.old.element[0].jQueryElement.css("left"),
+            //             top: m.old.element[0].jQueryElement.css("top")
+            //     });
+            m.old.element[0].jQueryContainer.before(shuf);    // Place a shuffle tag before the unshuffled element
             shuf.css({                                      // Store unshuffled element's style to apply to new element later
-                        position: m.old.element[0].jQueryElement.css("position"),
-                        left: m.old.element[0].jQueryElement.css("left"),
-                        top: m.old.element[0].jQueryElement.css("top")
+                        position: m.old.element[0].jQueryContainer.css("position"),
+                        left: m.old.element[0].jQueryContainer.css("left"),
+                        top: m.old.element[0].jQueryContainer.css("top")
                 });
             shuffleTags.push(shuf);                         // Add the shuffle tag to the list
         }); 
         shuffleTags.map(tag=>{                              // Go through each shuffle tag
             let i = tag.attr('i');                          // Retrieve the index in the map
-            let jQueryElementToMove = map[i].new.element[0].jQueryElement;
-            tag.after( jQueryElementToMove );               // Move the new element after the tag
-            jQueryElementToMove.css({                       // And apply the old element's style
+            // let jQueryElementToMove = map[i].new.element[0].jQueryElement;
+            // tag.after( jQueryElementToMove );               // Move the new element after the tag
+            // jQueryElementToMove.css({                       // And apply the old element's style
+            //     position: tag.css("position"),
+            //     left: tag.css("left"),
+            //     top: tag.css("top")
+            // });
+            // if (this.selections.length && this.selections[this.selections.length-1][1] == map[i].new.element[0].id)
+            //     jQueryElementToMove.before(this.frame);     // Also move frame if new element has frame
+            let jQueryContainerToMove = map[i].new.element[0].jQueryContainer;
+            tag.after( jQueryContainerToMove );               // Move the new element after the tag
+            jQueryContainerToMove.css({                       // And apply the old element's style
                 position: tag.css("position"),
                 left: tag.css("left"),
                 top: tag.css("top")
             });
             if (this.selections.length && this.selections[this.selections.length-1][1] == map[i].new.element[0].id)
-                jQueryElementToMove.before(this.frame);     // Also move frame if new element has frame
+                jQueryContainerToMove.before(this.frame);     // Also move frame if new element has frame
             tag.remove();                                   // Remove shuffle tag from DOM
         });
         resolve();
     }
 
     this.immediate = function(id){
+        if (id===undefined||typeof(id)!="string"||id.length==0)
+            id = "Selector";
+        this.id = id;
     };
 
     this.uponCreation = function(resolve){
@@ -130,8 +148,13 @@ window.PennController._AddElementType("Selector", function(PennEngine) {
     this.value = function(){                                // Value is last selection
         if (this.selections.length){
             let selectedElementID = this.selections[this.selections.length-1][1];
-            let selectedElement = this.elements.filter(e=>e[0].id==selectedElementID)[0][0];
-            return window.PennController.Elements["get"+selectedElement.type](selectedElement.id);
+            let selectedElement = this.elements.filter(e=>e[0].id==selectedElementID);
+            if (selectedElement.length){
+                selectedElement = selectedElement[0][0];
+                return window.PennController.Elements["get"+selectedElement.type](selectedElement.id);
+            }
+            else
+                return null;
         }
         else
             return null;
@@ -192,7 +215,7 @@ window.PennController._AddElementType("Selector", function(PennEngine) {
     };
     
     this.settings = {
-        add: function(resolve, ...what){  /* $AC$ Selector PElement.settings.add(elements) Adds one or more elements to the selector $AC$ */
+        add: function(resolve, ...what){  /* $AC$ Selector PElement.add(elements) Adds one or more elements to the selector $AC$ */
             for (w in what) {
                 let element = what[w]._element;
                 if (element == undefined || element.id == undefined)
@@ -222,7 +245,7 @@ window.PennController._AddElementType("Selector", function(PennEngine) {
             }
             resolve();
         },
-        callback: function(resolve, ...elementCommands){  /* $AC$ Selector PElement.settings.callback(commands) Will execute the specified command(s) whenever selection happens $AC$ */
+        callback: function(resolve, ...elementCommands){  /* $AC$ Selector PElement.callback(commands) Will execute the specified command(s) whenever selection happens $AC$ */
             let oldSelect = this.select;
             this.select = async function(element) {
                 let disabled = this.disabled;
@@ -237,9 +260,11 @@ window.PennController._AddElementType("Selector", function(PennEngine) {
         disable: function(resolve){
             this.disabled = true;
             this.elements.map(element=>element[0].jQueryElement.css("cursor", ""));
+            this.jQueryContainer.addClass("PennController-disabled");
+            this.jQueryElement.addClass("PennController-disabled");
             resolve();
         },
-        disableClicks: function(resolve){  /* $AC$ Selector PElement.settings.disableClicks() Disables selection by click $AC$ */
+        disableClicks: function(resolve){  /* $AC$ Selector PElement.disableClicks() Disables selection by click $AC$ */
             this.noClick = true;
             this.elements.map(element=>element[0].jQueryElement.css("cursor", ""));
             resolve();
@@ -248,18 +273,20 @@ window.PennController._AddElementType("Selector", function(PennEngine) {
             this.disabled = false;
             if (!this.noClick)
                 this.elements.map(element=>element[0].jQueryElement.css("cursor", "pointer"));
+            this.jQueryContainer.removeClass("PennController-disabled");
+            this.jQueryElement.removeClass("PennController-disabled");    
             resolve();
         },
-        enableClicks: function(resolve){  /* $AC$ Selector PElement.settings.enableClicks() Enables selection by click (again) $AC$ */
+        enableClicks: function(resolve){  /* $AC$ Selector PElement.enableClicks() Enables selection by click (again) $AC$ */
             this.noClick = false;
             this.elements.map(element=>element[0].jQueryElement.css("cursor", "pointer"));
             resolve();
         },
-        frame: function(resolve, css){  /* $AC$ Selector PElement.settings.frame(css) Attributes the CSS style to the selection frame $AC$ */
+        frame: function(resolve, css){  /* $AC$ Selector PElement.frame(css) Attributes the CSS style to the selection frame $AC$ */
             this.frame.css.apply(this.frame, ["outline", css]);
             resolve();
         },
-        keys: function(resolve, ...keys){  /* $AC$ Selector PElement.settings.keys(keys) Associates the elements in the selector (in the order they were added) with the specified keys $AC$ */
+        keys: function(resolve, ...keys){  /* $AC$ Selector PElement.keys(keys) Associates the elements in the selector (in the order they were added) with the specified keys $AC$ */
             for (let k in keys){
                 if (k >= this.elements.length)
                     break;
@@ -270,14 +297,14 @@ window.PennController._AddElementType("Selector", function(PennEngine) {
             }
             resolve();
         },
-        log: function(resolve, ...what){  /* $AC$ Selector PElement.settings.log() Will log any selection to the results file $AC$ */
+        log: function(resolve, ...what){  /* $AC$ Selector PElement.log() Will log any selection to the results file $AC$ */
             if (what.length)
                 this.log = what;
             else
                 this.log = ["last"];
             resolve();
         },
-        once: function(resolve){  /* $AC$ Selector PElement.settings.once() Will disable the selector after the first selection $AC$ */
+        once: function(resolve){  /* $AC$ Selector PElement.once() Will disable the selector after the first selection $AC$ */
             if (this.selections.length){
                 this.disabled = true;
                 this.elements.map(e=>e[0].jQueryElement.css("cursor",""));
@@ -303,7 +330,9 @@ window.PennController._AddElementType("Selector", function(PennEngine) {
     this.test = {
         selected: function(elementCommand){  /* $AC$ Selector PElement.test.selected(element) Checks that the specified element, or any element if non specified, is selected $AC$ */
             if (elementCommand == undefined)
-                return this.selections.length;
+                return this.selections.length>0;
+            else if (this.selections.length===0)
+                return false;
             else if (elementCommand._element)
                 return this.selections[this.selections.length-1][1] == elementCommand._element.id;
             PennEngine.debug.error("Invalid element tested for Selector "+this.id, elementCommand._element.id);
@@ -324,7 +353,7 @@ window.PennController._AddElementType("Selector", function(PennEngine) {
 // Add a .settings.selector command to all elements
 window.PennController._AddStandardCommands(function(PennEngine){
     this.settings = {
-        selector: async function(resolve, selectorRef){  /* $AC$ all PElements.settings.selector(selector) Adds the element to the specified selector $AC$ */
+        selector: async function(resolve, selectorRef){  /* $AC$ all PElements.selector(selector) Adds the element to the specified selector $AC$ */
             var selector;
             if (typeof(selectorRef)=="string"){
                 let elements = PennEngine.controllers.running.options.elements;

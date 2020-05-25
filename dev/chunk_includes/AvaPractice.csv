@@ -1,0 +1,5 @@
+Prime,Target,PrePrimeISI,PrimeToTargetISI,PostTargetISI,CorrectPrime,CorrectTarget
+w_chopstick_R.wav,w_catwalk_R.wav,200,100,200,nonword,word
+w_weekday_R.wav,w_chopstick_R.wav,200,100,200,word,nonword
+w_lifeguard_R.wav,w_weekday_R.wav,200,100,200,nonword,nonword
+w_fingertip_R.wav,w_lifeguard_R.wav,200,100,200,word,word

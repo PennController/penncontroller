@@ -11,45 +11,9 @@ window.PennController._AddElementType("EyeTracker", function(PennEngine) {
     let past50Array = [[], []];
     let calibrated = false;
     let moveEvent = null;
+    let uploadURL = "";
 
-    // $(window.document).keypress(e=>{
-    //     if (e.which==32){
-    //         let target = $("<div>").css({position: "absolute", background: "green",
-    //                                     width: 20, height: 20, "border-radius": 10, top: 400, left: 400});
-    //         $("#bod").append(target);
-    //         let horizontal = "right", vertical = "none";
-    //         let cycle = function(){
-    //             let pos = target.offset();
-    //             if (horizontal == "right"){
-    //                 target.offset({left: pos.left+2, top: pos.top});
-    //                 if (pos.left > 700)
-    //                     horizontal = "left";
-    //             } 
-    //             else if (horizontal == "left"){
-    //                 target.offset({left: pos.left-2, top: pos.top});
-    //                 if (pos.left < 200){
-    //                     horizontal = "none";
-    //                     vertical = "up";
-    //                 }
-    //             }
-    //             else if (vertical == "up"){
-    //                 target.offset({left: pos.left, top: pos.top-2});
-    //                 if (pos.top < 100)
-    //                     vertical = "down";
-    //             }
-    //             else if (vertical == "down"){
-    //                 target.offset({left: pos.left, top: pos.top+2});
-    //                 if (pos.top > 600)
-    //                     vertical = "none";
-    //             }
-    //             else
-    //                 return;
-    //             moveEvent({clientX: pos.left, clientY: pos.top});
-    //             setTimeout(cycle, 5);
-    //         };
-    //         cycle();
-    //     }
-    // })
+    window.PennController.EyeTrackerURL = url => uploadURL = url; /* $AC$ PennController.EyeTrackerURL(url) Will send eye-tracking data to specified URL $AC$ */
 
     // GENERIC FUNCTIONS
     //
@@ -195,6 +159,8 @@ window.PennController._AddElementType("EyeTracker", function(PennEngine) {
                             // Retry button
                             $("<button>Retry</button>").click(function(){
                                 calibrationDiv.remove();
+                                // Reset the model (forget previous estimations)
+                                window.webgazer.reg.RidgeWeightedReg.call(window.webgazer.getRegression()[0]);
                                 calibrate(resolve, element, threshold, remainingAttempts-1);
                             }).css('margin','auto')
                         );
@@ -262,6 +228,34 @@ window.PennController._AddElementType("EyeTracker", function(PennEngine) {
         $("#webgazerVideoFeed").before(calibrationDiv);
     }
 
+    // (Re)set the tracker and its regression model
+    let resetTracker = function(){
+        past50Array = [[],[]];
+        tracker = window.webgazer.setRegression('weightedRidge')
+            .setTracker('clmtrackr')
+            .setGazeListener((data, clock) => {
+                if (storePoints){
+                    past50Array[0].push(data.x);
+                    past50Array[1].push(data.y);
+                    if (past50Array[0].length>50)
+                        past50Array[0].shift();
+                    if (past50Array[1].length>50)
+                        past50Array[1].shift();
+                }
+                if (currentTracker)
+                    currentTracker.look(data,clock);
+            });        
+        let oldAME = document.addEventListener;         // Catch the mousemove function
+        document.addEventListener = function(...args){  // NOW!
+            if (args[0]=="mousemove"&&typeof(args[1])=="function"&&!moveEvent)
+                moveEvent = args[1];
+            oldAME.apply(document, args);
+        };
+        tracker
+            .begin()
+            .showPredictionPoints(true);
+        showTracker(false);
+    }
 
     // ELEMENT
     //
@@ -269,34 +263,11 @@ window.PennController._AddElementType("EyeTracker", function(PennEngine) {
         sessionID = PennEngine.utils.guidGenerator();
         initiated = true;
         let webgazer = document.createElement('script');
-        webgazer.setAttribute('src','https://files.lab.florianschwarz.net/ibexfiles/webgazer/webgazer.js');
+        webgazer.setAttribute('src','https://webgazer.cs.brown.edu/webgazer.js');
         document.head.appendChild(webgazer);
         let checkIfReady = () => {
             if (window.webgazer) {
-                tracker = window.webgazer.setRegression('weightedRidge')
-                    .setTracker('clmtrackr')
-                    .setGazeListener((data, clock) => {
-                        if (storePoints){
-                            past50Array[0].push(data.x);
-                            past50Array[1].push(data.y);
-                            if (past50Array[0].length>50)
-                                past50Array[0].shift();
-                            if (past50Array[1].length>50)
-                                past50Array[1].shift();
-                        }
-                        if (currentTracker)
-                            currentTracker.look(data,clock);
-                    });        
-                let oldAME = document.addEventListener;         // Catch the mousemove function
-                document.addEventListener = function(...args){  // NOW!
-                    if (args[0]=="mousemove"&&typeof(args[1])=="function"&&!moveEvent)
-                        moveEvent = args[1];
-                    oldAME.apply(document, args);
-                };
-                tracker
-                    .begin()
-                    .showPredictionPoints(true);
-                showTracker(false);
+                resetTracker();
             } else {
                 setTimeout(checkIfReady, 100);
             }
@@ -311,7 +282,9 @@ window.PennController._AddElementType("EyeTracker", function(PennEngine) {
         if (typeof(id)=="number" && (span===undefined||(typeof(span)=="number"&&proportion===undefined))){
             proportion = span;
             span = id;
-            this.id = PennEngine.utils.guidGenerator();
+            if (id===undefined||typeof(id)!="string"||id.length==0)
+                id = "EyeTracker";
+            this.id = id;
         }
         this.span = Number(span);
         this.proportion = proportion;
@@ -388,7 +361,7 @@ window.PennController._AddElementType("EyeTracker", function(PennEngine) {
         this.enabled = false;
         currentTracker = undefined;
         if (this.log && this.counts.times.length){
-            let url = "https://files.lab.florianschwarz.net/ibexfiles/RecordingsFromIbex/trackerData.php";
+            let url = uploadURL;
             let expName = window.location.href.replace(/[^/]+$/,'')
                                               .replace(/[^\w\d]/g,'')
                                               .replace(/[\.]{2,}/g,'');
@@ -415,8 +388,9 @@ window.PennController._AddElementType("EyeTracker", function(PennEngine) {
             sendLine('times', lzw_encode(this.counts.times.join('.')));
             delete this.counts.times;
             let keys = Object.keys(this.counts);
-            for (let k = 0; k < keys.length; k++)
+            for (let k = 0; k < keys.length; k++){
                 sendLine(keys[k], lzw_encode(this.counts[keys[k]].join('.')));
+            }
             PennEngine.controllers.running.save(this.type, this.id, "Filename", expName+'/'+sessionID, Date.now(), "NULL");
         }
         delete this.counts;
@@ -465,7 +439,7 @@ window.PennController._AddElementType("EyeTracker", function(PennEngine) {
     }
 
     this.settings = {
-        add: function(resolve, ...elements){    /* $AC$ EyeTracker PElement.settings.add(elements) Adds one or more elements of interest to the EyeTracker $AC$ */
+        add: function(resolve, ...elements){    /* $AC$ EyeTracker PElement.add(elements) Adds one or more elements of interest to the EyeTracker $AC$ */
             for (let e = 0; e < elements.length; e++){
                 let element = elements[e];
                 if (element && element._element && this.elements.indexOf(element._element)<0){
@@ -475,20 +449,29 @@ window.PennController._AddElementType("EyeTracker", function(PennEngine) {
             }
             resolve();
         },
-        callback: function(resolve, func){    /* $AC$ EyeTracker PElement.settings.callback(function) Runs the specified javascript function whenever the eyes look at an element of interest $AC$ */
+        callback: function(resolve, func){    /* $AC$ EyeTracker PElement.callback(function) Runs the specified javascript function whenever the eyes look at an element of interest $AC$ */
             if (func instanceof Function)
                 this.callback = func;
             resolve();
         },
-        log: function(resolve){    /* $AC$ EyeTracker PElement.settings.log() Logs the X and Y positions of the eyes every N milliseconds (see documentation) $AC$ */
+        log: function(resolve){    /* $AC$ EyeTracker PElement.log() Logs the X and Y positions of the eyes every N milliseconds (see documentation) $AC$ */
             this.log = true;
             resolve();
         },
-        trainOnMouseMove: function(resolve, yesNo){    /* $AC$ EyeTracker PElement.settings.trainOnMouseMove(true) Tells the model whether to use mouse movements to improve its estimations $AC$ */
+        trainOnMouseMove: function(resolve, yesNo){    /* $AC$ EyeTracker PElement.trainOnMouseMove(true) Tells the model whether to use mouse movements to improve its estimations $AC$ */
             this.trainOnMouseMove = yesNo===undefined||yesNo;
             if (!this.trainOnMouseMove)
                 document.removeEventListener("mousemove", moveEvent, true);
             resolve();
+        }
+    }
+
+    this.test = {
+        calibrated: function(){
+            return calibrated;
+        },
+        ready: function(){
+            return window.webgazer && window.webgazer.isReady();
         }
     }
 

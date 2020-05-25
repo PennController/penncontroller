@@ -4,16 +4,22 @@
 window.PennController._AddElementType("Video", function(PennEngine) {
 
     this.immediate = function(id, file){
-        if (typeof id == "string" && file===undefined){
-            this.id = PennEngine.utils.guidGenerator();
+        if (typeof id == "string" && file===undefined)
             file = id;
-        }
         let addHostURLs = !file.match(/^http/i);
         this.resource = PennEngine.resources.fetch(file, function(resolve){
             this.object = document.createElement("video");
             this.object.src = this.value;                      // Creation of the video using the resource's value
-            this.object.addEventListener("canplay", resolve);  // Preloading is over when can play (>> resolve)
+            this.object.preload = true;                        // Preloading is over when can play (>> resolve)
+            this.object.load();                                // Forcing 'autopreload'
+            if (this.object.readyState > 3) 
+                resolve();
+            else 
+                this.object.addEventListener("canplaythrough", resolve);  // Preloading is over when can play (>> resolve)
         }, addHostURLs);
+        if (id===undefined||typeof(id)!="string"||id.length==0)
+            id = "Video";
+        this.id = id;
     };
 
     this.uponCreation = function(resolve){
@@ -47,19 +53,20 @@ window.PennController._AddElementType("Video", function(PennEngine) {
         this.resource.object.waiting = ()=>{
             this.bufferEvents.push(["buffer",this.video.currentTime,Date.now()]);
         };
-        this.printDisable = ()=>{
+        this.printDisable = opacity=>{
+            opacity = Number(opacity) || 0.5;
             if (this.jQueryDisable instanceof jQuery)
                 this.jQueryDisable.remove();
             this.jQueryDisable = $("<div>").css({
                 position: "absolute",
                 display: "inline-block",
                 "background-color": "gray",
-                opacity: 0.5,
+                opacity: opacity,
                 width: this.jQueryElement.width(),
                 height: this.jQueryElement.height()
             });
             this.jQueryElement.before(this.jQueryDisable);
-            this.jQueryElement.addClass("PennController-"+this.type.replace(/[\s_]/g,'')+"-disabled");
+            this.jQueryElement.removeAttr("controls");
         };
         resolve();
     };
@@ -118,13 +125,13 @@ window.PennController._AddElementType("Video", function(PennEngine) {
             resolve();
         }
         ,
-        print: function(resolve, where){        /* $AC$ Video PElement.print() Shows a video player $AC$ */
+        print: function(resolve, ...where){        /* $AC$ Video PElement.print() Shows a video player $AC$ */
             let afterPrint = ()=>{
                 if (this.disabled)
-                    this.printDisable();
+                    this.printDisable(this.disabled);
                 resolve();
             };
-            PennEngine.elements.standardCommands.actions.print.apply(this, [afterPrint, where]);
+            PennEngine.elements.standardCommands.actions.print.apply(this, [afterPrint, ...where]);
         },
         stop: function(resolve){        /* $AC$ Video PElement.stop() Stops playing the video $AC$ */
             this.video.pause();
@@ -165,9 +172,11 @@ window.PennController._AddElementType("Video", function(PennEngine) {
     };
     
     this.settings = {
-        disable: function(resolve){
-            this.printDisable();
-            this.disabled = true;
+        disable: function(resolve, opacity){    /* $AC$ Video PElement.disable(opacity) Disable controls on the Video element $AC$ */
+            this.printDisable(opacity);
+            this.disabled = opacity || true;
+            this.jQueryContainer.addClass("PennController-disabled");
+            this.jQueryElement.addClass("PennController-disabled");
             resolve();
         }
         ,
@@ -176,13 +185,15 @@ window.PennController._AddElementType("Video", function(PennEngine) {
                 this.disabled = false;
                 this.jQueryDisable.remove();
                 this.jQueryDisable = null;
-                this.jQueryElement.removeClass("PennController-"+this.type+"-disabled");
+                this.jQueryContainer.addClass("PennController-disabled");
+                this.jQueryElement.addClass("PennController-disabled");
+                this.jQueryElement.attr("controls", true);
             }
             resolve();
         }
         ,
         // Every setting is converted into a Promise (so resolve)
-        once: function(resolve){        /* $AC$ Video PElement.settings.once() Will disable the video player after the video has played through once $AC$ */
+        once: function(resolve){        /* $AC$ Video PElement.once() Will disable the video player after the video has played through once $AC$ */
             if (this.hasPlayed){
                 this.disabled = true;
                 this.printDisable();
@@ -198,7 +209,7 @@ window.PennController._AddElementType("Video", function(PennEngine) {
             resolve();
         }
         ,
-        log: function(resolve,  ...what){        /* $AC$ Video PElement.settings.log() Will log play and/or stop events in the results file $AC$ */
+        log: function(resolve,  ...what){        /* $AC$ Video PElement.log() Will log play and/or stop events in the results file $AC$ */
             if (what.length==1 && typeof(what[0])=="string")
                 this.whatToSave.push(what);
             else if (what.length>1)

@@ -4,11 +4,33 @@ var prefix = null;
 let oldResPref = window.PennController.ResetPrefix;
 window.PennController.ResetPrefix = function(prefixName) {
     oldResPref(prefixName);
-    if (typeof(prefix)=="string")           // Catch the new prefix
+    if (typeof(prefixName)=="string")           // Catch the new prefix
         prefix = window[prefixName];
     else
         prefix = window;                    // If no (valid) prefix name, drop any prefix (object = window)
 };
+
+let getVarWasReset = false;
+let resetGetVar = PennEngine =>{
+    if (getVarWasReset) return;
+    let oldGetVar = window.PennController.Elements.getVar;
+    window.PennController.Elements.getVar = function(getVarID){
+        let controller = PennEngine.controllers.underConstruction; // Controller under construction
+        if (PennEngine.controllers.running)                     // Or running, if in running phase
+            controller = PennEngine.controllers.list[PennEngine.controllers.running.id];
+        if (!(controller.elements.hasOwnProperty("Var") && controller.elements.Var.hasOwnProperty(getVarID))){
+            let newVar = window.PennController.Elements.newVar(getVarID).settings.global();
+            newVar._element.scope = "global";
+            return newVar;
+        }
+        else
+            return oldGetVar(getVarID);
+    };
+    if (prefix)                         // Update 'getVar' for the new prefix
+        prefix.getVar = window.PennController.Elements.getVar;
+}
+
+let globalVars = {};
 
 // VAR element
 /* $AC$ PennController.newVar(name,value) Creates a new Var element $AC$ */
@@ -16,29 +38,32 @@ window.PennController.ResetPrefix = function(prefixName) {
 window.PennController._AddElementType("Var", function(PennEngine) {
 
     this.immediate = function(id, value){
-        // Things are getting a little ugly: overriding 'getVar' to make 'newVar' optional when global reference
-        let oldGetVar = window.PennController.Elements.getVar;
-        let underConstruction = PennEngine.controllers.underConstruction;
-        window.PennController.Elements.getVar = function(getVarID){
-            let controllerElements = PennEngine.controllers.underConstruction.elements;
-            if (getVarID==id && !(controllerElements.hasOwnProperty("Var") && controllerElements.Var.hasOwnProperty(id))){
-                let oldRunning = PennEngine.controllers.running;
-                let oldUnderConstruction = PennEngine.controllers.underConstruction;
-                PennEngine.controllers.running = null;
-                PennEngine.controllers.underConstruction = underConstruction;
-                let returnVar = oldGetVar(getVarID);
-                PennEngine.controllers.running = oldRunning;
-                PennEngine.controllers.underConstruction = oldUnderConstruction;
-                return returnVar;
-            }
-            else
-                return oldGetVar(getVarID);
-        };
-        if (prefix)                         // Update 'getVar' for the new prefix
-            prefix.getVar = window.PennController.Elements.getVar;
-        this.initialValue = value;
-        this.value = value;
+        resetGetVar(PennEngine);
+        let controller = PennEngine.controllers.underConstruction; // Controller under construction
+        if (PennEngine.controllers.running)                     // Or running, if in running phase
+            controller = PennEngine.controllers.list[PennEngine.controllers.running.id];
+        if (controller.elements.hasOwnProperty("Var") && controller.elements.Var.hasOwnProperty(id)){
+            let other = controller.elements.Var[id];
+            if (other.scope == "global")
+                delete controller.elements.Var[id];
+        }
         this.scope = "local";
+        this.initialValue = value;
+        //this.value = value;
+        this._value = value;
+        this.getter = ()=>{
+            if (this.scope=="local")
+                return this._value;
+            else
+                return globalVars[this.id];
+        };
+        this.setter = v=>{
+            if (this.scope=="local")
+                this._value = v;
+            else
+                globalVars[this.id] = v;
+        };
+        Object.defineProperty(this, "value", { get: this.getter , set: this.setter });
         this.evaluate = ()=>{
             if (this.value && this.value.type === "Var")
                 return this.value.evaluate();
@@ -48,11 +73,8 @@ window.PennController._AddElementType("Var", function(PennEngine) {
     };
 
     this.uponCreation = function(resolve){
-        let running = PennEngine.controllers.running.options.elements.Var[this.id];
-        if (running && running.scope=="global" && running != this)
-            this.value = running.value;
-        else if (this.scope=="local")
-            this.value = this.initialValue;
+        this.scope = "local";
+        this.value = this.initialValue;
         this.values = [];
         resolve();
     };
@@ -79,20 +101,19 @@ window.PennController._AddElementType("Var", function(PennEngine) {
             if (typeof(value)=="object" && value.hasOwnProperty("value"))
                 this.value = value.value;
             else if (value instanceof Function)
-                this.value = value.apply(this, [this.value]);
+                this.value = value.call(this, this.value);
             else
                 this.value = value;
+            if (this.values===undefined)
+                this.values = [];
             this.values.push(["Set", this.value, Date.now(), "NULL"]);
             resolve();
         }
     };
 
     this.settings = {
-        local: function(resolve){  /* $AC$ Var PElement.settings.local() Ensures that the value of this Var element only affects the current trial $AC$ */
+        local: function(resolve){  /* $AC$ Var PElement.local() Ensures that the value of this Var element only affects the current trial $AC$ */
             this.scope = "local";
-            for (c in PennEngine.controllers.list)
-                if (PennEngine.controllers.list[c][this.id] == this)
-                    PennEngine.controllers.list[c][this.id] = null;
             resolve();
         },
         log: function(resolve, ...what){
@@ -102,25 +123,29 @@ window.PennController._AddElementType("Var", function(PennEngine) {
                 this.log = ["final"];
             resolve();
         },
-        global: function(resolve){  /* $AC$ Var PElement.settings.global() Shares the value with all Var elements with the same name across trials $AC$ */
+        global: function(resolve){  /* $AC$ Var PElement.global() Shares the value with all Var elements with the same name across trials $AC$ */
+            if (!globalVars.hasOwnProperty(this.id))
+                globalVars[this.id] = this.value;
             this.scope = "global";
-            for (c in PennEngine.controllers.list){
-                if (!PennEngine.controllers.list[c].elements.hasOwnProperty("Var"))
-                    PennEngine.controllers.list[c].elements.Var = {};
-                PennEngine.controllers.list[c].elements.Var[this.id] = this;
-            }
             resolve();
         }
     };
 
     this.test = {
         is: function(test){  /* $AC$ Var PElement.test.is(value) Checks the value of the Var element (can be a function, e.g. v=>v<10) $AC$ */
-            if (test instanceof RegExp)
-                return this.evaluate().match(test);
+            let v = this.evaluate();
+            if (test && test.value)
+                test = test.value;
+            if (test && test._element)
+                test = test._element
+            if (v && v._element)
+                v = v._element;
+            if (test instanceof RegExp && typeof(v) == "text")
+                return v.match(test);
             else if (test instanceof Function)
-                return test(this.evaluate());
+                return test(v);
             else
-                return this.evaluate() == test;
+                return v == test;
         }
     };
 
@@ -133,7 +158,12 @@ window.PennController._AddStandardCommands(function(PennEngine){
                 if (!PennEngine.controllers.running.options.elements.hasOwnProperty("Var"))
                     return PennEngine.debug.error("No Var element named "+varRef+" found");
                 let variable = PennEngine.controllers.running.options.elements.Var[varRef];
-                variable.value = window.PennController.Elements["get"+this.type](this.id).value;
+                if (variable)
+                    variable.value = window.PennController.Elements["get"+this.type](this).value;
+                else if (globalVars[varRef])
+                    globalVars[varRef].value =  window.PennController.Elements["get"+this.type](this).value;
+                else
+                    return PennEngine.debug.error("No Var element named "+varRef+" found");
             }
             else
                 PennEngine.debug.error("Invalid variable reference when trying to store "+this.id+"'s value", varRef);

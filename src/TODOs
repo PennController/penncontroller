@@ -1,10 +1,88 @@
-- Implement window.onerror and new Proxy on PennController objects to track errors and print in debug
-- Shuffle and containers: remove after shuffle removes the wrong element
+Since 1.7
+- Add a callback command for Controller (make it default?)
+- Define this.utils for Controller element (e.g. timeout parameter crashes for Question controller)
+- Canvas shouldn't persist across trials (nor any other element for the matter)
+- Fix selector.test.selected (crashes when no selection happened before)
+- Fix all-number keys passed to Key element (currently interpreted as number instead of string)
+- Do something about the upper-case extensions in Resources causing a crash?
+
+
+
+- Throw a warning when a Canvas' element overflows?
+- Make Youtube disable not gray out the video(?)
+- Youtube disable prevents from playing through the play command
+- Youtube does not preload well on Chrome
+- Add a way to customize the results file
+    Time only once (not on every line)
+        Time,MD5/ID,Group,Trial#,Screen#,Label,Controller,
+    pc:                                                     PennElementType,PennElementName,Parameter,Value
+- Add a Wheel? As a settings of the scale?
+- Add the option to pass a number as a parameter to wait for timeout
+    >  Generalize 'wait'
+- Revise selector.shuffle: messes up when contains printed + unprinted elements
+- AddTable sometimes doesn't work with Google Spreadsheet (when some cells are numbers?)
+- ?Revise dropdown.shuffle: not random enough as is
+- Add PennController.GetGroup([table]) returning a LazyString (placeholder for a Var):
+    class LazyString extends String {
+        constructor(f){
+            if (typeof(f)!="function") throw Error("LazyString's parameter should be a function!");
+            super(f());
+            Object.defineProperty(this, "value", {get() { return f() }});
+            this.type = "Var";
+            this._promises = [];
+        }
+    }
+    var GetGroup = () => new LazyString( ()=>Date.now() )
+- Add shuffle for Scales
+- Add a (Copy) Report option in the debugger, to use on the forums
+- Go through emails and forum topics to list more to-do's (not enough here already)
+- Fix how (undefined) order interacts with var items = ... when some items are PennController and some are not
+- Add PennController.GetFPS()
+- Shuffle and containers: removing after shuffling removes the wrong element
 - Add newCanvas(getElement())?
-- Create a Canvas for the whole page by default, and make .print("center at 50%", "center at 50%") possible?
-        > getCanvas("screen")? getCanvas(PennController)? getCanvas(PennController.trial)? getCanvas(PennController.screen)?
 - Add newRow( "text" , newText("name", "text") , newImage("http://.../") ).settings.spacing("33px")
-- Get rid of .settings?
+
+
+- fix "top|middle at ..." in .print (shouldn't subtract whole height + "right" doesn't work?)   <   ??
+- Remove elements printed globally (.print(x,y)) at the end of trials   <   ??
+
+- Get rid of .settings? [Maybe not] < Why not?
+
+
+- DONE: newIbexQuestion("").settings.q("...").print().wait()      or      newController(["name",] "Question", {q:"why",as:}).print().log().wait()
+    $(temp0)["Question"]({ _finishedCallback:()=>console.log("over"), _cssPrefix: "Question-", q: "hello?", as: ["yes","no"] })
+    take a look at VBox
+    almost there!
+- DONE: Add a fullscreen option
+- DONE: Add support for .log for Headers and for Footers
+- DONE(?): setVar and var.set behave differently in a number of ways, in particular when global
+- DONE: Use flow CSS for better vertical alignment with before and after (Scale)
+- DONE: Revise the automatic naming of the elements: infinite loop!
+- DONE: Header/Footer's inheritence of .log is duplicated when the same trial is run multiple times
+- DONE: getVar in PennController().log is not re-evaluated upon repetition of trial
+- DONE: Throw an error when misspelling a Controller's name
+- DONE: Remove tooltip's bottom padding when label is empty
+- DONE: Make tooltip.settings.key accept special key names (like the key element)
+- DONE: Handle optional .settings from AddStandardCommands
+- DONE: Remove all .settings?
+- DONE: Multiple Key elements in a single trial only log the last one
+    (NOT DONE) > Actually it's a complete mess, should juss rewrite the whole log thing
+- DONE: Add a MouseTracker
+- DONE(?): bug with newText in Canvas when reprinted
+- DONE: Add .unselect to Scale
+- DONE: Add option "loop" to audio.play?
+- DONE: Make it possible to pass window coordinates for tooltip.print
+- DONE: Make it possible to give a label to non-Penncontroller Template-generated trials
+- DONE: Handle cross-table groups
+- DONE: Handle server.py requests...
+- DONE: Store key presses as key names instead of key codes? (give option)
+- PARTLY DONE WITH PRINT(X,Y): Create a Canvas for the whole page by default, and make .print("center at 50%", "center at 50%") possible?
+        > getCanvas("screen")? getCanvas(PennController)? getCanvas(PennController.trial)? getCanvas(PennController.screen)?
+- DONE: Make it possible to use custom filenames for audio recordings
+- DONE: Make debug popin appear by default?
+- DONE: Implement window.onerror and new Proxy on PennController objects to track errors and print in debug
+- DONE: Add the "disabled" class to all disabled elements
+- DONE: Rehaul of Timer element (use requestAnimationFrame)  
 - DONE: Revise tests: redundant layers + Var elements not evaluated on one layer, failing tests that should be successful
 - DONE: FIX SELECTION OF ELEMENTS (IN PARTICULAR SELECTORS) WHEN NOT DISPLAYED
 - DONE: Replace keydown with keypress in selectors

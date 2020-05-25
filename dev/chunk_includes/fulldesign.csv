@@ -1,0 +1,9 @@
+"Item","Group","Ending","Sentence","PictureSg","PicturePl","Audio","Duration"
+"fish","A","3rd","The fish swims in a tank which is perfectly square","1fishSquareTank.png","2fishRoundTank.png","1fishSquareTank.mp3",2600
+"fish","B","1st","The fish swim in a tank which is perfectly round","1fishSquareTank.png","2fishRoundTank.png","2fishRoundTank.mp3",2600
+"deer","B","3rd","The deer runs in a wood which is extremely dense","1deerDenseWood.png","2deerSparseWood.png","1deerDenseWood.mp3",2500
+"deer","A","1st","The deer run in a wood which is extremely sparse","1deerDenseWood.png","2deerSparseWood.png","2deerSparseWood.mp3",2500
+"sheep","A","3rd","The sheep roams in a pen which is strikingly red","1sheepRedPen.png","2sheepBluePen.png","1sheepRedPen.mp3",2200
+"sheep","B","1st","The sheep roam in a pen which is strikingly blue","1sheepRedPen.png","2sheepBluePen.png","2sheepBluePen.mp3",2200
+"moose","B","3rd","The moose walks in a park which is visibly new","1mooseNewPark.png","2mooseOldPark.png","1mooseNewPark.mp3",2200
+"moose","A","1st","The moose walk in a park which is visibly old","1mooseNewPark.png","2mooseOldPark.png","2mooseOldPark.mp3",2200

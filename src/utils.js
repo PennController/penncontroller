@@ -21,7 +21,7 @@ export function hexFromArrayBuffer (array) {
 
 // See https://mimesniff.spec.whatwg.org/#matching-an-image-type-pattern
 // See https://en.wikipedia.org/wiki/List_of_file_signatures
-export function getMimetype (signature) {
+export function getMimetype (signature, filename) {
     // IMAGE
     if (signature.match(/^00000[12]00/i))
         return 'image/x-icon';
@@ -57,8 +57,48 @@ export function getMimetype (signature) {
         return 'application/pdf';
     if (signature.match(/^504B0304/i))
         return 'application/zip';
-    else
-        return false;
+    else{
+        let r = filename.match(/\.([^.]+)$/);
+        if (r){
+            switch(r[1].toLowerCase()){
+                case 'bmp':
+                    return 'image/bmp';
+                case 'png':
+                    return 'image/png'; 
+                case 'gif':
+                    return 'image/gif'; 
+                case 'webp':
+                    return 'image/webp';
+                case 'jpg':
+                case 'jpeg':
+                    return 'image/jpeg';
+                case 'mp3':
+                    return 'audio/mpeg';
+                case 'ogg':
+                case 'oga':
+                    return 'audio/ogg';
+                case 'midi':
+                case 'mid':
+                    return 'audio/midi';
+                case 'wav':
+                    return 'audio/wave';
+                case 'webm':
+                    return 'video/webm';
+                case 'avi':
+                    return 'video/avi';
+                case 'mp4':
+                    return 'video/mp4';
+                case 'ogv':
+                    return 'video/ogg';
+                case 'mov':
+                    return 'video/quicktime';
+                default:
+                    return '';
+            }
+        }
+        else
+            return '';
+    }
 }
 
 
@@ -83,4 +123,382 @@ export function parseElementCommands(array){
         else
             return e;
     });
+}
+
+// Parses "bottom|left|center|middle|right|top at ..."
+export function parseCoordinates(x,y,element){
+    let anchorX = String(x).match(/^(.+)\s+at\s+(.+)$/i);
+    let anchorY = String(y).match(/^(.+)\s+at\s+(.+)$/i);
+    if (anchorX && anchorX[2].match(/^\d+(\.\d+)?$/))
+        anchorX[2] = String(anchorX[2]) + "px";
+    if (anchorY && anchorY[2].match(/^\d+(\.\d+)?$/))
+        anchorY[2] = String(anchorY[2]) + "px";
+    if (anchorX){
+        if (anchorX[1].match(/center|middle/i))
+            x = "calc("+anchorX[2]+" - "+(element.width()/2)+"px)";
+        else if (anchorX[1].match(/right/i))
+            x = "calc("+anchorX[2]+" - "+element.width()+"px)";
+        else
+            x = anchorX[2];
+    }
+    if (anchorY){
+        if (anchorY[1].match(/center|middle/i))
+            y = "calc("+anchorY[2]+" - "+(element.height()/2)+"px)";
+        else if (anchorY[1].match(/bottom/i))
+            y = "calc("+anchorY[2]+" - "+element.height()+"px)";
+        else
+            y = anchorY[2];
+    }
+    return {x: x, y: y};
+}
+
+// Returns the Levensthein distance between two words
+export function levensthein(s,t){
+    let d = [];
+    d[0] = ("a"+t).split("").map((c,n)=>n);
+    for (let i = 1; i < s.length+1; i++)
+        d[i] = [i,...t.split("").map(()=>0)];
+
+    for (let j = 1; j < t.length+1; j++)
+        for (let i = 1; i < s.length+1; i++){
+            let substitutionCost = s.charAt(i)!=t.charAt(j);
+            let deletion = d[i-1][j] + 1;
+            let insertion = d[i][j-1] + 1;
+            let substitution = d[i-1][j-1] + substitutionCost;
+            if (deletion<insertion&&deletion<substitution)
+                d[i][j] = deletion;
+            else if (insertion<deletion&&insertion<substitution)
+                d[i][j] = insertion;
+            else
+                d[i][j] = substitution;
+        }
+    return d[s.length][t.length];
+}
+
+let specialKeys = [
+    "Unidentified",
+    "Alt",
+    "AltGraph",
+    "CapsLock",
+    "Control",
+    "Fn",
+    "FnLock",
+    "Meta",
+    "NumLock",
+    "ScrollLock",
+    "Shift",
+    "Symbol",
+    "SymbolLock",
+    "Hyper",
+    "Super",
+    "Enter",
+    "Tab",
+    "ArrowDown",
+    "ArrowLeft",
+    "ArrowRight",
+    "ArrowUp",
+    "End",
+    "Home",
+    "PageDown",
+    "PageUp",
+    "Backspace",
+    "Clear",
+    "Copy",
+    "CrSel",
+    "Cut",
+    "Delete",
+    "EraseEof",
+    "ExSel",
+    "Insert",
+    "Paste",
+    "Redo",
+    "Undo",
+    "Accept",
+    "Again",
+    "Attn",
+    "Cancel",
+    "ContextMenu",
+    "Escape",
+    "Execute",
+    "Find",
+    "Help",
+    "Pause",
+    "Play",
+    "Props",
+    "Select",
+    "ZoomIn",
+    "ZoomOut",
+    "BrightnessDown",
+    "BrightnessUp",
+    "Eject",
+    "LogOff",
+    "Power",
+    "PowerOff",
+    "PrintScreen",
+    "Hibernate",
+    "Standby",
+    "WakeUp",
+    "AllCandidates",
+    "Alphanumeric",
+    "CodeInput",
+    "Compose",
+    "Convert",
+    "Dead",
+    "FinalMode",
+    "GroupFirst",
+    "GroupLast",
+    "GroupNext",
+    "GroupPrevious",
+    "ModeChange",
+    "NextCandidate",
+    "NonConvert",
+    "PreviousCandidate",
+    "Process",
+    "SingleCandidate",
+    "HangulMode",
+    "HanjaMode",
+    "JunjaMode",
+    "Eisu",
+    "Hankaku",
+    "Hiragana",
+    "HiraganaKatakana",
+    "KanaMode",
+    "KanjiMode",
+    "Katakana",
+    "Romaji",
+    "Zenkaku",
+    "ZenkakuHankaku",
+    "F1",
+    "F2",
+    "F3",
+    "F4",
+    "F5",
+    "F6",
+    "F7",
+    "F8",
+    "F9",
+    "F10",
+    "F11",
+    "F12",
+    "Soft1",
+    "Soft2",
+    "Soft3",
+    "Soft4",
+    "ChannelDown",
+    "ChannelUp",
+    "Close",
+    "MailForward",
+    "MailReply",
+    "MailSend",
+    "MediaClose",
+    "MediaFastForward",
+    "MediaPause",
+    "MediaPlay",
+    "MediaPlayPause",
+    "MediaRecord",
+    "MediaRewind",
+    "MediaStop",
+    "MediaTrackNext",
+    "MediaTrackPrevious",
+    "New",
+    "Open",
+    "Print",
+    "Save",
+    "SpellCheck",
+    "Key11",
+    "Key12",
+    "AudioBalanceLeft",
+    "AudioBalanceRight",
+    "AudioBassBoostDown",
+    "AudioBassBoostToggle",
+    "AudioBassBoostUp",
+    "AudioFaderFront",
+    "AudioFaderRear",
+    "AudioSurroundModeNext",
+    "AudioTrebleDown",
+    "AudioTrebleUp",
+    "AudioVolumeDown",
+    "AudioVolumeUp",
+    "AudioVolumeMute",
+    "MicrophoneToggle",
+    "MicrophoneVolumeDown",
+    "MicrophoneVolumeUp",
+    "MicrophoneVolumeMute",
+    "SpeechCorrectionList",
+    "SpeechInputToggle",
+    "LaunchApplication1",
+    "LaunchApplication2",
+    "LaunchCalendar",
+    "LaunchContacts",
+    "LaunchMail",
+    "LaunchMediaPlayer",
+    "LaunchMusicPlayer",
+    "LaunchPhone",
+    "LaunchScreenSaver",
+    "LaunchSpreadsheet",
+    "LaunchWebBrowser",
+    "LaunchWebCam",
+    "LaunchWordProcessor",
+    "BrowserBack",
+    "BrowserFavorites",
+    "BrowserForward",
+    "BrowserHome",
+    "BrowserRefresh",
+    "BrowserSearch",
+    "BrowserStop",
+    "AppSwitch",
+    "Call",
+    "Camera",
+    "CameraFocus",
+    "EndCall",
+    "GoBack",
+    "GoHome",
+    "HeadsetHook",
+    "LastNumberRedial",
+    "Notification",
+    "MannerMode",
+    "VoiceDial",
+    "TV",
+    "TV3DMode",
+    "TVAntennaCable",
+    "TVAudioDescription",
+    "TVAudioDescriptionMixDown",
+    "TVAudioDescriptionMixUp",
+    "TVContentsMenu",
+    "TVDataService",
+    "TVInput",
+    "TVInputComponent1",
+    "TVInputComponent2",
+    "TVInputComposite1",
+    "TVInputComposite2",
+    "TVInputHDMI1",
+    "TVInputHDMI2",
+    "TVInputHDMI3",
+    "TVInputHDMI4",
+    "TVInputVGA1",
+    "TVMediaContext",
+    "TVNetwork",
+    "TVNumberEntry",
+    "TVPower",
+    "TVRadioService",
+    "TVSatellite",
+    "TVSatelliteBS",
+    "TVSatelliteCS",
+    "TVSatelliteToggle",
+    "TVTerrestrialAnalog",
+    "TVTerrestrialDigital",
+    "TVTimer",
+    "AVRInput",
+    "AVRPower",
+    "ColorF0Red",
+    "ColorF1Green",
+    "ColorF2Yellow",
+    "ColorF3Blue",
+    "ColorF4Grey",
+    "ColorF5Brown",
+    "ClosedCaptionToggle",
+    "Dimmer",
+    "DisplaySwap",
+    "DVR",
+    "Exit",
+    "FavoriteClear0",
+    "FavoriteClear1",
+    "FavoriteClear2",
+    "FavoriteClear3",
+    "FavoriteRecall0",
+    "FavoriteRecall1",
+    "FavoriteRecall2",
+    "FavoriteRecall3",
+    "FavoriteStore0",
+    "FavoriteStore1",
+    "FavoriteStore2",
+    "FavoriteStore3",
+    "Guide",
+    "GuideNextDay",
+    "GuidePreviousDay",
+    "Info",
+    "InstantReplay",
+    "Link",
+    "ListProgram",
+    "LiveContent",
+    "Lock",
+    "MediaApps",
+    "MediaAudioTrack",
+    "MediaLast",
+    "MediaSkipBackward",
+    "MediaSkipForward",
+    "MediaStepBackward",
+    "MediaStepForward",
+    "MediaTopMenu",
+    "NavigateIn",
+    "NavigateNext",
+    "NavigateOut",
+    "NavigatePrevious",
+    "NextFavoriteChannel",
+    "NextUserProfile",
+    "OnDemand",
+    "Pairing",
+    "PinPDown",
+    "PinPMove",
+    "PinPToggle",
+    "PinPUp",
+    "PlaySpeedDown",
+    "PlaySpeedReset",
+    "PlaySpeedUp",
+    "RandomToggle",
+    "RcLowBattery",
+    "RecordSpeedNext",
+    "RfBypass",
+    "ScanChannelsToggle",
+    "ScreenModeNext",
+    "Settings",
+    "SplitScreenToggle",
+    "STBInput",
+    "STBPower",
+    "Subtitle",
+    "Teletext",
+    "VideoModeNext",
+    "Wink",
+    "ZoomToggle",
+    "AudioVolumeDown",
+    "AudioVolumeUp",
+    "AudioVolumeMute",
+    "BrowserBack",
+    "BrowserForward",
+    "ChannelDown",
+    "ChannelUp",
+    "ContextMenu",
+    "Eject",
+    "End",
+    "Enter",
+    "Home",
+    "MediaFastForward",
+    "MediaPlay",
+    "MediaPlayPause",
+    "MediaRecord",
+    "MediaRewind",
+    "MediaStop",
+    "MediaNextTrack",
+    "MediaPause",
+    "MediaPreviousTrack",
+    "Power"
+];
+let specialKeysUpper = specialKeys.map(k=>k.toUpperCase());
+
+String.prototype.isSpecialKey = function (caseSensitive) { 
+    if (caseSensitive)
+        return specialKeys.indexOf(this)>-1;
+    else
+        return specialKeysUpper.indexOf(this.toUpperCase())>-1;
+}
+
+// Tests whether the element belongs to the document's body
+jQuery.fn.printed = function(){
+    let e = this.parent();
+    while (e.length){
+        if (e[0]==document.body)
+            return true;
+        e = e.parent();
+    }
+    return false;
 }

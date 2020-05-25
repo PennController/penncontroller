@@ -4,10 +4,9 @@
 window.PennController._AddElementType("Image", function(PennEngine) {
 
     this.immediate = function(id, file){
-        if (typeof id == "string" && file===undefined){
-            this.id = PennEngine.utils.guidGenerator();
+        if (typeof id == "string" && file===undefined)
             file = id;
-        }
+        this.id = id;
         let addHostURLs = !file.match(/^http/i);
         this.resource = PennEngine.resources.fetch(file, function(resolve){
             this.object = new Image();          // Creation of the image element
@@ -18,7 +17,8 @@ window.PennController._AddElementType("Image", function(PennEngine) {
 
     this.uponCreation = function(resolve){
         this.image = this.resource.object;      // Image simply refers to the resource's object
-        this.image.style = null;                // (Re)set any particular style applied to the resource's object
+        if (this.image)
+            this.image.style = null;            // (Re)set any particular style applied to the resource's object
         this.jQueryElement = $(this.image);     // The jQuery element
         resolve();
     };

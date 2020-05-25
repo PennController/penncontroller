@@ -5,8 +5,10 @@ window.PennController._AddElementType("Function", function(PennEngine) {
 
     this.immediate = function(id, func){
         if (typeof id == "function"){
-            this.id = PennEngine.utils.guidGenerator();
             func = id;
+            if (id===undefined||typeof(id)!="string"||id.length==0)
+                id = "Function";
+            this.id = id;
         }
         this.function = func;
     };

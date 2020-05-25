@@ -1,4 +1,10 @@
 import { PennEngine } from "./engine";
+import { levensthein } from "./utils";
+
+const VERSION = "1.8-dev";
+
+const WIDTH = 450;
+const HEIGHT = 250;
 
 class PopIn {
     constructor(title, width, height, x, y) {
@@ -98,7 +104,9 @@ class PopIn {
             return tab;
         };
         this.container.append($("<div>").css({
-            display: "inline-block", width: "1.3em", height: "1.3em", position: "absolute", bottom: 0, right: 0, cursor: "se-resize"
+            display: "inline-block", width: "1.3em", height: "1.3em", position: "absolute", bottom: 0, right: 0, cursor: "se-resize",
+            background: "repeating-linear-gradient(135deg,rgba(255,255,255,.5),rgba(255,255,255,.5) 2px,#777 2px,#777 4px)",
+            'clip-path': "polygon(90% 0,90% 90%,0 90%)", opacity: "0.5"
         }).mousedown(function(e){
             t.updateSize = true;
             t.offsetRight = e.clientX - (t.x + t.width);
@@ -111,11 +119,14 @@ class PopIn {
             'font-size': "0.9em",
             margin: '0px 5px 5px 5px',
             padding: '2px',
-            height: 'calc(100% - 3em - 25px)',
+            height: 'calc(100% - 4.5em - 30px)',
             overflow: 'auto',
             'border-top': "none"
         })
         this.container.append(this.titleBar);
+        this.container.append($("<div>Use <tt>DebugOff()</tt> before publishing.</div>").css({
+            height: "1.5em", 'overflow-x': "hidden"
+        }));
         this.container.append(this.tabBar);
         this.container.append(this.content);
         this.container.css({left: x, top: y});
@@ -153,7 +164,7 @@ let debug = {
 };
 
 PennEngine.debug = {
-    on: false,
+    on: true,
     currentPromise: null,
     forceResolve: ()=>{
         if (PennEngine.debug.currentPromise instanceof Function)
@@ -166,6 +177,8 @@ PennEngine.debug = {
             controller = PennEngine.controllers.underConstruction; // get from controller under construction
         else                                    // Else, get from the running controller (e.g. async command)
             controller = PennEngine.controllers.list[PennEngine.controllers.running.id];
+        if (controller===undefined||controller===null)
+            controller = {id: "NA"};
         let now = new Date();
         tab.prepend( $("<div>"+
             "["+[now.getHours(),now.getMinutes(),now.getSeconds()].join(":")+"] "+
@@ -179,8 +192,25 @@ PennEngine.debug = {
         if (!PennEngine.debug.on) return;
         PennEngine.debug.addToTab(debug.errorsTab.content,...messages);
         debug.errorsTab.title.css("color","red");
+        debug.errorsTab.content.find(".PennController-debug-noerrors").css("display","none");
     }
 };
+
+
+// Creation of the debug popin
+debug.popin = new PopIn(`Debug (PennController ${VERSION})`, WIDTH-10, HEIGHT-10, window.innerWidth - WIDTH, window.innerHeight - HEIGHT);
+debug.logTab = debug.popin.newTab("Log");               // First tab: console
+debug.logTab.controls = $("<div>")
+    .append( $("<button>Next screen</button>").click(()=>debug.currentController._finishedCallback()) )
+    .append( $("<button>Next command</button>").click(()=>PennEngine.debug.forceResolve()) )
+    .css({background: "lightgray", "border-bottom": "dotted 1px black"})
+    .appendTo( debug.logTab.content );
+debug.logTab.log = $("<div>").appendTo( debug.logTab.content );
+debug.errorsTab = debug.popin.newTab("Errors");         // Second tab: errors
+debug.errorsTab.content.prepend( $("<div>No errors found</div>").css({
+    'font-style': 'italic', 'text-align': 'center', 'margin': '5px'
+}).addClass("PennController-debug-noerrors"));
+
 
 
 let highlightCurrentRow = ()=>{
@@ -267,18 +297,11 @@ let showTables = table=>{
 }
 
 
-let oldAddSafeBindMethodPair = window.addSafeBindMethodPair;
-window.addSafeBindMethodPair = controllerType => {
-    oldAddSafeBindMethodPair(controllerType);
-    if (!PennEngine.debug.on){
-        window.items = undefined;
-        return;
-    }
-    if (controllerType == "__SendResults__")
-        HAS_REACHED_SEND_RESULTS = true;
+
+let newItem = () => {
     if (debug.runningIndex<0)
         debug.runningIndex = 0;
-    else{
+    else if (PennEngine.debug.on){
         let li = $(debug.sequenceTab.content.find("li")[debug.runningIndex]);
         li.css("color","gray");
         li.find("button").attr("disabled",true);
@@ -292,6 +315,15 @@ window.addSafeBindMethodPair = controllerType => {
             debug.runningIndex++;
         }
     }
+
+    if (debug.runningOrder[debug.runningIndex][debug.runningElement].controller == "__SendResults__")
+        HAS_REACHED_SEND_RESULTS = true;
+
+    if (!PennEngine.debug.on){
+        window.items = undefined;
+        return;
+    }
+    
     jumpToRow.detach();
     hideOtherGroups.detach();
     debug.currentTable = null;
@@ -321,85 +353,77 @@ window.addSafeBindMethodPair = controllerType => {
         $(debug.logTab.controls.children()[1]).css("display","inline-block")
     else
         $(debug.logTab.controls.children()[1]).css("display","none")
+}
+
+
+let dgetOld = window.dget;
+window.dget = (...args) => {    // Called whenever a new item shows up
+    let r = dgetOld(...args);   // displayMode,overwrite only called in finishCallback
+    if (args[1] && args[1] == "displayMode" && args[2] && args[2] == "overwrite")
+      newItem();
+    return r;
+};
+
+let init_debug = () => {
+    // If there are any tables, add a tab to the debug popin
+    let tableNames = Object.keys(PennEngine.tables);
+    if (tableNames.length>0){
+        let tableTabContent = $("<ul>");
+        for (let t = 0; t<tableNames.length; t++)
+            tableTabContent.append($("<li>").html(tableNames[t]).click(()=>showTables(t)).css("cursor","pointer"));
+        debug.popin.newTab("Tables", tableTabContent);
+    }
+
+    // Sequence tab
+    debug.sequenceTab = debug.popin.newTab("Sequence");
+    // Info tab
+    debug.infoTab = debug.popin.newTab("Info");
+
+    let jumpToTrial = n => {
+        if (debug.runningIndex < n){
+            debug.currentController._finishedCallback();
+            setTimeout(()=>jumpToTrial(n), 1);
+        }
+    }
+    let list = $("<ol>");
+    for (let i = 0; i < debug.runningOrder.length; i++){
+        let item = debug.runningOrder[i];
+        let elements = [];
+        for (let e = 0; e < item.length; e++)
+            elements.push(item[e].controller);
+        let tableInfo = [];
+        if (item[0].options.hasOwnProperty("_PennController"))
+            tableInfo = [':',item[0].options._PennController.table.id,item[0].options._PennController.row+1];
+        let text = item[0].type+" ("+elements.join(",")+tableInfo.join(":")+")";
+        list.append($("<li>").append(text).append($("<button>Reach</button>").click(()=>jumpToTrial(i))));
+    }
+    debug.sequenceTab.content.append(list);
+
+    debug.errorsTab.jQuery.click();
+
+    // Key to open the debugger
+    $(window.document).bind("keyup keydown", function(e){
+        if (e.ctrlKey && e.keyCode == 68) {
+            let x = window.innerWidth - WIDTH, y = window.innerHeight - HEIGHT;
+            $(window.document.body).append( debug.popin.container );
+            debug.popin.x = x;
+            debug.popin.y = y;
+            debug.popin.container.css({top: y, left: x});
+        }
+    });
+};
+
+// Overriding $.ajax (first called in other_includes/main.js) to print debug as soon as possible
+let oldAjax = window.$.ajax;
+window.$.ajax = (...args) => {
+    if (PennEngine.debug.on && args[0] && args[0].url && args[0].url.match(/\?allchunks=1$/))
+        debug.popin.popIn();
+    return oldAjax(...args);
 };
 
 
-
-// Creation of the debug popin
-debug.popin = new PopIn("Debug", 290, 190, window.innerWidth - 300, window.innerHeight - 200);
-debug.logTab = debug.popin.newTab("Log");               // First tab: console
-debug.logTab.controls = $("<div>")
-    .append( $("<button>Next screen</button>").click(()=>debug.currentController._finishedCallback()) )
-    .append( $("<button>Next command</button>").click(()=>PennEngine.debug.forceResolve()) )
-    .css({background: "lightgray", "border-bottom": "dotted 1px black"})
-    .appendTo( debug.logTab.content );
-debug.logTab.log = $("<div>").appendTo( debug.logTab.content );
-debug.errorsTab = debug.popin.newTab("Errors");         // Second tab: errors
-
 PennEngine.Prerun(
     ()=>{
-        if (!PennEngine.debug.on)
-            return;
-        // Retrieve the list of trials
-        let oldRunShuffleSequence = window.runShuffleSequence;
-        window.runShuffleSequence = function(...args) {         // runShuffle... = just before call to conf_modify...
-            let oldModify = window.conf_modifyRunningOrder;     // this way we get most recent conf_modify...
-            window.conf_modifyRunningOrder = function (ro){
-                if (oldModify instanceof Function)
-                    debug.runningOrder = oldModify.call(this, ro);
-                else
-                    debug.runningOrder = ro;
-
-                // If there are any tables, add a tab to the debug popin
-                let tableNames = Object.keys(PennEngine.tables);
-                if (tableNames.length>0){
-                    let tableTabContent = $("<ul>");
-                    for (let t = 0; t<tableNames.length; t++)
-                        tableTabContent.append($("<li>").html(tableNames[t]).click(()=>showTables(t)).css("cursor","pointer"));
-                    debug.popin.newTab("Tables", tableTabContent);
-                }
-
-                // Sequence tab
-                debug.sequenceTab = debug.popin.newTab("Sequence");
-                // Info tab
-                debug.infoTab = debug.popin.newTab("Info");
-
-                let jumpToTrial = n => {
-                    if (debug.runningIndex < n){
-                        debug.currentController._finishedCallback();
-                        setTimeout(()=>jumpToTrial(n), 1);
-                    }
-                }
-                let list = $("<ol>");
-                for (let i = 0; i < debug.runningOrder.length; i++){
-                    let item = debug.runningOrder[i];
-                    let elements = [];
-                    for (let e = 0; e < item.length; e++)
-                        elements.push(item[e].controller);
-                    let tableInfo = [];
-                    if (item[0].options.hasOwnProperty("_PennController"))
-                        tableInfo = [':',item[0].options._PennController.table.id,item[0].options._PennController.row+1];
-                    let text = item[0].type+" ("+elements.join(",")+tableInfo.join(":")+")";
-                    list.append($("<li>").append(text).append($("<button>Reach</button>").click(()=>jumpToTrial(i))));
-                }
-                debug.sequenceTab.content.append(list);
-                        
-                return debug.runningOrder;
-            };
-            return oldRunShuffleSequence.apply(this, args);
-        }
-
-
-        $(window.document).bind("keyup keydown", function(e){
-            if (e.ctrlKey && e.keyCode == 68) {
-                let x = window.innerWidth - 300, y = window.innerHeight - 200;
-                $(window.document.body).append( debug.popin.container );
-                debug.popin.x = x;
-                debug.popin.y = y;
-                debug.popin.container.css({top: y, left: x});
-            }
-        });
-        
 
         window.onbeforeunload = function() {
             if (HAS_REACHED_SEND_RESULTS)
@@ -407,7 +431,91 @@ PennEngine.Prerun(
             return "Your results have not been sent yet. Do you really want to leave the page?";
         };
 
-        debug.popin.popIn();
+        let ran = false;    // Only run the new assert once
+
+        PennController.version = VERSION;
+
+        // Retrieve the list of trials
+        //let oldRunShuffleSequence = window.runShuffleSequence;
+        let oldAssert = window.assert;
+        //window.runShuffleSequence = function(...args) {         // runShuffle... = just before call to conf_modify...
+        window.assert = function (...args){
+            if (ran || args[1]!="There must be some items in the running order!")
+                return oldAssert.apply(this, args);             // Only run the new assert once
+            ran = true;
+            let oldModify = window.conf_modifyRunningOrder;     // this way we get most recent conf_modify...
+            window.conf_modifyRunningOrder = function (ro){
+                if (oldModify instanceof Function)
+                    debug.runningOrder = oldModify.call(this, ro);
+                else
+                    debug.runningOrder = ro;
+
+                if (PennEngine.debug.on)
+                    init_debug();
+
+                newItem();  // First item
+                        
+                return debug.runningOrder;
+            };
+            //return oldRunShuffleSequence.apply(this, args);
+            return oldAssert.apply(this, args);
+        }
+
+        // if (PennEngine.debug.on)
+        //     debug.popin.popIn();
 
     }
 );
+
+
+// Catch errors related to new*/get*/default*
+window.onerror = function(message, uri, line) {
+    if (!uri.match(/include=data$/))
+        return;
+    let ref = message.match(/ReferenceError: (.+) is not defined/);
+    if (ref){
+        if (ref[1].match(/^(new|get|default)/) && PennController.Elements[ref[1]])
+            PennEngine.debug.error("Tried to use &lsquo;"+ref[1]+"&rsquo; without a prefix on line "+line+"; did you forget to use PennController.ResetPrefix?");
+        else {
+            let lowest = {score: 1, command: ""};
+            let commands = Object.getOwnPropertyNames( PennController.Elements );
+            for (let i = 0; i < commands.length; i++){
+                let score = levensthein(ref[1],commands[i]) / ref[1].length;
+                if (score < lowest.score){
+                    lowest.score = score;
+                    lowest.command = commands[i];
+                }
+            }
+            if (lowest.score < 0.5)
+                PennEngine.debug.error("Wrong command &lsquo;"+ref[1]+"&rsquo; on line "+line+". Did you mean to type &lsquo;<strong>"+lowest.command+"</strong>&rsquo;?");
+            else    
+                PennEngine.debug.error("Unrecognized expression &lsquo;"+ref[1]+"&rsquo; (line "+line+")");
+        }
+    }
+    else
+        PennEngine.debug.error(message);
+        //console.error(message);
+}
+
+let oldGetP = window.ibex_controller_get_property;
+window.ibex_controller_get_property = (cname, oname) => {
+    let controllerNames = Object.getOwnPropertyNames( $.ui );
+
+    if (controllerNames.indexOf(cname)>-1)
+        return oldGetP(cname, oname);
+
+    let lowest = {score: 1, controllerName: ""};
+    for (let i = 0; i < controllerNames.length; i++){
+        let score = levensthein(cname,controllerNames[i]) / cname.length;
+        if (score < lowest.score){
+            lowest.score = score;
+            lowest.controllerName = controllerNames[i];
+        }
+    }
+
+    if (lowest.score < 0.5)
+        PennEngine.debug.error("Invalid controller reference: &lsquo;"+cname+"&rsquo;---Did you mean to type <strong>"+lowest.controllerName+"</strong>?");
+    else    
+        PennEngine.debug.error("Invalid controller reference: &lsquo;"+cname+"&rsquo;");
+
+}
