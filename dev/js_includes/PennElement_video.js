@@ -50,7 +50,7 @@ window.PennController._AddElementType("Video", function(PennEngine) {
         this.resource.object.onseeked = ()=>{
             this.seekEvents.push(["seek",this.video.currentTime,Date.now()]);
         };
-        this.resource.object.waiting = ()=>{
+        this.resource.object.onwaiting = ()=>{
             this.bufferEvents.push(["buffer",this.video.currentTime,Date.now()]);
         };
         this.printDisable = opacity=>{

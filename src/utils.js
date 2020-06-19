@@ -127,29 +127,28 @@ export function parseElementCommands(array){
 
 // Parses "bottom|left|center|middle|right|top at ..."
 export function parseCoordinates(x,y,element){
+    let coordinates = {x:x,y:y,translateX:0,translateY:0};
     let anchorX = String(x).match(/^(.+)\s+at\s+(.+)$/i);
     let anchorY = String(y).match(/^(.+)\s+at\s+(.+)$/i);
-    if (anchorX && anchorX[2].match(/^\d+(\.\d+)?$/))
+    if (anchorX && anchorX[2].match(/^\d+(\.\d+)?$/))   // raw number
         anchorX[2] = String(anchorX[2]) + "px";
-    if (anchorY && anchorY[2].match(/^\d+(\.\d+)?$/))
+    if (anchorY && anchorY[2].match(/^\d+(\.\d+)?$/))   // raw number
         anchorY[2] = String(anchorY[2]) + "px";
     if (anchorX){
+        coordinates.x = anchorX[2];
         if (anchorX[1].match(/center|middle/i))
-            x = "calc("+anchorX[2]+" - "+(element.width()/2)+"px)";
+            coordinates.translateX = '-50%';
         else if (anchorX[1].match(/right/i))
-            x = "calc("+anchorX[2]+" - "+element.width()+"px)";
-        else
-            x = anchorX[2];
+            coordinates.translateX = '-100%';
     }
     if (anchorY){
+        coordinates.y = anchorY[2];
         if (anchorY[1].match(/center|middle/i))
-            y = "calc("+anchorY[2]+" - "+(element.height()/2)+"px)";
+            coordinates.translateY = '-50%';
         else if (anchorY[1].match(/bottom/i))
-            y = "calc("+anchorY[2]+" - "+element.height()+"px)";
-        else
-            y = anchorY[2];
+            coordinates.translateY = '-100%';
     }
-    return {x: x, y: y};
+    return coordinates;
 }
 
 // Returns the Levensthein distance between two words

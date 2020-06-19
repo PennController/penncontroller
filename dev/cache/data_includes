@@ -1,11 +1,14 @@
 PennController.ResetPrefix(null) // Shorten command names (keep this)
 
+// Resources are hosted as ZIP files on a distant server
 PreloadZip("https://files.lab.florianschwarz.net/ibexfiles/OnlyCleftsVW/Pictures.zip")
 PreloadZip("https://files.lab.florianschwarz.net/ibexfiles/OnlyCleftsVW/AudioContext.zip")
 PreloadZip("https://files.lab.florianschwarz.net/ibexfiles/OnlyCleftsVW/AudioTest.zip")
 
+// PHP script that receives, stores (and will also output) the eye-tracking data
 EyeTrackerURL("https://files.lab.florianschwarz.net/ibexfiles/RecordingsFromIbex/EyeTracker.php")
 
+// Welcome page: we do a first calibration here---meanwhile, the resources are preloading
 newTrial(
     newText(`<p>This experiment needs to access your webcam to follow your eye movements.</p>
             <p>We will only collect data on where on this page your eyes are looking during the experiment.</p>`)
@@ -19,18 +22,28 @@ newTrial(
     fullscreen()
     ,
     getEyeTracker("tracker").calibrate(60)
+    ,
+    newText(`<p>You will see the same button at the middle of the screen before each trial.</p>
+            <p>Click and fix it for 3 seconds to check that the tracker is still well calibrated.</p>
+            <p>If it is, the trial will start after 3 seconds. Otherwise, you will go through calibration again.</p>`)
+        .print()
+    ,
+    newButton("Go to the first trial").print().wait()
 )
 
+// Wait if the resources have not finished preloading by the time the tracker is calibrated
 CheckPreloaded()
 
+// Only run 24 first trials defined in the table (it's a long experiment...)
 Template( GetTable("clefts.csv").filter(r=>Number(r.item)<25) , row =>
     newTrial(
-        newEyeTracker("tracker").calibrate(60)
+        newEyeTracker("tracker").calibrate(60)  // Make sure that the tracker is still calibrated
         ,
         newTimer(250).start().wait()
         ,
         defaultImage.size("20vh", "20vh"),
-        newCanvas("topFemaleIA", "40vw", "40vh")
+        // We print the four images at the four corners
+        newCanvas("topFemaleIA", "40vw", "40vh")  // The Canvas are bigger than the images they contain
             .add( "center at 25%" , "middle at 50%" , newImage(row.pic1_top_female) )
             .add( "center at 75%" , "middle at 50%" , newImage("backTF", "back.png") )
             .print( "center at 25vw" , "middle at 25vh" )
@@ -60,9 +73,10 @@ Template( GetTable("clefts.csv").filter(r=>Number(r.item)<25) , row =>
         newImage(row.pic4_suit).print( "center at 75%" , "middle at 50%" , getCanvas("bottomMaleIA") )
         ,
         getEyeTracker("tracker")
+            // We track the Canvas: making them bigger allows us to capture look-estimates slightly off the images themselves
             .add( getCanvas("topFemaleIA") , getCanvas("bottomFemaleIA") , getCanvas("topMaleIA") , getCanvas("bottomMaleIA") )
             .start()
-            .log()
+            .log()  // IMPORTANT: if you don't log, the eye-tracking data will NOT get sent
         ,
         newTimer(500).start().wait()
         ,
@@ -74,7 +88,7 @@ Template( GetTable("clefts.csv").filter(r=>Number(r.item)<25) , row =>
             .log()
             .wait()
         ,
-        getEyeTracker("tracker").stop()
+        getEyeTracker("tracker").stop() // Stop now to prevent collecting unnecessary data
         ,
         getAudio("test").wait("first")
         ,
@@ -85,11 +99,13 @@ Template( GetTable("clefts.csv").filter(r=>Number(r.item)<25) , row =>
 SendResults()
 
 newTrial(
+    exitFullscreen()
+    ,
     newText("The is the end of the experiment, you can now close this window. Thank you!").print()
     ,
-    newButton("waitforever").wait()
+    newButton("waitforever").wait() // Not printed: wait on this page forever
 )
-
+.setOption("countsForProgressBar",false)
 
 
 

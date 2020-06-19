@@ -1,11 +1,23 @@
+Since 1.8
+- Add fullscreen support across browsers: https://www.w3schools.com/jsref/met_element_requestfullscreen.asp
+    > listen to fullscreenchange event: https://developer.mozilla.org/en-US/docs/Web/API/Document/fullscreenchange_event
+- Add an option to scale.unselect that shouldn't log it (revise the onchange/onclick events)
+- Scales no longer show up without .print in .after/.before
+- Add some way to play with PCElements' contained dom elements
+    > .addClass?    .jQuery.command?
+- Change the way resources are preloaded:
+    start sending requests only after the running order has been established
+    start with the resources of the first trials to be run first
+    start with zip files (already the case?)
+    use callback (+ timeouts) to load next resources
+- Something about Group column not accepting numbers?
+- Add command to deactivate warnings on early exits
+
+
 Since 1.7
 - Add a callback command for Controller (make it default?)
-- Define this.utils for Controller element (e.g. timeout parameter crashes for Question controller)
-- Canvas shouldn't persist across trials (nor any other element for the matter)
-- Fix selector.test.selected (crashes when no selection happened before)
 - Fix all-number keys passed to Key element (currently interpreted as number instead of string)
 - Do something about the upper-case extensions in Resources causing a crash?
-
 
 
 - Throw a warning when a Canvas' element overflows?
@@ -48,7 +60,12 @@ Since 1.7
 
 - Get rid of .settings? [Maybe not] < Why not?
 
-
+- DONE: Fix the scale's labels always showing up with radio buttons
+- DONE: Render "left/center/right/etc. at" using transform: translate instead of calculating width/height with jQuery
+- DONE: make .print() accept PennElements (eg. printing in a Canvas)
+- DONE: Canvas shouldn't persist across trials (nor any other element for the matter)
+- DONE: Define this.utils for Controller element (e.g. timeout parameter crashes for Question controller)
+- DONE: Fix selector.test.selected (crashes when no selection happened before)
 - DONE: newIbexQuestion("").settings.q("...").print().wait()      or      newController(["name",] "Question", {q:"why",as:}).print().log().wait()
     $(temp0)["Question"]({ _finishedCallback:()=>console.log("over"), _cssPrefix: "Question-", q: "hello?", as: ["yes","no"] })
     take a look at VBox

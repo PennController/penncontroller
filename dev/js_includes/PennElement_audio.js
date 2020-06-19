@@ -53,7 +53,7 @@ window.PennController._AddElementType("Audio", function(PennEngine) {
         this.resource.object.onseeked = ()=>{
             this.seekEvents.push(["seek",this.audio.currentTime,Date.now()]);
         };
-        this.resource.object.waiting = ()=>{
+        this.resource.object.onwaiting = ()=>{
             this.bufferEvents.push(["buffer",this.audio.currentTime,Date.now()]);
         };
         this.printDisable = opacity=>{

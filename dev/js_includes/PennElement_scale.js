@@ -76,6 +76,7 @@ window.PennController._AddElementType("Scale", function(PennEngine) {
                 else if (this.labels=="bottom") option.css('flex-direction','column');
                 else if (this.labels=="left") option.css('flex-direction','row-reverse');
                 this.jQueryElement.append(option);
+                if (type=="radio"&&this.labels===false) label.css("display","none");
             };
             if (orientation=="vertical") this.jQueryElement.css('flex-direction','column');
         }

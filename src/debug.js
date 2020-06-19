@@ -1,7 +1,7 @@
 import { PennEngine } from "./engine";
 import { levensthein } from "./utils";
 
-const VERSION = "1.8-dev";
+const VERSION = "1.9-dev";
 
 const WIDTH = 450;
 const HEIGHT = 250;

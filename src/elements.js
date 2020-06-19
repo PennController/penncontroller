@@ -313,37 +313,41 @@ let standardCommands = {
                 this.jQueryElement.addClass("PennController-"+this.id.replace(/[\s_]/g,''));
                 let div = this.jQueryContainer;
                 div.css("display","inherit");
-                if (typeof(this.jQueryAlignment)=="string")
-                    div.css("text-align",this.jQueryAlignment);     // Handle horizontal alignement, if any
+                if (typeof(this.jQueryAlignment)=="string"){
+                    if (this.jQueryAlignment.match(/left/i))
+                        div.css('align-self','start');
+                    else if (this.jQueryAlignment.match(/center/i))
+                        div.css('align-self','center');
+                    else if (this.jQueryAlignment.match(/right/i))
+                        div.css('align-self','end');
+                }
                 div.addClass("PennController-elementContainer")
                     .addClass("PennController-"+this.type.replace(/[\s_]+/g,'')+"-container")
                     .addClass("PennController-"+this.id.replace(/[\s_]+/g,'')+"-container")
                     .append(this.jQueryElement);
                 if (where instanceof jQuery)                        // Add to the specified jQuery element
                     where.append(div);
-                else if (y) {                                       // if where and y: coordinates
+                else if (where instanceof PennElementCommands && where._element.jQueryElement instanceof jQuery)
+                    where._element.jQueryElement.append(div);
+                else if (y!==undefined) {                           // if where and y: coordinates
                     div.appendTo($("body")).css('display','inline-block');
                     let coordinates = parseCoordinates(where,y,div);
-                    div.css({position: "absolute", left: coordinates.x, top: coordinates.y});
+                    div.css({position: 'absolute', left: coordinates.x, top: coordinates.y, 
+                            transform: 'translate('+coordinates.translateX+','+coordinates.translateY+')'});
                 }
                 else                                                // Or to main element by default
-                    PennEngine.controllers.running.element.append(div.css("width", "100%"));
+                    PennEngine.controllers.running.element.append(div);
+                    // PennEngine.controllers.running.element.append(div.css("width", "100%"));
                 if (this.cssContainer instanceof Array && this.cssContainer.length){ // Apply custom css if defined
                     for (let i = 0; i < this.cssContainer.length; i++)
                         div.css.apply(div, this.cssContainer[i]);
                 }
-                div.css({
-                    "min-width": this.jQueryElement.width(),
-                    "min-height": this.jQueryElement.height()
-                });    
-                let before = $("<div>").css("display", "inline-block")
-                                .addClass("PennController-before")
-                                .addClass("PennController-"+this.type.replace(/[\s_]/g,'')+"-before")
-                                .addClass("PennController-"+this.id.replace(/[\s_]/g,'')+"-before");
-                let after = $("<div>").css("display", "inline-block")  
-                                .addClass("PennController-after")
-                                .addClass("PennController-"+this.type.replace(/[\s_]/g,'')+"-after")
-                                .addClass("PennController-"+this.id.replace(/[\s_]/g,'')+"-after");
+                // div.css({
+                //     "min-width": this.jQueryElement.width(),
+                //     "min-height": this.jQueryElement.height()
+                // });
+                let before = $("<div>").css("display", "inline-block").addClass("PennController-before")
+                let after = $("<div>").css("display", "inline-block").addClass("PennController-after")
                 this.jQueryElement.before( before );
                 this.jQueryElement.after( after );
                 for (let e in this.jQueryBefore)
@@ -479,10 +483,11 @@ let standardCommands = {
         },
         center: function(resolve){          /* $AC$ all PElements.center() Centers the element on the page $AC$ */
             if (this.jQueryElement instanceof jQuery){
-                this.jQueryElement.css({"text-align":"center",margin:"auto"});
+                // this.jQueryElement.css({"text-align":"center",margin:"auto"});
                 this.jQueryAlignment = "center";
                 if (this.jQueryElement.parent().length)    // If element already printed, update
-                    this.jQueryContainer.css("text-align", "center");
+                    this.jQueryContainer.css("align-self", "center");
+                    // this.jQueryContainer.css("text-align", "center");
             }
             else
                 PennEngine.debug.error("Element named "+this.id+" has not jQuery element to render as centered");
@@ -540,10 +545,11 @@ let standardCommands = {
         },
         left: function(resolve){             /* $AC$ all PElements.left() Aligns the element with the left edge of the printing area $AC$ */
             if (this.jQueryElement instanceof jQuery){
-                this.jQueryElement.css("text-align","left");
+                // this.jQueryElement.css("text-align","left");
                 this.jQueryAlignment = "left";
                 if (this.jQueryElement.parent().length)    // If element already printed, update
-                    this.jQueryContainer.css("text-align", "left");
+                    this.jQueryContainer.css("align-self", "left");
+                    // this.jQueryContainer.css("text-align", "left");
             }
             else
                 PennEngine.debug.error("Element named "+this.id+" has not jQuery element to render as aligned to the left");
@@ -570,10 +576,11 @@ let standardCommands = {
         },
         right: function(resolve){             /* $AC$ all PElements.right() Aligns the element with the right edge of the printing area $AC$ */
             if (this.jQueryElement instanceof jQuery){
-                this.jQueryElement.css("text-align","right");
+                // this.jQueryElement.css("text-align","right");
                 this.jQueryAlignment = "right";
                 if (this.jQueryElement.parent().length)    // If element already printed, update
-                    this.jQueryContainer.css("text-align", "right");
+                    this.jQueryContainer.css("align-self","right");
+                    // this.jQueryContainer.css("text-align", "right");
             }
             else
                 PennEngine.debug.error("Element named "+this.id+" has not jQuery element to render as aligned to the right");
@@ -583,12 +590,11 @@ let standardCommands = {
             if (this.jQueryElement instanceof jQuery){
                 this.jQueryElement.width(width);
                 this.jQueryElement.height(height);
-                if (this.jQueryContainer && this.jQueryContainer.parent().length){
-                    let w = this.jQueryElement.width(), h = this.jQueryElement.height();
-                    if (w>this.jQueryContainer.width())
-                        this.jQueryContainer.width(w);
-                    if (w>this.jQueryContainer.height())
-                        this.jQueryContainer.height(h);
+                if (this.jQueryContainer instanceof jQuery){
+                    if (typeof width == "string" && width.match(/%$/))
+                        this.jQueryContainer.width("100%");
+                    if (typeof height == "string" && height.match(/%$/))
+                        this.jQueryContainer.height("100%");
                 }
             }
             else

@@ -465,6 +465,13 @@ define_ibex_controller({
             let startTrial = async function(failedToPreload){ // Launches the trial
                 if (trialStarted)                       // Trial already started: return
                     return;
+                _t.element.css({
+                    display:'flex',
+                    'flex-direction':'column',
+                    position:'absolute',
+                    left:0,
+                    width:'100vw'
+                });
                 trialStarted = true;
                 if (failedToPreload){                   // Some resources failed to load
                     for (let r in _t.controller.resources.filter(r=>r.status!="ready"))

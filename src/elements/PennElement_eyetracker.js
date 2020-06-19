@@ -129,6 +129,7 @@ window.PennController._AddElementType("EyeTracker", function(PennEngine) {
                 $(this).attr('disabled', true);
                 storePoints = true;
                 setTimeout(()=>{
+                    console.log("Past 50", past50Array);
                     let precision = calculatePrecision(past50Array);
                     PennEngine.debug.log("Tracker's precision: "+precision);
                     storePoints = false;
@@ -228,22 +229,27 @@ window.PennController._AddElementType("EyeTracker", function(PennEngine) {
         $("#webgazerVideoFeed").before(calibrationDiv);
     }
 
+    const parseData = (data,clock) => {
+        if (storePoints){
+            past50Array[0].push(data.x);
+            past50Array[1].push(data.y);
+            if (past50Array[0].length>50)
+                past50Array[0].shift();
+            if (past50Array[1].length>50)
+                past50Array[1].shift();
+        }
+        if (currentTracker)
+            currentTracker.look(data,clock);
+    }
+
     // (Re)set the tracker and its regression model
     let resetTracker = function(){
         past50Array = [[],[]];
         tracker = window.webgazer.setRegression('weightedRidge')
             .setTracker('clmtrackr')
             .setGazeListener((data, clock) => {
-                if (storePoints){
-                    past50Array[0].push(data.x);
-                    past50Array[1].push(data.y);
-                    if (past50Array[0].length>50)
-                        past50Array[0].shift();
-                    if (past50Array[1].length>50)
-                        past50Array[1].shift();
-                }
-                if (currentTracker)
-                    currentTracker.look(data,clock);
+                if (data instanceof Promise) data.then( d=>parseData(d,clock) );
+                else if (data.x) parseData(data,clock);
             });        
         let oldAME = document.addEventListener;         // Catch the mousemove function
         document.addEventListener = function(...args){  // NOW!

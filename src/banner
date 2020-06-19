@@ -1,26 +1,11 @@
 PennController for IBEX
 This software is licensed under a BSD license; see the LICENSE file for details.
 
- - Version 1.8
- - Last Update:  2020, May 24
- - Major changes in version 1.8:
-   * Debug window now reports PennController version
-   * Containers of elements .print-ed with coordinates no longer remain on the screen after the trial
-   * Special commands clear and end now also work in .callback commands
-   * Fixed cluttering of results file from injected controllers
-   * Fixed timeout feature of injected controllers (eg. DashedController in speeded acceptability mode)
-   * Fixed selector.test.selected: it no longer crashes when no selection happened
-   * Fixed unsuccessful wait on Key elements when focused element has been disabled (eg. after click on once-scale)
-   * Space characters in initial and final position of Text elements are now non-breakable spaces
-   * Updated display of Scale elements
-   * Fixed reference to DropDown elements' value that would prevent testing them and setting Var elements
-   * Fixed automatic naming of MediaRecorder (formerly VoiceRecorder) files
-   * Failed uploads of recordings now ask participants to download an archive containing the samples before proceeding
-   * Media recordings are now encoded as WEBM, OGG or MP4, depending on browser support
-   * Fixed mediarecorder.test.hasPlayed (formerly voicerecorder.test.hasPlayed)
-   + Added MediaRecorder element, VoiceRecorder is now deprecated, use newMediaRecorder("name", "audio") instead
-   + Added PennController.UploadRecordings: creates a trial that uploads the samples recorded (but not sent) so far
-   + PennController.InitiateRecorder can now take a third parameter to customize the consent form text
-   + Accordingly added methods PennController.InitiateRecorder().warning(text) and PennController.InitiateRecorder().consent(text)
-   + Added PennController.EyeTrackerURL to set where to send eyetracking data
-   + Added PennController.version
+ - Version 1.9
+ - Last Update:  2020, June 14
+ - Major changes in version 1.9:
+   * Fixed buffer-event detection in audio & video resources
+   * Labels of Scale element no longer systematically show up with radio display
+   * Revised CSS (now mostly flex based)
+   * The commands .left, .center and .right no longer align the text itself, but the whole element instead
+   + Passing an element reference as the single argument of .print now inserts the element as inline inside the referenced one

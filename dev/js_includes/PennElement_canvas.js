@@ -31,7 +31,8 @@ window.PennController._AddElementType("Canvas", function(PennEngine) {
     this.uponCreation = function(resolve){
         this.jQueryElement = $("<div>").css({
             width: this.width, height: this.height,
-            overflow: "visible", position: "relative", display: "inline-block"
+            overflow: "visible", position: "relative", 
+            display: "flex", 'flex-direction': 'column'
         });
         this.elementCommands = [];
         this.showElement = (elementCommand, x, y, z)=>new Promise(resolve=>{
@@ -41,13 +42,14 @@ window.PennController._AddElementType("Canvas", function(PennEngine) {
                 let coordinates = PennEngine.utils.parseCoordinates(x,y,element.jQueryContainer);
                 x = coordinates.x;
                 y = coordinates.y;
+                let transform = 'translate('+coordinates.translateX+','+coordinates.translateY+')';
                 if (element.jQueryContainer){
-                    element.jQueryContainer.css({position: "absolute", left: x, top: y});
+                    element.jQueryContainer.css({position: "absolute", left: x, top: y, transform: transform});
                     if (Number(z)>0||Number(z)>0)
                         element.jQueryContainer.css("z-index", z);    // Only if number (i.e. not NaN)
                 }
                 else{
-                    jQueryElement.css({position: "absolute", left: x, top: y});
+                    jQueryElement.css({position: "absolute", left: x, top: y, transform: transform});
                     if (Number(z)>0||Number(z)>0)
                         jQueryElement.css("z-index", z);    // Only if number (i.e. not NaN)
                 }
