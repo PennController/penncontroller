@@ -4,6 +4,70 @@ import { PennEngine } from "./engine.js";
 
 PennController.Elements = {};       // Will add newX/getX/defaultX commands for each element type (see _AddElementType)
 
+// The self keyword will be instantiated with the current element in each command
+class Self {
+    constructor(){
+        this._commands = [];             // We'll keep track of the commands here
+        this._currentType = "action.";
+    }
+};
+// Using a proxy to list *any* command when invoking self
+Object.defineProperty(PennController.Elements, "self", {get: () => {
+    const t = new Self();
+    const p = new Proxy(t, {
+        get: (obj, prop) => {
+            if (prop == "_commands" || prop == "_currentType" || prop == "hasOwnProperty")
+                return t[prop];
+            console.log("Getting self's proxy, with",prop);
+            if (prop == "settings")
+                t._currentType = "settings.";
+            else if (prop == "test")
+                t._currentType = "test.";
+            else if (prop == "testNot")
+                t._currentType = "testNot.";
+            else {
+                console.log("Action on self");
+                let action = {name: t._currentType.replace('action.','')+prop};
+                t._commands.push(action);
+                const f = (...args) => { action.args = args; console.log("Added args",args,"to",action);  return p };
+                t._currentType = "action.";
+                return f;
+            }
+            return p;
+        }
+    });
+    return p;
+}});
+
+
+// Replace Var with their values and self with pointers
+const evaluateArguments = function(args){
+    for (let r = 0; r < args.length; r++){
+        if (args[r] instanceof PennElementCommands && args[r].type == "Var" && !args[r]._promises.length){
+            args[r]._runPromises();
+            args[r] = args[r]._element.evaluate();
+        }
+        else if (args[r] instanceof Self) {
+            let pcommands = new PennElementCommands(this, elementTypes[this.type]), handler = pcommands._proxy;
+            const listOfCommands = args[r]._commands;
+            // Loop through the commands and just call them on the handler (will take care of adding the promises)
+            for (let i = 0; i < listOfCommands.length; i++){
+                const c = listOfCommands[i];
+                console.log("About to call",c.name,"with",c.args,"on",handler);
+                if (c.name.match(/^settings\./)) handler = handler.settings[c.name.replace(/^settings\./,'')](...c.args);
+                else if (c.name.match(/^test\./)) handler = handler.test[c.name.replace(/^test\./,'')](...c.args);
+                else if (c.name.match(/^testNot\./)) handler = handler.testNot[c.name.replace(/^test\./,'')](...c.args);
+                else handler = handler[c.name](...c.args);
+            }
+            args[r] = pcommands;
+            console.log("Replaced self with",args[r]);
+        }
+    }
+    return args;
+}
+
+
+
 // Returns an anonymous function returning a Promise containing the function command
 // This is basically just a way to get lazy evaluation of Promises
 //
@@ -17,12 +81,7 @@ let newCommand = function(command) {
             let controller = PennEngine.controllers.running;
             PennEngine.debug.currentPromise = resolve;
             let resolveOnlyForCurrentController = (...args)=>(PennEngine.controllers.running!=controller||resolve(...args));
-            for (let r in rest){                        // Evaluate any getVar() passed as argument (no command)
-                if (rest[r] instanceof PennElementCommands && rest[r].type == "Var" && !rest[r]._promises.length){
-                    rest[r]._runPromises();
-                    rest[r] = rest[r]._element.evaluate();
-                }
-            }
+            evaluateArguments.call(element, rest);
             command.apply(element, [resolveOnlyForCurrentController].concat(rest));
         });
     }
@@ -43,11 +102,7 @@ let newTest = function(condition){
             let controller = PennEngine.controllers.running;
             PennEngine.debug.currentPromise = resolve;
             let resolveOnlyForCurrentController = (...args)=>(PennEngine.controllers.running!=controller||resolve(...args));
-            for (let r = 0; r < rest.length; r++)       // Evaluate any Var element passed as parameter
-                if (rest[r] instanceof PennElementCommands && rest[r].type == "Var" && !rest[r]._promises.length){
-                    rest[r]._runPromises();
-                    rest[r] = rest[r]._element.evaluate();
-                }
+            evaluateArguments.call(element, rest);
             let result = condition.apply(element, rest);    // Result of this test
             let connective = "and";                     // Going through conjunctions/disjunction tests
             for (let c = 0; c < complex.length; c++){
@@ -191,7 +246,8 @@ class PennElementCommands {
                     if (PennEngine.debug.on)
                         PennEngine.debug.log("<div style='color: lightsalmon'>"+
                                             t._element.id+" ("+type.name+") Action command '"+p+
-                                            "' running, params: " + JSON.stringify(parseElementCommands(rest)) +
+                                            //"' running, params: " + JSON.stringify(parseElementCommands(rest)) +
+                                            "' running, params: " + JSON.stringify(parseElementCommands(args)) +
                                             "</div>");
                     type.actions[p].apply(this, args);
                 };
@@ -216,7 +272,8 @@ class PennElementCommands {
                     if (PennEngine.debug.on)
                         PennEngine.debug.log("<div style='color: salmon'>"+
                                             t._element.id+" ("+type.name+") Settings command '"+p+
-                                            "' running, params: " + JSON.stringify(parseElementCommands(rest)) +
+                                            //"' running, params: " + JSON.stringify(parseElementCommands(rest)) +
+                                            "' running, params: " + JSON.stringify(parseElementCommands(args)) +
                                             "</div>");
                     type.settings[p].apply(this, args);
                 };
@@ -250,7 +307,8 @@ class PennElementCommands {
                     if (PennEngine.debug.on)
                         PennEngine.debug.log("<div style='color: darksalmon'>"+
                                             t._element.id+" ("+type.name+") Test command '"+p+
-                                            "' running, params: " + JSON.stringify(parseElementCommands(rest)) +
+                                            //"' running, params: " + JSON.stringify(parseElementCommands(rest)) +
+                                            "' running, params: " + JSON.stringify(parseElementCommands(args)) +
                                             "</div>");
                     return type.test[p].apply(this, args);
                 };
@@ -258,8 +316,8 @@ class PennElementCommands {
                 t._promises.push( () => test.apply(t._element, rest) );
 
                 // Methods defined in newTest, encapsulating them to return t
-                t.success = (...commands)=>{ test.success.apply(t._element, commands); return t; };
-                t.failure = (...commands)=>{ test.failure.apply(t._element, commands); return t; };
+                t.success = (...commands)=>{ test.success.apply(t._element, evaluateArguments.call(t._element,commands)); return t; };
+                t.failure = (...commands)=>{ test.failure.apply(t._element, evaluateArguments.call(t._element,commands)); return t; };
                 t.and = tst=>{ test.and.call(t._element, tst); return t; };
                 t.or = tst=>{ test.or.call(t._element, tst); return t; };
                 
@@ -268,15 +326,16 @@ class PennElementCommands {
             t.testNot[p] = function (...rest){
                 let func = function(...args){
                     if (PennEngine.debug.on)
-                        PennEngine.debug.log(type.name+" testNot command "+p+" running, params: " + JSON.stringify(parseElementCommands(rest)));
+                        PennEngine.debug.log(type.name+" testNot command "+p+" running, params: " + JSON.stringify(parseElementCommands(args)));
+                        //PennEngine.debug.log(type.name+" testNot command "+p+" running, params: " + JSON.stringify(parseElementCommands(rest)));
                     return !type.test[p].apply(this, args);
                 };
                 let test = newTest( func );
                 t._promises.push( () => test.apply(t._element, rest) );
 
                 // Methods defined in newTest, encapsulating them to return t
-                t.success = (...commands)=>{ test.success.apply(t._element, commands); return t; };
-                t.failure = (...commands)=>{ test.failure.apply(t._element, commands); return t; };
+                t.success = (...commands)=>{ test.success.apply(t._element, evaluateArguments.call(t._element,commands)); return t; };
+                t.failure = (...commands)=>{ test.failure.apply(t._element, evaluateArguments.call(t._element,commands)); return t; };
                 t.and = tst=>{ test.and.call(t._element, tst); return t; };
                 t.or = tst=>{ test.or.call(t._element, tst); return t; };
                 
@@ -628,7 +687,15 @@ PennController.Elements.fullscreen = function(){       /* $AC$ Special Command.f
     return {
         _promises: [()=>new Promise(
             function(resolve){
-                document.documentElement.requestFullscreen().then( resolve ).catch( resolve );
+                if (document.documentElement.requestFullscreen)
+                    return document.documentElement.requestFullscreen().then( resolve ).catch( resolve );
+                else if (document.documentElement.mozRequestFullScreen) /* Firefox */
+                    document.documentElement.mozRequestFullScreen();
+                else if (document.documentElement.webkitRequestFullscreen) /* Chrome, Safari and Opera */
+                    document.documentElement.webkitRequestFullscreen();
+                else if (document.documentElement.msRequestFullscreen) /* IE/Edge */
+                    document.documentElement.msRequestFullscreen();
+                resolve();
             }
         )]
         ,
@@ -639,7 +706,15 @@ PennController.Elements.exitFullscreen = function(){       /* $AC$ Special Comma
     return {
         _promises: [()=>new Promise(
             function(resolve){
-                document.exitFullscreen().then( resolve ).catch( resolve );
+                if (document.exitFullscreen)
+                    return document.exitFullscreen().then( resolve ).catch( resolve );
+                else if (document.mozCancelFullScreen) /* Firefox */
+                    document.mozCancelFullScreen();
+                else if (document.webkitExitFullscreen) /* Chrome, Safari and Opera */
+                    document.webkitExitFullscreen();
+                else if (document.msExitFullscreen) /* IE/Edge */
+                    document.msExitFullscreen();
+                resolve();
             }
         )]
         ,
@@ -775,9 +850,7 @@ PennController._AddElementType = function(name, Type) {
         // for (let t in elementTypes)                             // Check that all types have been defined
         //     if (elementTypes[t] instanceof Function)
         //         elementTypes[t] = getType(elementTypes[t]);
-        for (let r in rest)                                     // Evaluate any getVar() passed as argument (no command)
-            if (rest[r] instanceof PennElementCommands && rest[r].type == "Var" && !rest[r]._promises.length)
-                rest[r] = rest[r]._element.evaluate();
+        evaluateArguments.call(null, rest);
         let type = elementTypes[name];
         let controller = PennEngine.controllers.underConstruction; // Controller under construction
         if (PennEngine.controllers.running)                     // Or running, if in running phase

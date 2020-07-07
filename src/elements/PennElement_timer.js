@@ -64,6 +64,25 @@ window.PennController._AddElementType("Timer", function(PennEngine) {
     };
     
     this.actions = {
+        pause: function (resolve){
+            if (this.running) {
+                this.running = false;
+                this.pausedTimestamp = Date.now();
+                this.events.push(["Pause","Pause",this.pausedTimestamp,"NULL"]);
+            }
+            resolve();
+        },
+        resume: function(resolve){
+            if (!this.running && this.pausedTimestamp) {
+                this.resumedTimestamp = Date.now();
+                const offset = this.resumedTimestamp-this.pausedTimestamp;
+                const newStartTime = this.startTime + offset;
+                this.events.push(["Resume","Resume",this.resumedTimestamp,"NULL"]);
+                this.start();
+                this.startTime = newStartTime;
+            }
+            resolve();
+        },
         start: function(resolve){   /* $AC$ Timer PElement.start() Starts the timer $AC$ */
             this.start();
             resolve();

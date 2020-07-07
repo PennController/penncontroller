@@ -1,4 +1,5 @@
 Since 1.8
+- Youtube videos should NOT start playing from the beginning of the experiment (blocked by browsers)
 - Add fullscreen support across browsers: https://www.w3schools.com/jsref/met_element_requestfullscreen.asp
     > listen to fullscreenchange event: https://developer.mozilla.org/en-US/docs/Web/API/Document/fullscreenchange_event
 - Add an option to scale.unselect that shouldn't log it (revise the onchange/onclick events)

@@ -111,8 +111,9 @@ window.PennController._AddElementType("MediaRecorder", function(PennEngine) {
                         currentMediaElement.blob = new Blob(chunks,{type:mime});                        // Blob from chunks
                         currentMediaElement.mediaPlayer.src = URL.createObjectURL(currentMediaElement.blob);    // Can replay now
                         chunks = [];                                                                            // Reset chunks
-                        currentMediaElement = null;                                                             // Reset current element
-                        resolveStop.shift().call();
+                        // currentMediaElement = null;                                                             // Reset current element
+                        if (resolveStop.length)
+                            resolveStop.shift().call();
                         mediaRecorder.recording = false;
                     };
                     mediaRecorder.onstart = function(e) {           // When a recording starts
@@ -352,9 +353,11 @@ window.PennController._AddElementType("MediaRecorder", function(PennEngine) {
         });
 
         this.start = ()=>new Promise(r=>{
+            currentMediaElement = this;
+            if (this.recorder.state=="recording")
+                this.recorder.stop();
             this.recording = true;
             resolveStart.push( ()=>{ this.recordings.push(["Recording", "Start", Date.now(), "NULL"]); r(); } );
-            currentMediaElement = this;
             this.recorder.start();
         });
 
@@ -362,7 +365,7 @@ window.PennController._AddElementType("MediaRecorder", function(PennEngine) {
             this.recording = false;
             currentMediaElement = this;
             resolveStop.push( ()=>{ this.recordings.push(["Recording", "Stop", Date.now(), "NULL"]); r(); } );
-            if (this.recorder.recording)
+            if (this.recorder.state=="recording")
                 this.recorder.stop();                                                  // This will look at currentMediaElement
             else
                 r();
@@ -375,6 +378,9 @@ window.PennController._AddElementType("MediaRecorder", function(PennEngine) {
     }
     
     this.end = function(){
+        currentMediaElement = this;
+        if (this.recorder.state=="recording")
+            this.recorder.stop();
         if (this.blob){
             let extension = getMimeExtension(this.mediaType).extension;
             let filename = this.id+'.'+extension;
