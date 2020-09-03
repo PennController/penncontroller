@@ -2,7 +2,7 @@ PennController for IBEX
 This software is licensed under a BSD license; see the LICENSE file for details.
 
  - Version 1.9
- - Last Update:  2020, July 7
+ - Last Update:  2020, August 11
  - Major changes in version 1.9:
    * Fixed buffer-event detection in audio & video resources
    * Labels of Scale element no longer systematically show up with radio display
@@ -12,4 +12,4 @@ This software is licensed under a BSD license; see the LICENSE file for details.
    * Made the fullscreen commands compatible across browsers
    + Passing an element reference as the single argument of .print now inserts the element as inline inside the referenced one
    + Added self keyword referring to current element
-   + Added commands timer.pause and timer.resume
+   + Added commands timer.pause, timer.resume and timer.set

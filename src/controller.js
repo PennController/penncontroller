@@ -240,12 +240,12 @@ PennController.SendResults = function(label){       /* $AC$ global.PennControlle
     handler._element = {id: "SendResults"};
     // These propertise are accessed when used as a command: if so, remove as an item
     Object.defineProperty(handler, "_promises", { get: ()=>{
-        let indexInItems = window.items.indexOf(item);
+        let indexInItems = window.items && window.items.indexOf(item);
         if (indexInItems>=0) window.items.splice(indexInItems,1);
         return [promise];
     } });
     Object.defineProperty(handler, "_runPromises", { get: ()=>{
-        let indexInItems = window.items.indexOf(item);
+        let indexInItems = window.items && window.items.indexOf(item);
         if (indexInItems>=0) window.items.splice(indexInItems,1);
         return () => lazyPromiseFromArrayOfLazyPromises([promise])();
     } });

@@ -1,3 +1,9 @@
+- HTML elements of resources being reused across trials keep former trials' classes!
+- Fix clear(): crash with unnamed elements
+- Make .text a standard command
+- Do something about new* in callbacks? resets properties when it shouldn't?
+    >   have getOrNew? or just no new/get prefix?
+
 Since 1.8
 - Youtube videos should NOT start playing from the beginning of the experiment (blocked by browsers)
 - Add fullscreen support across browsers: https://www.w3schools.com/jsref/met_element_requestfullscreen.asp

@@ -246,9 +246,10 @@ window.PennController._AddElementType("EyeTracker", function(PennEngine) {
     let resetTracker = function(){
         past50Array = [[],[]];
         tracker = window.webgazer.setRegression('weightedRidge')
-            .setTracker('clmtrackr')
+            .setTracker('TFFacemesh')
             .setGazeListener((data, clock) => {
-                if (data instanceof Promise) data.then( d=>parseData(d,clock) );
+                if (data == null) return;
+                else if (data instanceof Promise) data.then( d=>parseData(d,clock) );
                 else if (data.x) parseData(data,clock);
             });        
         let oldAME = document.addEventListener;         // Catch the mousemove function
@@ -257,9 +258,9 @@ window.PennController._AddElementType("EyeTracker", function(PennEngine) {
                 moveEvent = args[1];
             oldAME.apply(document, args);
         };
-        tracker
-            .begin()
-            .showPredictionPoints(true);
+        tracker.params.showVideoPreview = true;
+        tracker.begin();
+        window.webgazer.showPredictionPoints(true);
         showTracker(false);
     }
 

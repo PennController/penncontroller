@@ -85,7 +85,7 @@ window.PennController._AddElementType("MouseTracker", function(PennEngine) {
 
     this.end = function(){
         this.enabled = false;
-        this.finishStream();
+        if (this.finishStream && this.finishStream instanceof Function) this.finishStream();
         if (this.log && this.coordinates.length){
             for (let i = 0; i < this.coordinates.length; i++)
                 PennEngine.controllers.running.save(this.type, this.id, "Move", ...this.coordinates[i]);

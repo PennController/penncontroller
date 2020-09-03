@@ -1,5 +1,6 @@
 import { PennEngine } from "./engine";
 import { levensthein } from "./utils";
+import { takeRightWhile } from "lodash";
 
 const VERSION = "1.9-dev";
 
@@ -17,12 +18,15 @@ class PopIn {
         this.tabs = [];
         this.container = $("<div>").css({
             width: width, 
-            height: height, 
+            // height: height, 
+            height: "3em",
+            overflow: 'hidden',
             position: "fixed", 
             'border-radius': "5px", 
             'background-color': 'floralwhite',
-            'min-height': "2em",
-            'min-width': "3em"
+            'min-height': "3em",
+            'min-width': "3em",
+            'z-index': 9999
         });
         this.titleBar = $("<div>").css({
             width: "100%", 
@@ -34,12 +38,34 @@ class PopIn {
             color: 'white',
             'border-radius': '5px 5px 0px 0px'
         });
+        this.titleExpand = $("<span>&#9656;</span>").css({
+            display: 'inline-block',
+            'line-height': '1.3em',
+            padding: '2px',
+            'margin-right': '0.25em',
+            cursor: 'pointer'
+        }).click(()=>{
+            if (this.titleExpand.html().charCodeAt(0)==9656){
+                this.titleExpand.html("&#9662;");
+                this.container.css({
+                    height: this.height,
+                    overflow: "unset",
+                });
+            }
+            else{
+                this.titleExpand.html("&#9656;");
+                this.container.css({
+                    height: "3em",
+                    overflow: "hidden",
+                });
+            }
+        });
         this.titleSpan = $("<span>"+title+"</span>").css({
             display: "inline-block", 
             padding: "2px", 'line-height': "1.3em",
             overflow: "hidden"
         });
-        this.titleBar.append(this.titleSpan).append(
+        this.titleBar.append(this.titleSpan.prepend(this.titleExpand)).append(
             $("<span>X</span>").css({
                 width: "1.3em",
                 height: "1.3em",
@@ -57,8 +83,8 @@ class PopIn {
             .mouseleave(function(){ $(this).css({border: "none"}); })
         ).mousedown(function(e){
             t.updatePosition = true;
-            t.offsetX = e.clientX - t.x;
-            t.offsetY = e.clientY - t.y;
+            t.offsetX = e.clientX - t.container.offset().left;
+            t.offsetY = e.clientY - t.container.offset().top;
             e.preventDefault();
         });
         this.tabBar = $("<div>").css({
@@ -109,8 +135,8 @@ class PopIn {
             'clip-path': "polygon(90% 0,90% 90%,0 90%)", opacity: "0.5"
         }).mousedown(function(e){
             t.updateSize = true;
-            t.offsetRight = e.clientX - (t.x + t.width);
-            t.offsetBottom = e.clientY - (t.y + t.height);
+            t.offsetRight = e.clientX - (t.container.offset().left + t.container.width());
+            t.offsetBottom = e.clientY - (t.container.offset().top + t.container.height());
             e.preventDefault();
         }));
         this.content = $("<div>").css({
@@ -137,8 +163,8 @@ class PopIn {
                 t.container.css({left: t.x, top: t.y});
             }
             if (t.updateSize){
-                t.width = (e.clientX - t.x) - t.offsetRight;
-                t.height = (e.clientY - t.y) - t.offsetBottom;
+                t.width = (e.clientX - t.container.offset().left) - t.offsetRight;
+                t.height = (e.clientY - t.container.offset().top) - t.offsetBottom;
                 t.container.css({width: t.width, height: t.height});
             }
         }).mouseup(function(){ t.updatePosition = false; t.updateSize = false; });
@@ -198,7 +224,7 @@ PennEngine.debug = {
 
 
 // Creation of the debug popin
-debug.popin = new PopIn(`Debug (PennController ${VERSION})`, WIDTH-10, HEIGHT-10, window.innerWidth - WIDTH, window.innerHeight - HEIGHT);
+debug.popin = new PopIn(`Debug (PennController ${VERSION})`, WIDTH-10, HEIGHT-10, window.innerWidth - WIDTH, 10/*HEIGHT*/);
 debug.logTab = debug.popin.newTab("Log");               // First tab: console
 debug.logTab.controls = $("<div>")
     .append( $("<button>Next screen</button>").click(()=>debug.currentController._finishedCallback()) )

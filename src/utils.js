@@ -19,6 +19,37 @@ export function hexFromArrayBuffer (array) {
     return bytes.join('').toUpperCase();
 }
 
+export async function uploadToPresignedS3(presignedUrl,fileObj){
+    const getPresignedPostData = filename => {
+        return new Promise(resolve => {
+          const xhr = new XMLHttpRequest();
+          xhr.open("GET", presignedUrl+"&fileName="+filename, true);
+          xhr.setRequestHeader("Content-Type", "application/json");
+          xhr.send();
+          xhr.onload = function() {
+            resolve(JSON.parse(this.responseText));
+          };
+        });
+    };
+    const uploadFileToS3 = (presignedPostData, file) => new Promise((resolve, reject) => {
+        const formData = new FormData();
+        Object.keys(presignedPostData.fields).forEach(key => {
+            formData.append(key, presignedPostData.fields[key]);
+        });
+        // Actual file has to be appended last.
+        formData.append("file", file);
+        const xhr = new XMLHttpRequest();
+        xhr.open("POST", presignedPostData.url, true);
+        xhr.send(formData);
+        xhr.onload = function() {
+            this.status === 204 ? resolve(presignedPostData) : reject(this.responseText);
+        };
+    });
+    const presignedPostData = await getPresignedPostData(fileObj.name);
+    // Step 2 - upload the file to S3.
+    return uploadFileToS3(presignedPostData, fileObj);
+}
+
 // See https://mimesniff.spec.whatwg.org/#matching-an-image-type-pattern
 // See https://en.wikipedia.org/wiki/List_of_file_signatures
 export function getMimetype (signature, filename) {

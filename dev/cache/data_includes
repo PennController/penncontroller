@@ -1,25 +1,33 @@
 PennController.ResetPrefix(null) // Shorten command names (keep this)
 
 newTrial(
-    newVar("score",0)
+    newButton("Start").print().wait( newEyeTracker("tracker").test.ready() ).remove()
     ,
-    newButton("Waf").print(),
-    newButton("Wouf").print()
+    getEyeTracker("tracker").calibrate(60)
     ,
-    newSelector()
-        .add( getButton("Waf") , getButton("Wouf") )
-        .callback( 
-            getVar("score").set(v=>v+1)
-            ,
-            newText("score").text(getVar("score")).print()
-            ,
-            self.test.selected(getButton("Waf"))
-            .success( self.disable() )
-            .failure( newText("wafwaf").print() )  
-        )
-    ,
-    newButton().wait()
+    getButton("Start").wait()
 )
+
+// newTrial(
+//     newVar("score",0)
+//     ,
+//     newButton("Waf").print(),
+//     newButton("Wouf").print()
+//     ,
+//     newSelector()
+//         .add( getButton("Waf") , getButton("Wouf") )
+//         .callback( 
+//             getVar("score").set(v=>v+1)
+//             ,
+//             newText("score").text(getVar("score")).print()
+//             ,
+//             self.test.selected(getButton("Waf"))
+//             .success( self.disable() )
+//             .failure( newText("wafwaf").print() )  
+//         )
+//     ,
+//     newButton().wait()
+// )
 
 
 // // Resources are hosted as ZIP files on a distant server

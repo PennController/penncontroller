@@ -11,9 +11,9 @@ window.PennController._AddElementType("Timer", function(PennEngine) {
                 id = "Timer";
         }
         this.id = id;
-        this.duration = 0;
+        this.initialDuration = 0;
         if (Number(duration)>0)
-            this.duration = Number(duration);
+            this.initialDuration = Number(duration);
         else
             PennEngine.debug.error("Invalid duration for Timer &quot;"+id+"&quot;");
     };
@@ -24,6 +24,7 @@ window.PennController._AddElementType("Timer", function(PennEngine) {
         this.events = [];
         this.log = false;
         this.running = false;
+        this.duration = this.initialDuration;
         this.start = ()=>{                  // Starts the timer
             this.startTime = Date.now();
             this.running = true;
@@ -81,6 +82,14 @@ window.PennController._AddElementType("Timer", function(PennEngine) {
                 this.start();
                 this.startTime = newStartTime;
             }
+            resolve();
+        },
+        set: function(resolve, duration){
+            const nduration = Number(duration);
+            if (isNaN(nduration) || nduration < 0)
+                PennEngine.debug.error(`Invalid duration passed for timer ${this.id} (&quot;${duration}&quot;)`);
+            else
+                this.duration = nduration;
             resolve();
         },
         start: function(resolve){   /* $AC$ Timer PElement.start() Starts the timer $AC$ */
