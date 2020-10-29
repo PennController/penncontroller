@@ -194,7 +194,7 @@ window.PennController._AddElementType("EyeTracker", function(PennEngine) {
                 // Add 8 buttons to the screen: click on each to calibrate
                 $(this).remove();
                 showTracker(false);
-                getGazer().showPredictionPoints(true);
+                // getGazer().showPredictionPoints(true);
                 calibrationDiv
                     .append($("<button>+</button>").css({
                         position: 'absolute', top: 0, left: 0, width: "2.5vw", height: "2.5vw"

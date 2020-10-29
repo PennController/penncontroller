@@ -207,7 +207,7 @@ window.PennController._AddElementType("Tooltip", function(PennEngine) {
         },
         key: function(resolve, keys, noclick){  /* $AC$ Tooltip PElement.key(key) Will validate (and remove) the tooltip whenever the specified key is pressed $AC$ */
             if (keys != " " && !isNaN(Number(keys)))    // If keycode
-            keys = String.fromCharCode(keys);
+                keys = String.fromCharCode(keys);
             if (typeof(keys) != "string")
                 resolve(PennEngine.debug.error("Invalid key(s) passed to Tooltip &quot;"+id+"&quot; (should be a string or a key code number)", keys));
             keys = keys.toUpperCase();

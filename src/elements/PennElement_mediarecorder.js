@@ -207,8 +207,8 @@ window.PennController._AddElementType("MediaRecorder", function(PennEngine) {
                 let fileName = PennEngine.utils.guidGenerator()+'.zip';
                 var fileObj = new File([zc], fileName); // Create file object to upload with uniquename
                 if (uploadURL.match(/^aws:/i)){
-                    uploadURL = uploadURL.replace(/^aws:/i,'');
-                    PennEngine.utils.uploadToPresignedS3(uploadURL,fileObj).then( response => {
+                    let strippedUploadURL = uploadURL.replace(/^aws:/i,'');
+                    PennEngine.utils.uploadToPresignedS3(strippedUploadURL,fileObj).then( response => {
                         let key = fileName;
                         if (response.fields && response.fields.key) key = response.fields.key;
                         PennEngine.controllers.running
@@ -219,13 +219,14 @@ window.PennController._AddElementType("MediaRecorder", function(PennEngine) {
                             uploadingStreams[i].uploadStatus = "uploaded";
                         PennEngine.debug.log("Recordings sent to the S3 bucket");
                         if (!async) resolve();
+                        pendingRequests = pendingRequests.filter(v=>v!=request);
                     }, error => {
                         PennEngine.controllers.running
                             .save("PennController", "UploadRecordings", "Filename", fileName, Date.now(), (async?"async":"NULL"));
                         PennEngine.controllers.running
                             .save("PennController", "UploadRecordings", "Status", "Failed", Date.now(), error);
                         PennEngine.debug.error("MediaRecorder's presigned S3 post failed.", error);
-                        controller.element
+                        PennEngine.controllers.running.element
                             .append($("<p>There was an error uploading the recordings: "+xhr.responseText+"</p>"))
                             .append($("<p>Please click here to download a copy of your recordings "+
                                     "in case you need to send them manually.</p>").bind('click', ()=>{
@@ -233,6 +234,7 @@ window.PennController._AddElementType("MediaRecorder", function(PennEngine) {
                                             if (!async)
                                                 resolve();
                                     }).addClass("Message-continue-link"));
+                        pendingRequests = pendingRequests.filter(v=>v!=request);
                     } );
                 }
                 else {

@@ -1,3 +1,15 @@
+- Google spreadsheets table
+- special keys don't work in selector.keys
+- after should print added elements even if container's already printed
+- Double-check pointers to elements as Var values (re-evaluted whenever .value is accessed?)
+- Go through command arguments not being executed as commands
+- Global Var handling got messy again...
+- canvas.add should not reprint the canvas (messes with order)
+- audio.stop should validate audio.wait
+- UploadRecordings should NOT send previously unlogged recordings along current ones
+- Add a warning if InitiateRecorder is absent, or not included in the Sequence
+- Fix audio replaying at the end of the trial (in the absence of explicit stop)
+- Something weird with newX().selector() (error message: "already in selector")
 - HTML elements of resources being reused across trials keep former trials' classes!
 - Fix clear(): crash with unnamed elements
 - Make .text a standard command

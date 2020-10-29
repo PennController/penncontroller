@@ -29,8 +29,8 @@ window.PennController._AddElementType("Function", function(PennEngine) {
     };
 
     this.actions = {
-        call: async function(resolve){  /* $AC$ Function PElement.call() Executes the function $AC$ */
-            await this.function.apply(PennEngine.controllers.running.internalVariables);
+        call: async function(resolve, ...args){  /* $AC$ Function PElement.call() Executes the function $AC$ */
+            await this.function.apply(PennEngine.controllers.running.internalVariables, args);
             resolve();
         }
     };
