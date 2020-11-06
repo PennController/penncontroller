@@ -1,3 +1,7 @@
+- Fix how VBox is integrated (https://www.pcibex.net/forums/topic/dashedacceptabilityjudgment/#post-6279) -- error msg: this.controllerDefaults is undefined
+- Write documentation about test commands (conditionals and operators) and good practice on how to inject native javascript
+- Add a mouseover detection feature
+- Keep track of *clicks* too in the MouseTracker, besides mouse movements
 - Google spreadsheets table
 - special keys don't work in selector.keys
 - after should print added elements even if container's already printed
