@@ -270,7 +270,7 @@ window.PennController._AddElementType("EyeTracker", function(PennEngine) {
         sessionID = PennEngine.utils.guidGenerator();
         initiated = true;
         let webgazer = document.createElement('script');
-        webgazer.setAttribute('src','https://webgazer.cs.brown.edu/webgazer.js');
+        webgazer.setAttribute('src','https://expt.pcibex.net/static/webgazer/webgazer.min.js');
         document.head.appendChild(webgazer);
         let checkIfReady = () => {
             if (window.webgazer) {

@@ -1,3 +1,4 @@
+- Throw an error when .log(.,.) is not called on newTrial()
 - Fix how VBox is integrated (https://www.pcibex.net/forums/topic/dashedacceptabilityjudgment/#post-6279) -- error msg: this.controllerDefaults is undefined
 - Write documentation about test commands (conditionals and operators) and good practice on how to inject native javascript
 - Add a mouseover detection feature
