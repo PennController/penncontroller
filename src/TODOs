@@ -1,3 +1,6 @@
+- Used .print('top at 30', 'left at 5') but it printed left at 30, top at 5
+- Something with MediaRecorder.stop not validating across trials (on_stop points to wrong element?)
+- Check that "speeded acceptability" does record every word for DashedSentence
 - Throw an error when .log(.,.) is not called on newTrial()
 - Fix how VBox is integrated (https://www.pcibex.net/forums/topic/dashedacceptabilityjudgment/#post-6279) -- error msg: this.controllerDefaults is undefined
 - Write documentation about test commands (conditionals and operators) and good practice on how to inject native javascript
