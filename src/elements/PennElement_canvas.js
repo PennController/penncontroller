@@ -35,27 +35,35 @@ window.PennController._AddElementType("Canvas", function(PennEngine) {
             display: "flex", 'flex-direction': 'column'
         });
         this.elementCommands = [];
-        this.showElement = (elementCommand, x, y, z)=>new Promise(resolve=>{
-            let afterPrint = ()=>{
-                let element = elementCommand._element;
-                let jQueryElement = element.jQueryElement;
-                let coordinates = PennEngine.utils.parseCoordinates(x,y,element.jQueryContainer);
-                x = coordinates.x;
-                y = coordinates.y;
-                let transform = 'translate('+coordinates.translateX+','+coordinates.translateY+')';
-                if (element.jQueryContainer){
-                    element.jQueryContainer.css({position: "absolute", left: x, top: y, transform: transform});
-                    if (Number(z)>0||Number(z)>0)
-                        element.jQueryContainer.css("z-index", z);    // Only if number (i.e. not NaN)
-                }
-                else{
-                    jQueryElement.css({position: "absolute", left: x, top: y, transform: transform});
-                    if (Number(z)>0||Number(z)>0)
-                        jQueryElement.css("z-index", z);    // Only if number (i.e. not NaN)
-                }
-                resolve();
+        this.showElement = (elementCommand, x, y, z)=>new Promise(async resolve=>{
+            await elementCommand.print( this.jQueryElement )._runPromises();
+            let element = elementCommand._element;
+            let jQueryElement = element.jQueryElement;
+            // let coordinates = PennEngine.utils.parseCoordinates(x,y,element.jQueryContainer);
+            // x = coordinates.x;
+            // y = coordinates.y;
+            // let transform = 'translate('+coordinates.translateX+','+coordinates.translateY+')';
+            const currentController = PennEngine.controllers.running;
+            if (element.jQueryContainer){
+                PennEngine.utils.printAndRefreshUntil.call(element.jQueryContainer,
+                    x,y,this.jQueryElement,
+                    /*until=*/()=>currentController!=PennEngine.controllers.running
+                );
+                // element.jQueryContainer.css({position: "absolute", left: x, top: y, transform: transform});
+                if (Number(z)>0||Number(z)>0)
+                    element.jQueryContainer.css("z-index", z);    // Only if number (i.e. not NaN)
             }
-            elementCommand.print( this.jQueryElement )._runPromises().then(afterPrint);
+            else{
+                PennEngine.utils.printAndRefreshUntil.call(jQueryElement,
+                    x,y,this.jQueryElement,
+                    /*until=*/()=>currentController!=PennEngine.controllers.running
+                );
+                // jQueryElement.css({position: "absolute", left: x, top: y, transform: transform});
+                if (Number(z)>0||Number(z)>0)
+                    jQueryElement.css("z-index", z);    // Only if number (i.e. not NaN)
+            }
+            element._lastPrint = [x,y,window.PennController.Elements.getCanvas(this.id)];
+            resolve();
         });
         resolve();
     };
@@ -75,6 +83,10 @@ window.PennController._AddElementType("Canvas", function(PennEngine) {
     
     let t = this;       // Needed to call settings form actions
     this.actions = {
+        color: function(resolve, color){
+            this.jQueryElement.css("background-color",color);
+            resolve();
+        },
         print: async function(resolve, ...where){
             let t=this, showElements = async function(){
                 for (let e in t.elementCommands)

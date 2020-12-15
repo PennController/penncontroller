@@ -19,6 +19,28 @@ export function hexFromArrayBuffer (array) {
     return bytes.join('').toUpperCase();
 }
 
+
+const checkForScale = function(scale){
+    const transform = this.css("transform").match(/matrix\(\s*(-?\d+(.\d+)?),[^,]+,[^,]+,\s*(-?\d+(.\d+)?),/);
+    if (transform){
+        scale.x = scale.x * Number(transform[1]);
+        scale.y = scale.y * Number(transform[3]);
+    }
+    return scale;
+}
+export function overToScale(x,y){
+    let element = this, inspected_element = element;
+    let scale = {x: 1, y: 1};
+    while (inspected_element){
+        checkForScale.call(inspected_element, scale);
+        inspected_element = inspected_element.parent();
+        if (inspected_element[0]===document) inspected_element = undefined;
+    }
+    let offset = element.offset(), w = element.width(), h= element.height(), scale_w = w*scale.x, scale_h = h*scale.y;
+    return offset.left <= x && offset.top <= y && offset.left+scale_w >= x && offset.top+scale_h>=y;
+}
+
+
 export async function uploadToPresignedS3(presignedUrl,fileObj){
     const getPresignedPostData = filename => {
         return new Promise(resolve => {
@@ -157,29 +179,59 @@ export function parseElementCommands(array){
 }
 
 // Parses "bottom|left|center|middle|right|top at ..."
-export function parseCoordinates(x,y,element){
-    let coordinates = {x:x,y:y,translateX:0,translateY:0};
+export function parseCoordinates(x,y){
+    // let coordinates = {x:x,y:y,translateX:0,translateY:0};
+    const transform = this.css("transform").match(/matrix\(\s*(-?\d+(.\d+)?),[^,]+,[^,]+,\s*(-?\d+(.\d+)?),/);
+    const original_width = this.width(), original_height = this.height();
+    let width = original_width, height = original_height;
+    if (transform){
+        width = Math.abs(width * transform[1]);
+        height = Math.abs(height * transform[3]);
+    }
     let anchorX = String(x).match(/^(.+)\s+at\s+(.+)$/i);
     let anchorY = String(y).match(/^(.+)\s+at\s+(.+)$/i);
-    if (anchorX && anchorX[2].match(/^\d+(\.\d+)?$/))   // raw number
-        anchorX[2] = String(anchorX[2]) + "px";
-    if (anchorY && anchorY[2].match(/^\d+(\.\d+)?$/))   // raw number
-        anchorY[2] = String(anchorY[2]) + "px";
+    if (anchorX && anchorX[2].match(/^-?\d+(\.\d+)?$/))   // raw number
+        x = String(anchorX[2])+"px";
+    if (anchorY && anchorY[2].match(/^-?\d+(\.\d+)?$/))   // raw number
+        y = String(anchorY[2])+"px";
     if (anchorX){
-        coordinates.x = anchorX[2];
-        if (anchorX[1].match(/center|middle/i))
-            coordinates.translateX = '-50%';
+        x = anchorX[2];
+        if (anchorX[1].match(/top|bottom/i)) throw "Passed Y coordinate in place of X";
+        else if (anchorX[1].match(/center|middle/i))
+            x = `calc(${x} - ${original_width/2}px)`;
         else if (anchorX[1].match(/right/i))
-            coordinates.translateX = '-100%';
+            x = `calc(${x} - ${width-(width-original_width)/2}px)`;
+        else
+            x = `calc(${x} + ${(width-original_width)/2}px)`;
     }
+    else
+        x = `calc(${x}px + ${(width-original_width)/2}px)`;
     if (anchorY){
-        coordinates.y = anchorY[2];
-        if (anchorY[1].match(/center|middle/i))
-            coordinates.translateY = '-50%';
+        y = anchorY[2];
+        if (anchorY[1].match(/left|right/i)) throw "Passed X coordinate in place of Y";
+        else if (anchorY[1].match(/center|middle/i))
+            y = `calc(${y} - ${original_height/2}px)`;
         else if (anchorY[1].match(/bottom/i))
-            coordinates.translateY = '-100%';
+            y = `calc(${y} - ${height-(height-original_height)/2}px)`;
+        else
+            y = `calc(${y} + ${(height-original_height)/2}px)`;
     }
-    return coordinates;
+    else
+        y = `calc(${y}px + ${(height-original_height)/2}px)`;
+    return {x: x, y: y};
+}
+function RefreshUntil(x,y,element,until){
+    if (until instanceof Function && until()) return;
+    const coordinates = parseCoordinates.call(this,x,y);
+    this.css({position: 'absolute', left: coordinates.x, top: coordinates.y});
+    window.requestAnimationFrame( ()=>RefreshUntil.call(this,x,y,element,until) );
+}
+// Call on a jQuery element
+export function printAndRefreshUntil(x,y,element,until){
+    element = element || $("body");
+    const parentDOM = this.parent()[0];
+    if (parentDOM === undefined || parentDOM != element[0]) this.appendTo(element).css('display','inline-block');
+    RefreshUntil.call(this,x,y,element,until);
 }
 
 // Returns the Levensthein distance between two words

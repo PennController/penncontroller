@@ -59,7 +59,7 @@ window.PennController._AddElementType("Scale", function(PennEngine) {
                 let v = this.buttons[i];
                 if (v===undefined||v===null||v=="") v = i+1;            // If the array's entry is void, use its index
                 let label = $("<label>").attr({for:this.id+'-'+i}).html(v).css('cursor','pointer');
-                let input = $("<input>").attr({name:this.id,value:v,type:"radio",id:this.id+'-'+i});
+                let input = $("<input>").attr({name:this.id,value:v,type:(type=="checkbox"?"checkbox":"radio"),id:this.id+'-'+i});
                 let option = $("<div>").addClass("option")
                     .css({cursor:'pointer',display:'flex','align-items':'center'})
                     .append( input ).append( label );
@@ -67,7 +67,7 @@ window.PennController._AddElementType("Scale", function(PennEngine) {
                 if (defaultValue==v||defaultValue==i) input.attr("checked",true);
                 if (this.disabled) input.attr("disabled", true);
                 input[0].onchange = ()=>{
-                    this.choice(this.buttons[i]||v)
+                    this.choice(this.buttons[i]||v,/*unselect=*/type=="checkbox"&&!input[0].checked)
                     this.jQueryElement.find("label").css("outline","none");
                     if (type=="buttons") label.css("outline","dotted 1px black");
                 };
@@ -112,10 +112,10 @@ window.PennController._AddElementType("Scale", function(PennEngine) {
         this.width = null;
         this.keys = [];
         this.buttons = this.initialButtons;
-        this.choice = value=>{                                      // (Re)set upon creation, since it can be modified during runtime
+        this.choice = (value,unselect)=>{                           // (Re)set upon creation, since it can be modified during runtime
             if (this.disabled)
                 return;                                             // Store the value + timestamp
-            this.unselected = undefined;
+            this.unselected = unselect||undefined;
             if (value && value._runPromises)
                 value = value._element.id;
             let duration = null;
@@ -123,7 +123,7 @@ window.PennController._AddElementType("Scale", function(PennEngine) {
                 duration = Date.now() - this.firstClick;
                 this.firstClick = undefined;
             }
-            this.choices.push(["Choice", value, Date.now(), duration||"NULL"]);
+            this.choices.push([(unselect?"Unselect":"Choice"), value, Date.now(), duration||"NULL"]);
         };
         PennEngine.controllers.running.safeBind($(document), "keydown", (e)=>{
             if (this.disabled)
@@ -138,7 +138,12 @@ window.PennController._AddElementType("Scale", function(PennEngine) {
 
     // This is executed at the end of a trial
     this.end = function(){
+        const that = this;
         if (this.log && this.log instanceof Array){
+            if (this.scaleType=="checkbox")
+                this.jQueryElement.find("input[type=checkbox]").each(function(i){
+                    PennEngine.controllers.running.save(that.type, that.id, that.buttons[i], (this.checked?"checked":"unchecked"), Date.now(), "Status");
+                });
             if (!this.choices.length)
                 PennEngine.controllers.running.save(this.type, this.id, "Choice", "NA", "Never", "No selection happened");
             else if (this.choices.length==1)
@@ -238,6 +243,11 @@ window.PennController._AddElementType("Scale", function(PennEngine) {
                 for (let c in elementCommands)
                     await elementCommands[c]._runPromises();
             };
+            resolve();
+        },
+        checkbox: function(resolve){
+            this.scaleType = "checkbox";
+            buildScale.apply(this);                      // Rebuild the scale as a checkbox "scale"
             resolve();
         },
         default: function(resolve, value){    /* $AC$ Scale PElement.default(value) Sets the specified value to be selected by default $AC$ */

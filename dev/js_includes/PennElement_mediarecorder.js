@@ -166,13 +166,27 @@ window.PennController._AddElementType("MediaRecorder", function(PennEngine) {
             setConsent(message);
             return controller;
         };
+        PennEngine.ArgumentCallback( a=>{
+            if (a==controller)
+                PennEngine.tmpItems = PennEngine.tmpItems.filter(i=>i!=controller);
+        });
+        PennEngine.NewTrialArgumentCallback(a=>{
+            if (a==controller)
+                PennEngine.tmpItems = PennEngine.tmpItems.filter(i=>i!=controller);
+        });
+        controller._runPromises = controller.sequence;
         return controller;
     };
-
 
     window.PennController.UploadRecordings = function(label,async) {  /* $AC$ global.PennController.UploadRecordings(label,noblock) Creates a trial that sends the recordings to the server $AC$ */
         let uploadController = PennEngine.controllers.new();
         PennEngine.tmpItems.push(uploadController);
+        const callback = a=>{
+            if (a==uploadController)
+                PennEngine.tmpItems = PennEngine.tmpItems.filter(i=>i!=uploadController)
+        }
+        PennEngine.NewTrialArgumentCallback(callback);
+        PennEngine.ArgumentCallback(callback);
         if (typeof label == "string" && label.length)
             uploadController.useLabel = label;
         uploadController.id = "UploadRecordings";
@@ -293,6 +307,8 @@ window.PennController._AddElementType("MediaRecorder", function(PennEngine) {
         });
         for (let i = 0; i < controllerLogs.length; i++)
             uploadzipController.log(...controllerLogs[i]);
+        uploadController._promises = [uploadController.sequence];
+        uploadController._runPromises = uploadController.sequence;
         return uploadController;
     }
 
@@ -398,12 +414,14 @@ window.PennController._AddElementType("MediaRecorder", function(PennEngine) {
             this.recording = true;
             resolveStart.push( ()=>{ this.recordings.push(["Recording", "Start", Date.now(), "NULL"]); r(); } );
             this.recorder.start();
+            recordButton.text("Stop");
         });
 
         this.stop = ()=>new Promise(r=>{
             this.recording = false;
             currentMediaElement = this;
             resolveStop.push( ()=>{ this.recordings.push(["Recording", "Stop", Date.now(), "NULL"]); r(); } );
+            recordButton.text("Record");
             if (this.recorder.state=="recording")
                 this.recorder.stop();                                                  // This will look at currentMediaElement
             else
@@ -418,7 +436,7 @@ window.PennController._AddElementType("MediaRecorder", function(PennEngine) {
     
     this.end = function(){
         currentMediaElement = this;
-        if (this.recorder.state=="recording")
+        if (this.recorder && this.recorder.state=="recording")
             this.recorder.stop();
         if (this.blob){
             let extension = getMimeExtension(this.mediaType).extension;

@@ -30,6 +30,7 @@ window.PennController._AddElementType("Video", function(PennEngine) {
         this.resource.object.style = null;      // (Re)set any particular style applied to the resource's object
         this.resource.object.currentTime = 0;   // (Re)set to the beginning
         this.jQueryElement = $(this.video);     // The jQuery element
+        this.jQueryElement.removeClass();
         this.jQueryDisable = null;              // The 'disable' element, to be printed on top
         this.playEvents = [];                   // List of ["play",time,position]
         this.endEvents = [];                    // List of ["end",time,position]

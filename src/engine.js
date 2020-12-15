@@ -1,4 +1,4 @@
-import { lazyPromiseFromArrayOfLazyPromises, guidGenerator, parseCoordinates, levensthein, uploadToPresignedS3 } from "./utils";
+import { lazyPromiseFromArrayOfLazyPromises, guidGenerator, overToScale, parseCoordinates, printAndRefreshUntil, levensthein, uploadToPresignedS3 } from "./utils";
 
 let preRunningFunctions = [];       // Functions to be run before Ibex processes window.items
 let functionsDictionary = {
@@ -99,8 +99,10 @@ export var PennEngine = {
     utils: {
         guidGenerator: guidGenerator,
         parseCoordinates: parseCoordinates,
+        printAndRefreshUntil: printAndRefreshUntil,
         levensthein: levensthein,
-        uploadToPresignedS3: uploadToPresignedS3
+        uploadToPresignedS3: uploadToPresignedS3,
+        overToScale: overToScale
     }
     ,
     tmpItems: []        //  PennController() adds {PennController: id}, PennController.Template adds {PennTemplate: [...]}

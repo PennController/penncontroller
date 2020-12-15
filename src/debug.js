@@ -1,8 +1,10 @@
 import { PennEngine } from "./engine";
 import { levensthein } from "./utils";
-import { takeRightWhile } from "lodash";
 
-const VERSION = "1.9-dev";
+$.prototype.left = function(){ return Number(this.css("left").replace(/px/,'')); }
+$.prototype.top = function(){ return Number(this.css("top").replace(/px/,'')); }
+
+const VERSION = "1.9";
 
 const WIDTH = 450;
 const HEIGHT = 250;
@@ -82,9 +84,7 @@ class PopIn {
             }).mouseenter(function(){ $(this).css({border: "solid 1px lightgray", 'border-radius': "2px"}); })
             .mouseleave(function(){ $(this).css({border: "none"}); })
         ).mousedown(function(e){
-            t.updatePosition = true;
-            t.offsetX = e.clientX - t.container.offset().left;
-            t.offsetY = e.clientY - t.container.offset().top;
+            t.updatePosition = {x: e.clientX, y: e.clientY, left: t.container.left(), top: t.container.top()};
             e.preventDefault();
         });
         this.tabBar = $("<div>").css({
@@ -135,8 +135,8 @@ class PopIn {
             'clip-path': "polygon(90% 0,90% 90%,0 90%)", opacity: "0.5"
         }).mousedown(function(e){
             t.updateSize = true;
-            t.offsetRight = e.clientX - (t.container.offset().left + t.container.width());
-            t.offsetBottom = e.clientY - (t.container.offset().top + t.container.height());
+            t.offsetRight = e.clientX - (t.container.left() + t.container.width());
+            t.offsetBottom = e.clientY - (t.container.top() + t.container.height());
             e.preventDefault();
         }));
         this.content = $("<div>").css({
@@ -158,16 +158,18 @@ class PopIn {
         this.container.css({left: x, top: y});
         $(document).mousemove(function(e){
             if (t.updatePosition){
-                t.x = e.clientX - t.offsetX;
-                t.y = e.clientY - t.offsetY;
+                // t.x = e.clientX - t.offsetX;
+                // t.y = e.clientY - t.offsetY;
+                t.x = t.updatePosition.left + (e.clientX-t.updatePosition.x);
+                t.y = t.updatePosition.top + (e.clientY-t.updatePosition.y);
                 t.container.css({left: t.x, top: t.y});
             }
             if (t.updateSize){
-                t.width = (e.clientX - t.container.offset().left) - t.offsetRight;
-                t.height = (e.clientY - t.container.offset().top) - t.offsetBottom;
+                t.width = (e.clientX - t.container.left()) - t.offsetRight;
+                t.height = (e.clientY - t.container.top()) - t.offsetBottom;
                 t.container.css({width: t.width, height: t.height});
             }
-        }).mouseup(function(){ t.updatePosition = false; t.updateSize = false; });
+        }).mouseup(function(){ t.updatePosition = undefined; t.updateSize = false; });
     }
     popIn() {
         $(document.body).append(this.container);
@@ -219,6 +221,8 @@ PennEngine.debug = {
         PennEngine.debug.addToTab(debug.errorsTab.content,...messages);
         debug.errorsTab.title.css("color","red");
         debug.errorsTab.content.find(".PennController-debug-noerrors").css("display","none");
+        if (debug.popin.titleExpand.html().charCodeAt(0)==9656) debug.popin.titleExpand.click();
+        debug.errorsTab.jQuery.click();
     }
 };
 
@@ -227,7 +231,10 @@ PennEngine.debug = {
 debug.popin = new PopIn(`Debug (PennController ${VERSION})`, WIDTH-10, HEIGHT-10, window.innerWidth - WIDTH, 10/*HEIGHT*/);
 debug.logTab = debug.popin.newTab("Log");               // First tab: console
 debug.logTab.controls = $("<div>")
-    .append( $("<button>Next screen</button>").click(()=>debug.currentController._finishedCallback()) )
+    .append( $("<button>Next screen</button>").click(()=>{
+        if (debug.currentController._cssPrefix=="PennController-") PennEngine.controllers.running.endTrial();
+        else debug.currentController._finishedCallback();
+    }) )
     .append( $("<button>Next command</button>").click(()=>PennEngine.debug.forceResolve()) )
     .css({background: "lightgray", "border-bottom": "dotted 1px black"})
     .appendTo( debug.logTab.content );
@@ -407,7 +414,8 @@ let init_debug = () => {
 
     let jumpToTrial = n => {
         if (debug.runningIndex < n){
-            debug.currentController._finishedCallback();
+            if (debug.currentController._cssPrefix=="PennController-") PennEngine.controllers.running.endTrial();
+            else debug.currentController._finishedCallback();
             setTimeout(()=>jumpToTrial(n), 1);
         }
     }

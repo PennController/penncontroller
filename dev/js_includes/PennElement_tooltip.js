@@ -5,8 +5,10 @@ window.PennController._AddElementType("Tooltip", function(PennEngine) {
 
     function remove(){                          // Special function to remove element from DOM
         this.jQueryElement.remove();
+        console.log("element removed");
         if (this.jQueryContainer instanceof jQuery)
             this.jQueryContainer.detach();
+        console.log("container detached");
         if (this.frame && this.frame instanceof jQuery)
             this.frame.detach();
     }
@@ -31,6 +33,7 @@ window.PennController._AddElementType("Tooltip", function(PennEngine) {
             this.label = "OK";
         this.resetLabel = false;                            // Use initial label
         this.jQueryElement = $("<div>").html(this.text);    // The tooltip itself
+        this.jQueryContainer = undefined;
         this.jQueryLabel = $("<a>").html(this.label);       // The confirmation button
         this.validations = [];                              // Stores all the validations of the tooltip
         this.frame = $("<div>").addClass("PennController-"+this.type.replace(/[\s_]/g,'')+"-tooltip-frame");
@@ -67,7 +70,7 @@ window.PennController._AddElementType("Tooltip", function(PennEngine) {
     };
     
     this.actions = {
-        print: function(resolve, element, ...more){  /* $AC$ Tooltip PElement.print(element) Prints the tooltip attached to the specified element $AC$ */
+        print: async function(resolve, element, ...more){  /* $AC$ Tooltip PElement.print(element) Prints the tooltip attached to the specified element $AC$ */
             if (element && element.hasOwnProperty("_element") && element._element.jQueryElement instanceof jQuery)
                 element = element._element.jQueryElement;
             this.jQueryElement.append(this.jQueryLabel);                        // Label, aligned to the right
@@ -144,10 +147,13 @@ window.PennController._AddElementType("Tooltip", function(PennEngine) {
                 }
             }
             else{                                                              // Add to the page
+                if (more.length>1) this.jQueryContainer = undefined;  // Print to element: no container
+                else this.jQueryContainer = $("<div>");               // Global print: need a container
+                await new Promise(r=>PennEngine.elements.standardCommands.actions.print.apply(this, [r, element, ...more]));
                 this.jQueryElement.css({position: "relative", left: "", top: "", margin: 0, display:"inline-block"});
                 if (this.jQueryLabel.css("display")!="none")
                     this.jQueryElement.css("padding-bottom", "20px");
-                PennEngine.elements.standardCommands.actions.print.apply(this, [resolve, element, ...more]);  // standard print
+                resolve();
             }
         },
         remove: function(resolve){

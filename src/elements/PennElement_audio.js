@@ -33,6 +33,7 @@ window.PennController._AddElementType("Audio", function(PennEngine) {
         this.disabled = false;                  // Whether the audio can be played
         this.resource.object.style = null;      // (Re)set any particular style applied to the resource's object
         this.jQueryElement = $(this.audio);     // The jQuery element
+        this.jQueryElement.removeClass();
         this.jQueryDisable = null;              // The 'disable' element, to be printed on top
         this.playEvents = [];                   // List of ["play",time,position]
         this.endEvents = [];                    // List of ["end",time,position]
@@ -103,6 +104,7 @@ window.PennController._AddElementType("Audio", function(PennEngine) {
         if (this.bufferEvents)
             for (let line in this.bufferEvents)
                 PennEngine.controllers.running.save(this.type, this.id, ...this.bufferEvents[line]);
+        this.resource.object.pause();
         this.resource.object.currentTime = 0;                   // Reset to the beginning
         if (this.jQueryDisable)
             this.jQueryDisable.remove();// Remove disabler from DOM
@@ -143,8 +145,8 @@ window.PennController._AddElementType("Audio", function(PennEngine) {
             PennEngine.elements.standardCommands.actions.print.apply(this, [afterPrint, ...where]);
         },
         stop: function(resolve){      /* $AC$ Audio PElement.stop() Stops the audio playback $AC$ */
-            this.audio.pause();
-            this.audio.currentTime = 0;
+            // this.audio.pause();
+            this.audio.currentTime = this.audio.duration;
             resolve();
         }
         ,

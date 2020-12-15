@@ -32,6 +32,8 @@ window.PennController._AddElementType("Controller", function(PennEngine) {
         };
         this.options._cssPrefix = this.controller+'-';
         this.options._utils = PennEngine.controllers.running.utils;
+        this.options._utilsClass = PennEngine.controllers.running.options._utilsClass;
+        this.options._controllerDefaults = PennEngine.controllers.running.options._controllerDefaults;
 
         let controllerNames = Object.getOwnPropertyNames($.ui).filter( name => $.ui[name] instanceof Function && $.ui[name]._ibex_options );
         if (controllerNames.indexOf(this.controller)>=0){

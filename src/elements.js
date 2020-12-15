@@ -1,4 +1,4 @@
-import { lazyPromiseFromArrayOfLazyPromises, parseElementCommands, parseCoordinates, levensthein } from "./utils.js";
+import { lazyPromiseFromArrayOfLazyPromises, parseElementCommands, printAndRefreshUntil, levensthein } from "./utils.js";
 import { PennController } from "./controller.js";
 import { PennEngine } from "./engine.js";
 
@@ -39,10 +39,12 @@ Object.defineProperty(PennController.Elements, "self", {get: () => {
     return p;
 }});
 
-
+const evaluateArgumentsCallbacks = [];
+PennEngine.ArgumentCallback = f=>evaluateArgumentsCallbacks.push(f);
 // Replace Var with their values and self with pointers
 const evaluateArguments = function(args){
     for (let r = 0; r < args.length; r++){
+        evaluateArgumentsCallbacks.map(f=>f instanceof Function && f.call(null,args[r]));
         if (args[r] instanceof PennElementCommands && args[r].type == "Var" && !args[r]._promises.length){
             args[r]._runPromises();
             args[r] = args[r]._element.evaluate();
@@ -65,6 +67,7 @@ const evaluateArguments = function(args){
     }
     return args;
 }
+PennEngine.utils.evaluateArguments = evaluateArguments;
 
 
 
@@ -355,16 +358,68 @@ class PennElementCommands {
 // The commands shared by all elements
 let standardCommands = {
     actions: {
+        // Zooms the element('s container) in/out so that it fits the dimensions
+        scaling: function(resolve,x,y){
+            let printedElement = this.jQueryElement;
+            let width = 0, height = 0, page_width = 0, page_height = 0;
+            const currentController = PennEngine.controllers.running;
+            const getDimension = (s,ratio) => {
+                let dimension = 0;
+                if (!isNaN(Number(s))) return Number(s);
+                else if (s.match(/(\d+(.\d+)?)px/)) dimension = Number(s.replace(/^[^\d]*(\d+(.\d+)?)px.*$/,"$1"));
+                else{
+                    const tmpDiv = $("<div>").css('width',s);
+                    dimension = tmpDiv.appendTo(printedElement.parent()).width();
+                    tmpDiv.remove();
+                }
+                return dimension/ratio;
+            };
+            const callback = ()=>{
+                if (currentController!=PennEngine.controllers.running) return;
+                if (this.jQueryContainer && this.jQueryContainer instanceof jQuery && this.jQueryContainer.parent().length)
+                    printedElement = this.jQueryContainer;
+                const new_width = printedElement.width(),
+                      new_height = printedElement.height(),
+                      new_page_width = $(window).width(),
+                      new_page_height = $(window).height();
+                window.requestAnimationFrame( callback );
+                // if (new_width==width && new_height==height && new_page_width==page_width && new_page_height==page_height) return;
+                // else{
+                    width = new_width;
+                    height = new_height;
+                    page_width = new_page_width;
+                    page_height = new_page_height;
+                // }
+                let zoom = "";
+                if (x.match(/page|screen/i)){
+                    const ratio_page = page_width/page_height,
+                          ratio_element = width/height;
+                    if (ratio_page<ratio_element)
+                        zoom = `scale(${getDimension("100vw",width)})`;
+                    else
+                        zoom = `scale(${getDimension("100vh",height)})`;
+                }
+                else if (y===undefined || y.match(/auto/i))  // Base off width by default
+                    zoom = `scale(${getDimension(x,width)})`;
+                else if (x.match(/auto/i))
+                    zoom = `scale(${getDimension(y,height)})`;
+                else
+                    zoom = `scale(${getDimension(x,width)},${getDimension(y,height)})`;
+                let transform = printedElement.css("transform");
+                transform = transform.replace(/^none$|matrix\([^)]+\)/,zoom);
+                printedElement.css('transform',transform);
+            };
+            callback();
+            resolve();
+        },
         // Adds the element to the page (or to the provided element)
         print: async function(resolve, where, y, canvas){      /* $AC$ all PElements.print() Prints the element $AC$ */
-            if (canvas && typeof(canvas)=="string"){
+            this._lastPrint = [where,y,canvas];
+            if (canvas && typeof(canvas)=="string")
                 canvas = PennController.Elements.getCanvas(canvas);
-            }
-            if (canvas && canvas instanceof PennElementCommands && canvas.type=="Canvas"){
-                canvas.settings.add(where,y,PennController.Elements['get'+this.type](this.id))
+            if (canvas && canvas instanceof PennElementCommands && canvas.type=="Canvas")
+                return canvas.settings.add(where,y,PennController.Elements['get'+this.type](this.id))
                     ._runPromises().then(()=>resolve());
-                return;
-            }
             if (this.jQueryElement && this.jQueryElement instanceof jQuery){
                 this.jQueryContainer.detach();
                 this.jQueryContainer.empty();
@@ -389,10 +444,15 @@ let standardCommands = {
                 else if (where instanceof PennElementCommands && where._element.jQueryElement instanceof jQuery)
                     where._element.jQueryElement.append(div);
                 else if (y!==undefined) {                           // if where and y: coordinates
-                    div.appendTo($("body")).css('display','inline-block');
-                    let coordinates = parseCoordinates(where,y,div);
-                    div.css({position: 'absolute', left: coordinates.x, top: coordinates.y, 
-                            transform: 'translate('+coordinates.translateX+','+coordinates.translateY+')'});
+                    // div.appendTo($("body")).css('display','inline-block');
+                    // let coordinates = parseCoordinates(where,y,div);
+                    // div.css({position: 'absolute', left: coordinates.x, top: coordinates.y, 
+                    //         transform: 'translate('+coordinates.translateX+','+coordinates.translateY+')'});
+                    const currentController = PennEngine.controllers.running;
+                    printAndRefreshUntil.call(div,
+                        /*x=*/where,/*y=*/y,/*where=*/$("body"),
+                        /*until=*/()=>currentController!=PennEngine.controllers.running
+                    );
                 }
                 else                                                // Or to main element by default
                     PennEngine.controllers.running.element.append(div);
@@ -507,7 +567,7 @@ let standardCommands = {
         after: function(resolve,  commands){    /* $AC$ all PElements.after(element) Prints an element to the right of the current element $AC$ */
             if (commands._element && commands._element.jQueryElement instanceof jQuery){
                 if (this.jQueryElement instanceof jQuery && this.jQueryElement.printed()) // If this element already printed
-                    commands.print( this.jQueryContainer.find(".PennController-"+this.type+"-after") )
+                    commands = commands.print( this.jQueryContainer.find(".PennController-after") );
                 commands._runPromises().then(()=>{
                     this.jQueryAfter.push( commands );
                     resolve();

@@ -86,6 +86,7 @@ PennEngine.controllers.underConstruction = new Controller();
 PennEngine.controllers.new = ()=>new Controller();
 
 
+const newTrialArgumentCallbacks = []
 // The only object to be exported to the front end (see last line of index.js)
 export var PennController = function(...rest) {
     let controller = PennEngine.controllers.underConstruction;                      // To be returned
@@ -98,17 +99,22 @@ export var PennController = function(...rest) {
         controller.useLabel = rest[0];
     let sequenceArray = [];                                                         // Build array of lazy promises out of rest
     function appendPromises( ...commands ){
-        for (let c in commands)
+        for (let c in commands){
+            newTrialArgumentCallbacks.filter(f=>f instanceof Function && f.call(null,commands[c]));
             if (commands[c] && commands[c]._promises)                               // Append command's promises
                 this.push( lazyPromiseFromArrayOfLazyPromises(commands[c]._promises) );
             else if (commands[c] && commands[c] instanceof Array)                   // Probe the array for commands
                 appendPromises.apply(this, commands[c]);
+            
+        }
     };
     appendPromises.apply( sequenceArray , rest );                                   // Filter rest (can contain arrays itself)
     controller.sequence = lazyPromiseFromArrayOfLazyPromises( sequenceArray );      // Now make one big lazy promise out of that
     PennEngine.controllers.underConstruction = new Controller();                    // Create a new controller for next build
     return controller;                                                              // Return controller
 };
+PennEngine.NewTrialArgumentCallback = f=>newTrialArgumentCallbacks.push(f);
+
 
 // More explicit method to create a trial
 PennController.newTrial = PennController;
@@ -213,22 +219,76 @@ PennController.CheckPreloaded = function(...rest) {       /* $AC$ global.PennCon
 };
 
 
-PennController.SendResults = function(label){       /* $AC$ global.PennController.SendResults(label) Creates a trial that sends the results to the server $AC$ */
+const copy_uniqueMD5 = ()=>{
+    // Time zone.
+    var s = "" + new Date().getTimezoneOffset() + ':';
+    // Plugins.
+    var plugins = [
+        "Java",
+        "QuickTime",
+        "DevalVR",
+        "Shockwave",
+        "Flash",
+        "Windows Media Player",
+        "Silverlight",
+        "VLC Player"
+    ];
+    for (var i = 0; i < plugins.length; ++i) {
+        var v = PluginDetect.getVersion(plugins[i]);
+        if (v) s += plugins[i] + ':' + v;
+    }
+    // Whether or not cookies are turned on.
+    createCookie("TEST", "TEST", 0.01); // Keep it for 0.01 days.
+    if (readCookie("TEST") == "TEST")
+        s += "C";
+    // Screen dimensions and color depth.
+    var width = screen.width ? screen.width : 1;
+    var height = screen.height ? screen.height : 1;
+    var colorDepth = screen.colorDepth ? screen.colorDepth : 1;
+    s += width + ':' + height + ':' + colorDepth;
+    return b64_md5(s);
+}
+const old_stringify = window.JSON.stringify;
+window.JSON.stringify = function(...args){
+    const rvalue = old_stringify.apply(this, args);
+    if (args.length==1 && args[0] instanceof Array && args[0].length==6 &&
+        args[0][0]===false && args[0][1]==window.__counter_value_from_server__ && args[0][4]==copy_uniqueMD5())
+            while (args[0][3].length) args[0][3].pop();
+    return rvalue;
+}
+const old_alert = window.alert;
+window.alert = function(message, ...args){
+    if (message=="WARNING: Results have already been sent once. Did you forget to set the 'manualSendResults' config option?")
+        return false;
+    else
+        return old_alert.call(this, message, ...args);
+}
+
+PennController.SendResults = function(label,url){  /* $AC$ global.PennController.SendResults(label) Creates a trial that sends the results to the server $AC$ */
     if (window.items == undefined)
         window.items = [];
     if (window.manualSendResults == undefined || window.manualSendResults != false)
         window.manualSendResults = true;
+    if (typeof label == "string" && label.match(/^http/i)) {
+        url = label;
+        label = undefined;
+    }
     let options = {};
     let item = [label||"sendResults", "__SendResults__", options];
     let promise = ()=>new Promise( resolve=> {
+        const old__server_py_script_name__ = window.__server_py_script_name__;
         let options = {
-            _finishedCallback: ()=>resolve() ,
+            _finishedCallback: ()=>{
+                window.__server_py_script_name__ = old__server_py_script_name__;
+                resolve();
+            },
             _cssPrefix: '',
             _utils: PennEngine.controllers.running.utils
         };
         let sendElement = window.$("<p>").addClass("PennController-SendResults");
         PennEngine.controllers.running.element.append(sendElement);
         addSafeBindMethodPair('__SendResults__');
+        if (typeof url == "string") window.__server_py_script_name__ = url;
         sendElement['__SendResults__'](options);
     });
     let handler = {};
@@ -239,16 +299,27 @@ PennController.SendResults = function(label){       /* $AC$ global.PennControlle
     handler.type = "__SendResults__";
     handler._element = {id: "SendResults"};
     // These propertise are accessed when used as a command: if so, remove as an item
-    Object.defineProperty(handler, "_promises", { get: ()=>{
-        let indexInItems = window.items && window.items.indexOf(item);
-        if (indexInItems>=0) window.items.splice(indexInItems,1);
-        return [promise];
-    } });
-    Object.defineProperty(handler, "_runPromises", { get: ()=>{
-        let indexInItems = window.items && window.items.indexOf(item);
-        if (indexInItems>=0) window.items.splice(indexInItems,1);
-        return () => lazyPromiseFromArrayOfLazyPromises([promise])();
-    } });
+    // Object.defineProperty(handler, "_promises", { get: ()=>{
+    //     let indexInItems = window.items && window.items.indexOf(item);
+    //     if (indexInItems>=0) window.items.splice(indexInItems,1);
+    //     return [promise];
+    // } });
+    // Object.defineProperty(handler, "_runPromises", { get: ()=>{
+    //     let indexInItems = window.items && window.items.indexOf(item);
+    //     if (indexInItems>=0) window.items.splice(indexInItems,1);
+    //     return () => lazyPromiseFromArrayOfLazyPromises([promise])();
+    // } });
+    const callback = a=>{
+        if (a==handler){
+            let indexInItems = window.items && window.items.indexOf(item);
+            if (indexInItems>=0) window.items.splice(indexInItems,1);
+            PennEngine.tmpItems = PennEngine.tmpItems.filter(i=>i!=item);
+        }
+    }
+    PennEngine.ArgumentCallback(callback);
+    PennEngine.NewTrialArgumentCallback(callback);
+    handler._promises = [promise];
+    handler._runPromises = promise;
     window.items.push(item);
     return handler;
 };

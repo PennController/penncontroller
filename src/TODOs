@@ -1,28 +1,52 @@
-- Used .print('top at 30', 'left at 5') but it printed left at 30, top at 5
-- Something with MediaRecorder.stop not validating across trials (on_stop points to wrong element?)
-- Check that "speeded acceptability" does record every word for DashedSentence
-- Throw an error when .log(.,.) is not called on newTrial()
-- Fix how VBox is integrated (https://www.pcibex.net/forums/topic/dashedacceptabilityjudgment/#post-6279) -- error msg: this.controllerDefaults is undefined
-- Write documentation about test commands (conditionals and operators) and good practice on how to inject native javascript
-- Add a mouseover detection feature
-- Keep track of *clicks* too in the MouseTracker, besides mouse movements
-- Google spreadsheets table
-- special keys don't work in selector.keys
-- after should print added elements even if container's already printed
-- Double-check pointers to elements as Var values (re-evaluted whenever .value is accessed?)
-- Go through command arguments not being executed as commands
 - Global Var handling got messy again...
-- canvas.add should not reprint the canvas (messes with order)
-- audio.stop should validate audio.wait
-- UploadRecordings should NOT send previously unlogged recordings along current ones
-- Add a warning if InitiateRecorder is absent, or not included in the Sequence
-- Fix audio replaying at the end of the trial (in the absence of explicit stop)
-- Something weird with newX().selector() (error message: "already in selector")
-- HTML elements of resources being reused across trials keep former trials' classes!
-- Fix clear(): crash with unnamed elements
-- Make .text a standard command
+- Go through command arguments not being executed as commands
+- Make .text a standard command < ?
 - Do something about new* in callbacks? resets properties when it shouldn't?
     >   have getOrNew? or just no new/get prefix?
+
+
+- Throw an error when .log(.,.) is not called on newTrial() < not feasible just by looking # of arguments
+
+
+- ? Double-check pointers to elements as Var values (re-evaluted whenever .value is accessed?) < works as far as I can tell
+
+- ??? Check that "speeded acceptability" does record every word for DashedSentence
+
+- Something weird with newX().selector() (error message: "already in selector") < ? I don't know
+
+- Fix clear(): crash with unnamed elements < ? not anymore?
+
+
+- Add "local" to eyetracker's upload URL < that's for the farm
+
+- Write documentation about test commands (conditionals and operators) and good practice on how to inject native javascript
+
+
+
+- canvas.add should not reprint the canvas (messes with order)      < FIXED?
+
+
+Since 1.9
+- Make it possible to redirect where the results files are sent
+- Make it possible to send results as multiple chunks across the experiment
+- HTML elements of resources being reused across trials keep former trials' classes!
+- Fix audio replaying at the end of the trial (in the absence of explicit stop)
+- special keys don't work in selector.keys
+- Google spreadsheets table < I don't know, it works with https://docs.google.com/spreadsheets/d/e/2PACX-1vTQLkPKbpz3TWlpZZsiBrhPojTsxTbvpotEDzYpCar24TEMLg3Co_dNYLzOVYpAEN7IUcphTusRj2FL/pub?output=csv ...
+- UploadRecordings should NOT send previously unlogged recordings along current ones    < does it still?
+- Add a warning if InitiateRecorder is absent, or not included in the Sequence
+- Add a mouseover detection feature
+- Keep track of *clicks* too in the MouseTracker, besides mouse movements
+- [SOLVED?] Something with MediaRecorder.stop not validating across trials (on_stop points to wrong element?)
+- Add .zoom("fit") / .zoom("fit","fit") / .zoom("50%") / .zoom(1850)
+        |_> applies .css('transform', `scale(window.innerWidth/this.width)`)
+            /!\ order matters, ie. 'translate' should come *before* scale
+- Add mediarecorder.stop in this.end
+- Fix how VBox is integrated (https://www.pcibex.net/forums/topic/dashedacceptabilityjudgment/#post-6279) -- error msg: this.controllerDefaults is undefined
+- after should print added elements even if container's already printed
+- audio.stop should validate audio.wait
+
+
 
 Since 1.8
 - Youtube videos should NOT start playing from the beginning of the experiment (blocked by browsers)

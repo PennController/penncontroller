@@ -20,6 +20,7 @@ window.PennController._AddElementType("Image", function(PennEngine) {
         if (this.image)
             this.image.style = null;            // (Re)set any particular style applied to the resource's object
         this.jQueryElement = $(this.image);     // The jQuery element
+        this.jQueryElement.removeClass();
         resolve();
     };
 

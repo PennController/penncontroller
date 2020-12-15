@@ -131,6 +131,7 @@ window.PennController._AddElementType("EyeTracker", function(PennEngine) {
                 setTimeout(()=>{
                     console.log("Past 50", past50Array);
                     let precision = calculatePrecision(past50Array);
+                    element._precision = precision;
                     PennEngine.debug.log("Tracker's precision: "+precision);
                     storePoints = false;
                     past50Array = [[],[]];
@@ -166,7 +167,7 @@ window.PennController._AddElementType("EyeTracker", function(PennEngine) {
                             }).css('margin','auto')
                         );
                     }
-                    // Threshold met: tracker is calibrated
+                    // Threshold met: tracker is calibrated OR no attempts left
                     else {
                         calibrated = true;
                         calibrationDiv.remove();
@@ -305,6 +306,14 @@ window.PennController._AddElementType("EyeTracker", function(PennEngine) {
         this.log = false;
         this.trainOnMouseMove = true;
         let previousClock;
+        // const checkForScale = function(scale){
+        //     const transform = this.css("transform").match(/matrix\(\s*(-?\d+(.\d+)?),[^,]+,[^,]+,\s*(-?\d+(.\d+)?),/);
+        //     if (transform){
+        //         scale.x = scale.x * Number(transform[1]);
+        //         scale.y = scale.y * Number(transform[3]);
+        //     }
+        //     return scale;
+        // }
         // Called every few ms (varies w/ performance) when EyeTracker started
         this.look = function (data,clock) {
             if (!this.enabled || data==null || data.x===undefined || data.y===undefined)
@@ -313,10 +322,29 @@ window.PennController._AddElementType("EyeTracker", function(PennEngine) {
             this.elements.map(el=>el.jQueryElement.removeClass("PennController-eyetracked"));
             // Check every element
             for (let e = 0; e < this.elements.length; e++){
-                let element = this.elements[e].jQueryElement;
-                let offset = element.offset(), w = element.width(), h= element.height();
-                let within = offset.left <= data.x && offset.top <= data.y && offset.left+w >= data.x && offset.top+h>=data.y;
+                // let element = this.elements[e].jQueryElement, inspected_element = element;
+                // let scale = {x: 1, y: 1};
+                // while (inspected_element){
+                //     checkForScale.call(inspected_element, scale);
+                //     inspected_element = inspected_element.parent();
+                //     if (inspected_element[0]===document) inspected_element = undefined;
+                // }
+                // // let offset = element.offset(), w = element.width(), h= element.height();
+                // let offset = element.offset(), w = element.width(), h= element.height(), scale_w = w*scale.x, scale_h = h*scale.y;
+                // // let within = offset.left <= data.x && offset.top <= data.y && offset.left+w >= data.x && offset.top+h>=data.y;
+                // // let within = offset.left-(scale_w-w)/2 <= data.x && offset.top-(scale_h-h)/2 <= data.y && 
+                // //              offset.left-(scale_w-w)/2+scale_w >= data.x && offset.top-(scale_h-h)/2+scale_h>=data.y;
+                // let within = offset.left <= data.x && offset.top <= data.y && 
+                //              offset.left+scale_w >= data.x && offset.top+scale_h>=data.y;
+                // console.log("scale x,y", scale.x, scale.y, "box", 
+                //             offset.left-(scale_w-w)/2,
+                //             offset.top-(scale_h-h)/2,
+                //             offset.left-(scale_w-w)/2+scale_w,
+                //             offset.top-(scale_h-h)/2+scale_h);
                 // Keep track of looks
+                // if (within)
+                const element = this.elements[e].jQueryElement,
+                      within = PennEngine.utils.overToScale.call(element,data.x,data.y);
                 if (within)
                     this.counts['_'+this.elements[e].id].push(1);
                 else
@@ -479,6 +507,15 @@ window.PennController._AddElementType("EyeTracker", function(PennEngine) {
         },
         ready: function(){
             return window.webgazer && window.webgazer.isReady();
+        },
+        score : function(arg){
+            const s = this._precision;
+            if (arg instanceof Function)
+                return arg.call(this, s);
+            else if (!isNaN(Number(arg)))
+                return s >= Number(arg);
+            else 
+                return calibrated;
         }
     }
 

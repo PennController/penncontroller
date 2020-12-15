@@ -63,6 +63,9 @@
 .Message-continue-link:visited { color: blue; }
 
 
+.PennController-eyetracked {
+  outline: solid 1px purple;
+}
 
 
 .Question-Question {

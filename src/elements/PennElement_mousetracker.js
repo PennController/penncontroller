@@ -31,8 +31,12 @@ window.PennController._AddElementType("MouseTracker", function(PennEngine) {
         $(document).mousemove( e=>{
             MouseX = e.clientX;
             MouseY = e.clientY;
-            if (this.move && this.move instanceof Function)
-                this.move(e)
+            if (this.move && this.move instanceof Function && this.enabled)
+                this.move(e);
+        });
+        $(document).click( e=>{
+            if (this.click && this.click instanceof Function && this.enabled)
+                this.click(e);
         });
     };
 
@@ -40,8 +44,20 @@ window.PennController._AddElementType("MouseTracker", function(PennEngine) {
         this.coordinates = [];
         this.enabled = false;
         this.callbacks = [];
+        this.clickCallbacks = [];
         this.currentStream = [];
+        this.log = [];
+        this.clicks = [];
         let t = this;
+        this.click = async e=>{
+            if (!this.enabled) return;
+            this.clicks.push([Date.now(),e.clientX,e.clientY]);
+            for (let i = 0; i < this.clickCallbacks.length; i++){
+                let f = this.clickCallbacks[i];
+                if (f instanceof Function) await f.apply(this, [e.clientX,e.clientY]);
+                else if (f._runPromises && f._runPromises instanceof Function) await f._runPromises(e.clientX,e.clientY);
+            }
+        }
         this.move = async function() {
             if (!t.enabled)
                 return;
@@ -86,10 +102,18 @@ window.PennController._AddElementType("MouseTracker", function(PennEngine) {
     this.end = function(){
         this.enabled = false;
         if (this.finishStream && this.finishStream instanceof Function) this.finishStream();
-        if (this.log && this.coordinates.length){
-            for (let i = 0; i < this.coordinates.length; i++)
-                PennEngine.controllers.running.save(this.type, this.id, "Move", ...this.coordinates[i]);
-        }
+        this.log.map(l=>{
+            if (typeof l == "string"){
+                if (l.match(/move/i))
+                    this.coordinates.map(c=>PennEngine.controllers.running.save(this.type, this.id, "Move", ...c));
+                else if (l.match(/click/i))
+                    this.clicks.map(c=>PennEngine.controllers.running.save(this.type, this.id, "Click", c[1]+':'+c[2], c[0], "NULL"));
+            }
+        })
+        // if (this.log && this.coordinates.length){
+        //     for (let i = 0; i < this.coordinates.length; i++)
+        //         PennEngine.controllers.running.save(this.type, this.id, "Move", ...this.coordinates[i]);
+        // }
     };
 
     this.value = function(){
@@ -115,12 +139,31 @@ window.PennController._AddElementType("MouseTracker", function(PennEngine) {
         callback: function(resolve, ...args){  /* $AC$ Mouse PElement.callback( commands ) Runs the specified command(s) when the mouse moves $AC$ */
             if (args.length==0)
                 return;
-            this.callbacks = this.callbacks.concat(args);
+            if (typeof args[0] == "string" && args[0].match(/click/i)){
+                args.shift();
+                this.clickCallbacks = this.clickCallbacks.concat(args);
+            }
+            else
+                this.callbacks = this.callbacks.concat(args);
             resolve();
         },
-        log: function(resolve){    /* $AC$ Mouse PElement.log() Logs the X and Y positions of the mouse $AC$ */
-            this.log = true;
+        log: function(resolve, ...what){    /* $AC$ Mouse PElement.log() Logs the X and Y positions of the mouse $AC$ */
+            console.log("log what?", what);
+            if (what.length) this.log = what;
+            else this.log = ["clicks","movements"];
             resolve();
         }
     }
+
+    this.test = {
+        over: function(element){
+            if (element instanceof jQuery)
+                return PennEngine.utils.overToScale.call(element,MouseX,MouseY);
+            else if (element._element && element._element.hasOwnProperty("jQueryElement") &&
+                     element._element.jQueryElement instanceof jQuery)
+                return PennEngine.utils.overToScale.call(element._element.jQueryElement,MouseX,MouseY);
+            return false;
+        }
+    }
+
 });

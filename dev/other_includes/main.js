@@ -171,7 +171,8 @@ $.widget("ui.__SendResults__", {
         if (RESULTS_HAVE_ALREADY_BEEN_SENT)
             alert("WARNING: Results have already been sent once. Did you forget to set the 'manualSendResults' config option?");
 
-	var spinSpan;
+
+	    var spinSpan;
         this.element.append($("<table>")
                             .addClass("sending-results")
                             .append($("<tr>")
@@ -185,12 +186,12 @@ $.widget("ui.__SendResults__", {
         var spinChars = ["\u2013", "\\", "|", "/"];
         var spinCharsPos = 0;
         var spinSpanShouldBeSpinning = true;
-	var t = this;
+	    var t = this;
         function timerCallback() {
             if (! spinSpanShouldBeSpinning) return;
 
             spinSpan.text(spinChars[spinCharsPos]);
-	    ++spinCharsPos;
+	        ++spinCharsPos;
             if (spinCharsPos == spinChars.length) spinCharsPos = 0;
             t.options._utils.setTimeout(timerCallback, 200);
         } // Note that this will be cleaned up automatically.
@@ -200,7 +201,7 @@ $.widget("ui.__SendResults__", {
 		    function() {
                         RESULTS_HAVE_ALREADY_BEEN_SENT = true;
                         spinSpanShouldBeSpinning = false;
-			t.element.empty().append($("<div>").addClass("sending-results").text(conf_completionMessage));
+            t.element.empty().append($("<div>").addClass("sending-results").text(conf_completionMessage));
 			t.options._finishedCallback();
 		    },
 		    function() {

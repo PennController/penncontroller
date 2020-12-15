@@ -53,7 +53,7 @@ window.PennController._AddElementType("Key", function(PennEngine) {
     // This is executed at the end of a trial
     this.end = function(){
         if (this.log && this.log instanceof Array){
-            if (!this.pressed.length)
+            if (this.pressed.length==0)
                 PennEngine.controllers.running.save(this.type, this.id, "Key", "NA", "Never", "NULL");
             else if (this.log.indexOf("all")>-1){
                 for (let key in this.pressed)                   // Save any clicks if logging

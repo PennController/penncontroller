@@ -3,10 +3,10 @@
 /* $AC$ PennController.getSelector(name) Retrieves an existing Selector element $AC$ */
 window.PennController._AddElementType("Selector", function(PennEngine) {
 
-    function shuffle(resolve, ...elementCommands){
-        let elementsToShuffle = [];
-        if (!elementCommands.length)                // If no argument, just add every element
-            elementsToShuffle = [].concat(this.elements);
+    async function shuffle(resolve, ...elementCommands){
+        let indicesToShuffle = [];
+        if (!elementCommands.length)                // If no argument, just add every index
+            indicesToShuffle = [...new Array(this.elements.length)].map((v,i)=>i);
         else {                                      // Else, first feed elementsToShuffle
             for (let e in elementCommands) {        // Go through each elementCommand
                 if (!(elementCommands[e]._element && elementCommands[e]._element.jQueryElement instanceof jQuery)){
@@ -18,55 +18,64 @@ window.PennController._AddElementType("Selector", function(PennEngine) {
                     PennEngine.debug.error("Cannot shuffle element "+elementCommands[e]._element.id+" for it has not been added to selector "+this.id);
                     continue;
                 }
-                elementsToShuffle.push(this.elements[index]);
+                // elementsToShuffle.push(elementCommands[e]._element);
+                indicesToShuffle.push(index);
             }
         }
-        let shuffled = [].concat(elementsToShuffle);
-        fisherYates(shuffled);                              // Now, shuffle the elements
-        let map = shuffled.map((s,i)=>Object({              // Create an association map of old to new elements
-            old: {element: elementsToShuffle[i], index: this.elements.indexOf(elementsToShuffle[i])},
-            new: {element: s, index: this.elements.indexOf(s)}
-        }));
-        let shuffleTags = [];
-        map.map((m,i)=>{
-            this.elements[m.old.index] = m.new.element;
-            let shuf = $("<shuffle>").attr("i", i);         // Indicate the position in the map
-            // m.old.element[0].jQueryElement.before(shuf);    // Place a shuffle tag before the unshuffled element
-            // shuf.css({                                      // Store unshuffled element's style to apply to new element later
-            //             position: m.old.element[0].jQueryElement.css("position"),
-            //             left: m.old.element[0].jQueryElement.css("left"),
-            //             top: m.old.element[0].jQueryElement.css("top")
-            //     });
-            m.old.element[0].jQueryContainer.before(shuf);    // Place a shuffle tag before the unshuffled element
-            shuf.css({                                      // Store unshuffled element's style to apply to new element later
-                        position: m.old.element[0].jQueryContainer.css("position"),
-                        left: m.old.element[0].jQueryContainer.css("left"),
-                        top: m.old.element[0].jQueryContainer.css("top")
-                });
-            shuffleTags.push(shuf);                         // Add the shuffle tag to the list
-        }); 
-        shuffleTags.map(tag=>{                              // Go through each shuffle tag
-            let i = tag.attr('i');                          // Retrieve the index in the map
-            // let jQueryElementToMove = map[i].new.element[0].jQueryElement;
-            // tag.after( jQueryElementToMove );               // Move the new element after the tag
-            // jQueryElementToMove.css({                       // And apply the old element's style
-            //     position: tag.css("position"),
-            //     left: tag.css("left"),
-            //     top: tag.css("top")
-            // });
-            // if (this.selections.length && this.selections[this.selections.length-1][1] == map[i].new.element[0].id)
-            //     jQueryElementToMove.before(this.frame);     // Also move frame if new element has frame
-            let jQueryContainerToMove = map[i].new.element[0].jQueryContainer;
-            tag.after( jQueryContainerToMove );               // Move the new element after the tag
-            jQueryContainerToMove.css({                       // And apply the old element's style
-                position: tag.css("position"),
-                left: tag.css("left"),
-                top: tag.css("top")
-            });
-            if (this.selections.length && this.selections[this.selections.length-1][1] == map[i].new.element[0].id)
-                jQueryContainerToMove.before(this.frame);     // Also move frame if new element has frame
-            tag.remove();                                   // Remove shuffle tag from DOM
-        });
+        let shuffledIndices = [...indicesToShuffle];
+        fisherYates(shuffledIndices);                              // Now, shuffle the indices
+        const prints = shuffledIndices.map(i=>this.elements[i][0]._lastPrint);
+        for (let i=0; i<indicesToShuffle.length; i++){
+            let index = indicesToShuffle[i], element = this.elements[index][0], print = prints[i];
+            if (print===undefined) continue;
+            await window.PennController.Elements['get'+element.type](element.id).print(...prints[i])._runPromises();
+        }
+        const copyOfElements = [...this.elements];
+        indicesToShuffle.map((original_index,i)=>this.elements[original_index]=copyOfElements[shuffledIndices[i]]);
+        // let map = shuffled.map((s,i)=>Object({              // Create an association map of old to new elements
+        //     old: {element: elementsToShuffle[i], index: this.elements.indexOf(elementsToShuffle[i])},
+        //     new: {element: s, index: this.elements.indexOf(s)}
+        // }));
+        // let shuffleTags = [];
+        // map.map((m,i)=>{
+        //     this.elements[m.old.index] = m.new.element;
+        //     let shuf = $("<shuffle>").attr("i", i);         // Indicate the position in the map
+        //     // m.old.element[0].jQueryElement.before(shuf);    // Place a shuffle tag before the unshuffled element
+        //     // shuf.css({                                      // Store unshuffled element's style to apply to new element later
+        //     //             position: m.old.element[0].jQueryElement.css("position"),
+        //     //             left: m.old.element[0].jQueryElement.css("left"),
+        //     //             top: m.old.element[0].jQueryElement.css("top")
+        //     //     });
+        //     m.old.element[0].jQueryContainer.before(shuf);    // Place a shuffle tag before the unshuffled element
+        //     shuf.css({                                      // Store unshuffled element's style to apply to new element later
+        //                 position: m.old.element[0].jQueryContainer.css("position"),
+        //                 left: m.old.element[0].jQueryContainer.css("left"),
+        //                 top: m.old.element[0].jQueryContainer.css("top")
+        //         });
+        //     shuffleTags.push(shuf);                         // Add the shuffle tag to the list
+        // }); 
+        // shuffleTags.map(tag=>{                              // Go through each shuffle tag
+        //     let i = tag.attr('i');                          // Retrieve the index in the map
+        //     // let jQueryElementToMove = map[i].new.element[0].jQueryElement;
+        //     // tag.after( jQueryElementToMove );               // Move the new element after the tag
+        //     // jQueryElementToMove.css({                       // And apply the old element's style
+        //     //     position: tag.css("position"),
+        //     //     left: tag.css("left"),
+        //     //     top: tag.css("top")
+        //     // });
+        //     // if (this.selections.length && this.selections[this.selections.length-1][1] == map[i].new.element[0].id)
+        //     //     jQueryElementToMove.before(this.frame);     // Also move frame if new element has frame
+        //     let jQueryContainerToMove = map[i].new.element[0].jQueryContainer;
+        //     tag.after( jQueryContainerToMove );               // Move the new element after the tag
+        //     jQueryContainerToMove.css({                       // And apply the old element's style
+        //         position: tag.css("position"),
+        //         left: tag.css("left"),
+        //         top: tag.css("top")
+        //     });
+        //     if (this.selections.length && this.selections[this.selections.length-1][1] == map[i].new.element[0].id)
+        //         jQueryContainerToMove.before(this.frame);     // Also move frame if new element has frame
+        //     tag.remove();                                   // Remove shuffle tag from DOM
+        // });
         resolve();
     }
 
@@ -93,7 +102,7 @@ window.PennController._AddElementType("Selector", function(PennEngine) {
                 return;
             if (this.elements.map(e=>e[0]).indexOf(element)<0)
                 return PennEngine.debug.error("Tried to select an element not part of Selector "+this.id);
-            this.selections.push(["Selection", element.id, Date.now(), "NULL"]);
+            this.selections.push(["Selection", element.id, Date.now(), this.elements.map(e=>e[0].id).join(';')]);
             this.frame.css({
                 width: element.jQueryElement.outerWidth(),
                 height: element.jQueryElement.outerHeight(),
@@ -112,11 +121,15 @@ window.PennController._AddElementType("Selector", function(PennEngine) {
         PennEngine.events.keypress(e=>{
             if (this.disabled)
                 return;
-            for (let s in this.elements){
-                let key = "";
-                if (this.elements[s].length>1)
+            for (let s = 0; s < this.elements.length; s++){
+                let element = this.elements[s], key = "";
+                if (element.length>1)
                     key = this.elements[s][1];
-                if (key && typeof(key)=="string" && key.toUpperCase().indexOf(String.fromCharCode(e.which).toUpperCase())>-1)
+                let isSpecialKey = e.key.isSpecialKey();
+                let upperE = e.key.toUpperCase();
+                let side = {0: "", 1: "LEFT", 2: "RIGHT"};
+                if (isSpecialKey===key.replace(/^(Left|Right)/i,'').isSpecialKey() &&
+                    (key.toUpperCase() == upperE || key.toUpperCase() == side[e.location]+upperE))
                     return this.select(this.elements[s][0]);
             }
         });
@@ -130,7 +143,7 @@ window.PennController._AddElementType("Selector", function(PennEngine) {
             this.frame.remove();
         if (this.log && this.log instanceof Array){
             if (!this.selections.length)
-                PennEngine.controllers.running.save(this.type, this.id, "Selection", "NA", "Never", "No selection happened");
+                PennEngine.controllers.running.save(this.type, this.id, "Selection", "NA", "Never", this.elements.map(e=>e[0].id).join(';')+";No selection happened");
             else if (this.selections.length==1)
                 PennEngine.controllers.running.save(this.type, this.id, ...this.selections[0]);
             else if (this.log.indexOf("all")>-1)
@@ -178,7 +191,7 @@ window.PennController._AddElementType("Selector", function(PennEngine) {
             shuffle.apply(this, [resolve].concat(elements));
         },
         unselect: function(resolve){  /* $AC$ Selector PElement.unselect() Unselects the element that is currently selected $AC$ */
-            this.selections.push(["Unselect", "Unselect", Date.now(), "From script"]);
+            this.selections.push(["Unselect", "Unselect", Date.now(), this.elements.map(e=>e[0].id).join(';')+";From script"]);
             this.frame.detach();
             this.elements.map(e=>e[0].jQueryElement.removeClass("PennController-"+this.type+"-selected"));
             resolve();
@@ -287,10 +300,9 @@ window.PennController._AddElementType("Selector", function(PennEngine) {
             resolve();
         },
         keys: function(resolve, ...keys){  /* $AC$ Selector PElement.keys(keys) Associates the elements in the selector (in the order they were added) with the specified keys $AC$ */
-            for (let k in keys){
-                if (k >= this.elements.length)
-                    break;
+            for (let k = 0; k < keys.length; k++){
                 let key = keys[k];
+                if (k >= this.elements.length) break;
                 if (typeof(key) != "string" && Number(key)>0)
                     key = String.fromCharCode(key);
                 this.elements[k] = [this.elements[k][0], key];
@@ -329,12 +341,15 @@ window.PennController._AddElementType("Selector", function(PennEngine) {
 
     this.test = {
         selected: function(elementCommand){  /* $AC$ Selector PElement.test.selected(element) Checks that the specified element, or any element if non specified, is selected $AC$ */
+            if (this.selections.length===0)
+                return false;
+            let selectedId = this.selections[this.selections.length-1][1];
             if (elementCommand == undefined)
                 return this.selections.length>0;
-            else if (this.selections.length===0)
-                return false;
+            else if (typeof (elementCommand) == "string")
+                return elementCommand==selectedId;
             else if (elementCommand._element)
-                return this.selections[this.selections.length-1][1] == elementCommand._element.id;
+                return elementCommand._element.id == selectedId;
             PennEngine.debug.error("Invalid element tested for Selector "+this.id, elementCommand._element.id);
             return false;
         },
