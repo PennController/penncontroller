@@ -1,3 +1,12 @@
+- Order reported in results after selector.shuffle is off 
+    >   also selector.shuffle does not work with plain print() commands
+    >>  solution: run the print() commands randomly rather than in order!
+- MediaRecorder.stop won't validate promise?
+- InititateRecorder no longer detects video only for MediaRecorder("video")?
+- Flickering on Chrome with .scaling("page")
+- Disable on audio makes the element disappear (because controls=false)
+    > change behavior so that it always adds a fully transparent layer on video (controls false), semi-transparent on audio (controls true)
+- Re-printing DropDown elements cancels their onchange event
 - Global Var handling got messy again...
 - Go through command arguments not being executed as commands
 - Make .text a standard command < ?

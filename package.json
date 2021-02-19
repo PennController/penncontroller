@@ -10,7 +10,7 @@
   "devDependencies": {
     "file-saver": "^2.0.0",
     "jquery-csv": "^0.8.9",
-    "jszip": "^3.1.5",
+    "jszip": "^3.6.0",
     "jszip-utils": "0.0.2",
     "webpack": "^4.31.0",
     "webpack-cli": "^3.3.12"
