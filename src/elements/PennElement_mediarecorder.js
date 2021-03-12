@@ -253,19 +253,22 @@ window.PennController._AddElementType("MediaRecorder", function(PennEngine) {
                     // } );
                 }
                 else {
-                    var fd = new FormData();                // Submission-friendly format
-                    fd.append('fileName', fileName);
-                    fd.append('file', fileObj);
-                    fd.append('mimeType', 'application/zip');
-                    var xhr = new XMLHttpRequest();     // XMLHttpRequest rather than jQuery's Ajax (mysterious CORS problems with jQuery 1.8)
-                    xhr.open('POST', uploadURL, true);
-                    xhr.onreadystatechange = ()=>{
-                        if (xhr.readyState == 4){       // 4 means finished and response ready
-                            let success = xhr.status == 200 && !xhr.responseText.match(/problem|error/i);
-                            console.log("Upload XHR response", xhr);
-                            if (success){ // Success
-                                if (typeof xhr.response == "string" && xhr.response.match(/"filename":/))
-                                    fileName = JSON.parse(xhr.response).filename;
+                    // var fd = new FormData();                // Submission-friendly format
+                    // fd.append('fileName', fileName);
+                    // fd.append('file', fileObj);
+                    // fd.append('mimeType', 'application/zip');
+                    // var xhr = new XMLHttpRequest();     // XMLHttpRequest rather than jQuery's Ajax (mysterious CORS problems with jQuery 1.8)
+                    // xhr.open('POST', uploadURL, true);
+                    // xhr.onreadystatechange = ()=>{
+                    //     if (xhr.readyState == 4){       // 4 means finished and response ready
+                    PennEngine.utils.upload(uploadURL, fileName, fileObj, 'application/zip')
+                        .then( f=>{
+                            fileName = f;
+                            // let success = xhr.status == 200 && !xhr.responseText.match(/problem|error/i);
+                            // console.log("Upload XHR response", xhr);
+                            // if (success){ // Success
+                            //     if (typeof xhr.response == "string" && xhr.response.match(/"filename":/))
+                            //         fileName = JSON.parse(xhr.response).filename;
                                 PennEngine.controllers.running
                                     .save("PennController", "UploadRecordings", "Filename", fileName, Date.now(), (async?"async":"NULL"));
                                 PennEngine.controllers.running
@@ -276,31 +279,39 @@ window.PennController._AddElementType("MediaRecorder", function(PennEngine) {
                                     // uploadingStreams[i].alreadyUploaded = true;
                                 if (!async)
                                     resolve();              // Successful request
-                            }else {                                                              // Error
+                                pendingRequests = pendingRequests.filter(v=>v!=request);
+                            // }else {                                                              // Error
+                        }).catch( e => {
                                 PennEngine.controllers.running
                                     .save("PennController", "UploadRecordings", "Filename", fileName, Date.now(), (async?"async":"NULL"));
                                 for (let i = 0; i < uploadingStreams.length; i++)
                                     uploadingStreams[i].uploadStatus = "local";
-                                window.PennController.UploadRecordingsError = xhr.responseText||"error";
-                                PennEngine.debug.error("MediaRecorder's Ajax post failed. ("+xhr.status+")", xhr.responseText);
+                                // window.PennController.UploadRecordingsError = xhr.responseText||"error";
+                                window.PennController.UploadRecordingsError = e||"error";
+                                // PennEngine.debug.error("MediaRecorder's Ajax post failed. ("+xhr.status+")", xhr.responseText);
+                                PennEngine.debug.error("MediaRecorder's Ajax post failed", e);
                                 PennEngine.controllers.running
                                         .save("PennController", "UploadRecordings", "Status", "Failed", Date.now(), 
-                                            "Error Text: "+xhr.responseText+"; Status: "+xhr.status);
+                                            "Error Text: "+e);
+                                            // "Error Text: "+xhr.responseText+"; Status: "+xhr.status);
                                 controller.element
-                                    .append($("<p>There was an error uploading the recordings: "+xhr.responseText+"</p>"))
+                                    // .append($("<p>There was an error uploading the recordings: "+xhr.responseText+"</p>"))
+                                    .append($("<p>There was an error uploading the recordings: "+e+"</p>"))
                                     .append($("<p>Please click here to download a copy of your recordings "+
                                             "in case you need to send them manually.</p>").bind('click', ()=>{
                                                     PennEngine.utils.saveAs(zc, "RecordingsArchive.zip");
                                                     if (!async)
                                                         resolve();
                                             }).addClass("Message-continue-link"));
-                            }
-                            // This request is no longer pending
+                            // }
                             pendingRequests = pendingRequests.filter(v=>v!=request);
-                        } 
-                    };
-                    xhr.send(fd);                       // Send the request
-                }
+                        });
+                            // This request is no longer pending
+                            // pendingRequests = pendingRequests.filter(v=>v!=request);
+                        // } 
+                    // };
+                    // xhr.send(fd);                       // Send the request
+                    }
             });
             if (async)
                 resolve();

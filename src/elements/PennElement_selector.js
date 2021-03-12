@@ -18,14 +18,13 @@ window.PennController._AddElementType("Selector", function(PennEngine) {
                     PennEngine.debug.error("Cannot shuffle element "+elementCommands[e]._element.id+" for it has not been added to selector "+this.id);
                     continue;
                 }
-                // elementsToShuffle.push(elementCommands[e]._element);
                 indicesToShuffle.push(index);
             }
         }
         let shuffledIndices = [...indicesToShuffle];
         fisherYates(shuffledIndices);                              // Now, shuffle the indices
         const tmpPrints = [];
-        const prints = shuffledIndices.map(i=>{
+        const prints = indicesToShuffle.map(i=>{
             const element = this.elements[i][0];
             const lastPrint = element._lastPrint;
             if (lastPrint[0]===undefined){
@@ -38,64 +37,19 @@ window.PennController._AddElementType("Selector", function(PennEngine) {
             }
             return lastPrint;
         });
-        console.log("lastprints", prints);
-        for (let i=0; i<indicesToShuffle.length; i++){
-            let index = indicesToShuffle[i], element = this.elements[index][0], print = prints[i];
-            console.log("reprinting",element.id,"from",element._lastPrint,"to",prints[i]);
-            if (print===undefined) continue;
+        shuffledIndices.forEach(async (index,i)=>{
+            let element = this.elements[index][0], print = prints[i];
+            if (print===undefined) return;
             await window.PennController.Elements['get'+element.type](element.id).print(...prints[i])._runPromises();
-            const tmpPrint = tmpPrints[shuffledIndices[i]];
+            const tmpPrint = tmpPrints[indicesToShuffle[i]];
             if (tmpPrint instanceof jQuery){
+                element.jQueryContainer.css('position', 'unset');
                 tmpPrint.before(element.jQueryContainer);
                 tmpPrint.remove();
             }
-        }
+        });
         const copyOfElements = [...this.elements];
-        indicesToShuffle.map((original_index,i)=>this.elements[original_index]=copyOfElements[shuffledIndices[i]]);
-        // let map = shuffled.map((s,i)=>Object({              // Create an association map of old to new elements
-        //     old: {element: elementsToShuffle[i], index: this.elements.indexOf(elementsToShuffle[i])},
-        //     new: {element: s, index: this.elements.indexOf(s)}
-        // }));
-        // let shuffleTags = [];
-        // map.map((m,i)=>{
-        //     this.elements[m.old.index] = m.new.element;
-        //     let shuf = $("<shuffle>").attr("i", i);         // Indicate the position in the map
-        //     // m.old.element[0].jQueryElement.before(shuf);    // Place a shuffle tag before the unshuffled element
-        //     // shuf.css({                                      // Store unshuffled element's style to apply to new element later
-        //     //             position: m.old.element[0].jQueryElement.css("position"),
-        //     //             left: m.old.element[0].jQueryElement.css("left"),
-        //     //             top: m.old.element[0].jQueryElement.css("top")
-        //     //     });
-        //     m.old.element[0].jQueryContainer.before(shuf);    // Place a shuffle tag before the unshuffled element
-        //     shuf.css({                                      // Store unshuffled element's style to apply to new element later
-        //                 position: m.old.element[0].jQueryContainer.css("position"),
-        //                 left: m.old.element[0].jQueryContainer.css("left"),
-        //                 top: m.old.element[0].jQueryContainer.css("top")
-        //         });
-        //     shuffleTags.push(shuf);                         // Add the shuffle tag to the list
-        // }); 
-        // shuffleTags.map(tag=>{                              // Go through each shuffle tag
-        //     let i = tag.attr('i');                          // Retrieve the index in the map
-        //     // let jQueryElementToMove = map[i].new.element[0].jQueryElement;
-        //     // tag.after( jQueryElementToMove );               // Move the new element after the tag
-        //     // jQueryElementToMove.css({                       // And apply the old element's style
-        //     //     position: tag.css("position"),
-        //     //     left: tag.css("left"),
-        //     //     top: tag.css("top")
-        //     // });
-        //     // if (this.selections.length && this.selections[this.selections.length-1][1] == map[i].new.element[0].id)
-        //     //     jQueryElementToMove.before(this.frame);     // Also move frame if new element has frame
-        //     let jQueryContainerToMove = map[i].new.element[0].jQueryContainer;
-        //     tag.after( jQueryContainerToMove );               // Move the new element after the tag
-        //     jQueryContainerToMove.css({                       // And apply the old element's style
-        //         position: tag.css("position"),
-        //         left: tag.css("left"),
-        //         top: tag.css("top")
-        //     });
-        //     if (this.selections.length && this.selections[this.selections.length-1][1] == map[i].new.element[0].id)
-        //         jQueryContainerToMove.before(this.frame);     // Also move frame if new element has frame
-        //     tag.remove();                                   // Remove shuffle tag from DOM
-        // });
+        indicesToShuffle.forEach((original_index,i)=>this.elements[original_index]=copyOfElements[shuffledIndices[i]]);
         resolve();
     }
 

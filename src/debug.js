@@ -4,7 +4,7 @@ import { levensthein } from "./utils";
 $.prototype.left = function(){ return Number(this.css("left").replace(/px/,'')); }
 $.prototype.top = function(){ return Number(this.css("top").replace(/px/,'')); }
 
-const VERSION = "1.9";
+const VERSION = "2.0.alpha";
 
 const WIDTH = 450;
 const HEIGHT = 250;

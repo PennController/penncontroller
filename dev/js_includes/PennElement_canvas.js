@@ -1,5 +1,6 @@
 // CANVAS element
 /* $AC$ PennController.newCanvas(name,width,height) Creates a new Canvas element $AC$ */
+
 /* $AC$ PennController.getCanvas(name) Retrieves an existing Canvas element $AC$ */
 window.PennController._AddElementType("Canvas", function(PennEngine) {
 
@@ -44,10 +45,12 @@ window.PennController._AddElementType("Canvas", function(PennEngine) {
             // y = coordinates.y;
             // let transform = 'translate('+coordinates.translateX+','+coordinates.translateY+')';
             const currentController = PennEngine.controllers.running;
+            const lastPrint = [x,y,window.PennController.Elements.getCanvas(this.id)];
+            element._lastPrint = lastPrint;
             if (element.jQueryContainer){
                 PennEngine.utils.printAndRefreshUntil.call(element.jQueryContainer,
                     x,y,this.jQueryElement,
-                    /*until=*/()=>currentController!=PennEngine.controllers.running
+                    /*until=*/()=>currentController!=PennEngine.controllers.running||lastPrint!=element._lastPrint
                 );
                 // element.jQueryContainer.css({position: "absolute", left: x, top: y, transform: transform});
                 if (Number(z)>0||Number(z)>0)
@@ -56,13 +59,13 @@ window.PennController._AddElementType("Canvas", function(PennEngine) {
             else{
                 PennEngine.utils.printAndRefreshUntil.call(jQueryElement,
                     x,y,this.jQueryElement,
-                    /*until=*/()=>currentController!=PennEngine.controllers.running
+                    /*until=*/()=>currentController!=PennEngine.controllers.running||lastPrint!=element._lastPrint
                 );
                 // jQueryElement.css({position: "absolute", left: x, top: y, transform: transform});
                 if (Number(z)>0||Number(z)>0)
                     jQueryElement.css("z-index", z);    // Only if number (i.e. not NaN)
             }
-            element._lastPrint = [x,y,window.PennController.Elements.getCanvas(this.id)];
+            // element._lastPrint = [x,y,window.PennController.Elements.getCanvas(this.id)];
             resolve();
         });
         resolve();
@@ -88,9 +91,9 @@ window.PennController._AddElementType("Canvas", function(PennEngine) {
             resolve();
         },
         print: async function(resolve, ...where){
-            let t=this, showElements = async function(){
-                for (let e in t.elementCommands)
-                    await t.showElement(...t.elementCommands[e]);
+            let showElements = async () => {
+                for (let e in this.elementCommands)
+                    await this.showElement(...this.elementCommands[e]);
                 resolve();
             };
             PennEngine.elements.standardCommands.actions.print.apply(this, [showElements, ...where]);

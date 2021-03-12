@@ -1,7 +1,7 @@
 #
-# Results on Monday March 08 2021 00:13:52 UTC.
-# USER AGENT: Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:85.0) Gecko/20100101 Firefox/85.0
-# Design number was non-random = 134
+# Results on Friday March 12 2021 06:43:43 UTC.
+# USER AGENT: Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:86.0) Gecko/20100101 Firefox/86.0
+# Design number was non-random = 141
 #
 # The lines below this comment are in groups of 2.
 # The formats of the lines in each of these groups are as follows:
@@ -37,8 +37,8 @@
 #     Col. 14: Newline?
 #     Col. 15: Sentence (or sentence MD5).
 #     Col. 16: Comments.
-1615162432,d9b4af5195b44a4fddd23f704f6e52e8,PennController,0,0,unlabeled,NULL,PennController,0,_Trial_,Start,1615162427311,NULL
-1615162432,d9b4af5195b44a4fddd23f704f6e52e8,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,DashedSentence,1,this,1615162428576,245,false,this is a test,Any addtional parameters were appended as additional columns
+1615531423,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,PennController,0,_Trial_,Start,1615531411045,NULL
+1615531423,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,DashedSentence,1,this,1615531418021,141,false,this is an example,Any addtional parameters were appended as additional columns
 # Columns below this comment are as follows:
 # 1. Time results were received.
 # 2. MD5 hash of participant's IP address.
@@ -56,9 +56,9 @@
 # 14. Newline?
 # 15. Sentence (or sentence MD5).
 # 16. Comments.
-1615162432,d9b4af5195b44a4fddd23f704f6e52e8,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,DashedSentence,2,is,1615162428576,202,false,this is a test,Any addtional parameters were appended as additional columns
-1615162432,d9b4af5195b44a4fddd23f704f6e52e8,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,DashedSentence,3,a,1615162428576,173,false,this is a test,Any addtional parameters were appended as additional columns
-1615162432,d9b4af5195b44a4fddd23f704f6e52e8,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,DashedSentence,4,test,1615162428576,217,false,this is a test,Any addtional parameters were appended as additional columns
+1615531423,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,DashedSentence,2,is,1615531418021,143,false,this is an example,Any addtional parameters were appended as additional columns
+1615531423,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,DashedSentence,3,an,1615531418021,353,false,this is an example,Any addtional parameters were appended as additional columns
+1615531423,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,DashedSentence,4,example,1615531418021,124,false,this is an example,Any addtional parameters were appended as additional columns
 # Columns below this comment are as follows:
 # 1. Time results were received.
 # 2. MD5 hash of participant's IP address.
@@ -73,4 +73,173 @@
 # 11. Value.
 # 12. EventTime.
 # 13. Comments.
-1615162432,d9b4af5195b44a4fddd23f704f6e52e8,PennController,0,0,unlabeled,NULL,PennController,0,_Trial_,End,1615162432300,NULL
+1615531423,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,PennController,0,_Trial_,End,1615531419318,NULL
+1615531423,7e4fa5c1f963f8682534acd89863e3cf,PennController,1,0,unlabeled,NULL,PennController,1,_Trial_,Start,1615531419333,NULL
+1615531423,7e4fa5c1f963f8682534acd89863e3cf,PennController,1,0,unlabeled,NULL,Selector,choice,Selection,second,1615531423255,second;first;third
+1615531423,7e4fa5c1f963f8682534acd89863e3cf,PennController,1,0,unlabeled,NULL,PennController,1,_Trial_,End,1615531423258,NULL
+#
+# Results on Friday March 12 2021 06:50:58 UTC.
+# USER AGENT: Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:86.0) Gecko/20100101 Firefox/86.0
+# Design number was non-random = 142
+#
+# The lines below this comment are in groups of 2.
+# The formats of the lines in each of these groups are as follows:
+#
+# Line 1:
+#     Col. 1: Time results were received.
+#     Col. 2: MD5 hash of participant's IP address.
+#     Col. 3: Controller name.
+#     Col. 4: Item number.
+#     Col. 5: Element number.
+#     Col. 6: Type.
+#     Col. 7: Group.
+#     Col. 8: PennElementType.
+#     Col. 9: PennElementName.
+#     Col. 10: Parameter.
+#     Col. 11: Value.
+#     Col. 12: EventTime.
+#     Col. 13: Comments.
+# Line 2:
+#     Col. 1: Time results were received.
+#     Col. 2: MD5 hash of participant's IP address.
+#     Col. 3: Controller name.
+#     Col. 4: Item number.
+#     Col. 5: Element number.
+#     Col. 6: Type.
+#     Col. 7: Group.
+#     Col. 8: PennElementType.
+#     Col. 9: PennElementName.
+#     Col. 10: Parameter.
+#     Col. 11: Value.
+#     Col. 12: EventTime.
+#     Col. 13: Reading time.
+#     Col. 14: Newline?
+#     Col. 15: Sentence (or sentence MD5).
+#     Col. 16: Comments.
+1615531859,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,PennController,0,_Trial_,Start,1615531846586,NULL
+1615531859,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,1,this,1615531849670,212,false,this is an example,Any addtional parameters were appended as additional columns
+# Columns below this comment are as follows:
+# 1. Time results were received.
+# 2. MD5 hash of participant's IP address.
+# 3. Controller name.
+# 4. Item number.
+# 5. Element number.
+# 6. Type.
+# 7. Group.
+# 8. PennElementType.
+# 9. PennElementName.
+# 10. Parameter.
+# 11. Value.
+# 12. EventTime.
+# 13. Reading time.
+# 14. Newline?
+# 15. Sentence (or sentence MD5).
+# 16. Comments.
+1615531859,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,2,is,1615531849670,195,false,this is an example,Any addtional parameters were appended as additional columns
+1615531859,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,3,an,1615531849670,194,false,this is an example,Any addtional parameters were appended as additional columns
+1615531859,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,4,example,1615531849670,312,false,this is an example,Any addtional parameters were appended as additional columns
+1615531859,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,1,this,1615531853314,370,false,this is an example,Any addtional parameters were appended as additional columns
+1615531859,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,2,is,1615531853314,168,false,this is an example,Any addtional parameters were appended as additional columns
+1615531859,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,3,an,1615531853314,152,false,this is an example,Any addtional parameters were appended as additional columns
+1615531859,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,4,example,1615531853314,439,false,this is an example,Any addtional parameters were appended as additional columns
+# Columns below this comment are as follows:
+# 1. Time results were received.
+# 2. MD5 hash of participant's IP address.
+# 3. Controller name.
+# 4. Item number.
+# 5. Element number.
+# 6. Type.
+# 7. Group.
+# 8. PennElementType.
+# 9. PennElementName.
+# 10. Parameter.
+# 11. Value.
+# 12. EventTime.
+# 13. Comments.
+1615531859,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,PennController,0,_Trial_,End,1615531857309,NULL
+1615531859,7e4fa5c1f963f8682534acd89863e3cf,PennController,1,0,unlabeled,NULL,PennController,1,_Trial_,Start,1615531857325,NULL
+1615531859,7e4fa5c1f963f8682534acd89863e3cf,PennController,1,0,unlabeled,NULL,Selector,choice,Selection,second,1615531858577,first;second;third
+1615531859,7e4fa5c1f963f8682534acd89863e3cf,PennController,1,0,unlabeled,NULL,PennController,1,_Trial_,End,1615531858589,NULL
+#
+# Results on Friday March 12 2021 06:53:47 UTC.
+# USER AGENT: Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:86.0) Gecko/20100101 Firefox/86.0
+# Design number was non-random = 143
+#
+# The lines below this comment are in groups of 2.
+# The formats of the lines in each of these groups are as follows:
+#
+# Line 1:
+#     Col. 1: Time results were received.
+#     Col. 2: MD5 hash of participant's IP address.
+#     Col. 3: Controller name.
+#     Col. 4: Item number.
+#     Col. 5: Element number.
+#     Col. 6: Type.
+#     Col. 7: Group.
+#     Col. 8: PennElementType.
+#     Col. 9: PennElementName.
+#     Col. 10: Parameter.
+#     Col. 11: Value.
+#     Col. 12: EventTime.
+#     Col. 13: Comments.
+# Line 2:
+#     Col. 1: Time results were received.
+#     Col. 2: MD5 hash of participant's IP address.
+#     Col. 3: Controller name.
+#     Col. 4: Item number.
+#     Col. 5: Element number.
+#     Col. 6: Type.
+#     Col. 7: Group.
+#     Col. 8: PennElementType.
+#     Col. 9: PennElementName.
+#     Col. 10: Parameter.
+#     Col. 11: Value.
+#     Col. 12: EventTime.
+#     Col. 13: Reading time.
+#     Col. 14: Newline?
+#     Col. 15: Sentence (or sentence MD5).
+#     Col. 16: Comments.
+1615532027,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,PennController,0,_Trial_,Start,1615532010751,NULL
+1615532027,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,1,this,1615532012874,185,false,this is an example,Any addtional parameters were appended as additional columns
+# Columns below this comment are as follows:
+# 1. Time results were received.
+# 2. MD5 hash of participant's IP address.
+# 3. Controller name.
+# 4. Item number.
+# 5. Element number.
+# 6. Type.
+# 7. Group.
+# 8. PennElementType.
+# 9. PennElementName.
+# 10. Parameter.
+# 11. Value.
+# 12. EventTime.
+# 13. Reading time.
+# 14. Newline?
+# 15. Sentence (or sentence MD5).
+# 16. Comments.
+1615532027,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,2,is,1615532012874,151,false,this is an example,Any addtional parameters were appended as additional columns
+1615532027,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,3,an,1615532012874,129,false,this is an example,Any addtional parameters were appended as additional columns
+1615532027,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,4,example,1615532012874,124,false,this is an example,Any addtional parameters were appended as additional columns
+1615532027,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,1,this,1615532015171,158,false,this is an example,Any addtional parameters were appended as additional columns
+1615532027,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,2,is,1615532015171,131,false,this is an example,Any addtional parameters were appended as additional columns
+1615532027,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,3,an,1615532015171,132,false,this is an example,Any addtional parameters were appended as additional columns
+1615532027,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,4,example,1615532015171,374,false,this is an example,Any addtional parameters were appended as additional columns
+# Columns below this comment are as follows:
+# 1. Time results were received.
+# 2. MD5 hash of participant's IP address.
+# 3. Controller name.
+# 4. Item number.
+# 5. Element number.
+# 6. Type.
+# 7. Group.
+# 8. PennElementType.
+# 9. PennElementName.
+# 10. Parameter.
+# 11. Value.
+# 12. EventTime.
+# 13. Comments.
+1615532027,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,PennController,0,_Trial_,End,1615532016450,NULL
+1615532027,7e4fa5c1f963f8682534acd89863e3cf,PennController,1,0,unlabeled,NULL,PennController,1,_Trial_,Start,1615532016466,NULL
+1615532027,7e4fa5c1f963f8682534acd89863e3cf,PennController,1,0,unlabeled,NULL,Selector,choice,Selection,second,1615532026979,third;second;first
+1615532027,7e4fa5c1f963f8682534acd89863e3cf,PennController,1,0,unlabeled,NULL,PennController,1,_Trial_,End,1615532026992,NULL

@@ -416,7 +416,6 @@ let standardCommands = {
         // Adds the element to the page (or to the provided element)
         print: async function(resolve, where, y, canvas){      /* $AC$ all PElements.print() Prints the element $AC$ */
             const lastPrint = [where,y,canvas]
-            console.log(this.id, "lastprint",this._lastPrint,"newlastprint",lastPrint);
             this._lastPrint = lastPrint;
             if (canvas && typeof(canvas)=="string")
                 canvas = PennController.Elements.getCanvas(canvas);

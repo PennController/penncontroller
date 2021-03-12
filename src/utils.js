@@ -44,38 +44,45 @@ export function overToScale(x,y){
 export async function upload(url,filename,file,mimeType){
     const presignedPostData = await new Promise(resolve => {
         const xhr = new XMLHttpRequest();
-        const addParamCharacter = (url.match(/\?/) ? "?" : "&");
-        xhr.open("GET", url+addParamCharacter+"filename="+filename+"&mimetype="+mimeType, true);
+        const addParamCharacter = (url.match(/\?/) ? "&" : "?");
+        xhr.open("GET", url+addParamCharacter+"filename="+encodeURIComponent(filename)+"&mimetype="+encodeURIComponent(mimeType), true);
         xhr.setRequestHeader("Content-Type", "application/json");
-        xhr.send();
         xhr.onload = function() {
-            if (this.responseType=="json")
-                resolve(JSON.parse(this.responseText));
-            else if (this.responseType==""||this.responseType=="text")
-                resolve(this.responseText);
+            let obj = null;
+            try{
+                obj = JSON.parse(this.responseText);
+            }
+            catch {
+                obj = this.responseText;
+            }
+            resolve(obj);
         };
+        xhr.send();
     });
     const formData = new FormData();
-    if (presignedPostData===undefined||typeof presignedPostData=="text"){
+    if (presignedPostData===undefined || typeof presignedPostData=="string"){
         formData.append('fileName', filename);
-        formData.append('file', file);
         formData.append('mimeType', mimeType);
+        formData.append('file', file);
     }
     else{
-        Object.keys(presignedPostData).forEach(key => formData.append(key, presignedPostData[key]) );
+        Object.keys(presignedPostData).forEach(key => {
+            if (key=="url")
+                url = presignedPostData.url;
+            else
+                formData.append(key, presignedPostData[key]) 
+        });
         // Actual file has to be appended last.
         formData.append("file", file);
-        url = presignedPostData.url;
         if (presignedPostData.key)
             filename = presignedPostData.key;
     }
     return new Promise((resolve, reject) => {
         const xhr = new XMLHttpRequest();
         xhr.open("POST", url, true);
+        xhr.onload = () => resolve(filename);
+        xhr.onerror = () => reject(xhr.responseText);
         xhr.send(formData);
-        xhr.onload = function() {
-            this.status === 204 ? resolve(filename) : reject(this.responseText);
-        };
     });
 }
 

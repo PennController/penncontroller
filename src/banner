@@ -1,30 +1,10 @@
 PennController for IBEX
 This software is licensed under a BSD license; see the LICENSE file for details.
 
- - Version 1.9
- - Last Update:  2020, December 12
- - Major changes in version 1.9:
-   * Fixed buffer-event detection in audio & video resources
-   * Labels of Scale element no longer systematically show up with radio display
-   * Revised CSS (now mostly flex based)
-   * Partial revision of MediaRecorder.stop
-   * The commands .left, .center and .right no longer align the text itself, but the whole element instead
-   * The command canvas.color now changes the background color of the Canvas element
-   * Made the fullscreen commands compatible across browsers
-   * Fixed VBox(-based) controllers
-   * audio.stop now validates audio.wait
-   * Made InitiateRecorder and UploadRecordings usable as in-trial commands
-   * Fixed a few problems with .print
-   * Selectors now report the order of elements in the results file
-   * Fixed audio file automatically replaying at the end of trials if not stopped first
-   * Fixed tooltip.print(x,y,canvas)
-   + Passing an element reference as the single argument of .print now inserts the element as inline inside the referenced one
-   + Added self keyword referring to current element
-   + Added commands timer.pause, timer.resume and timer.set
-   + Added standard command .scaling that scales elements using a zoom index/to a given size/container
-   + Added scale.checkbox
-   + Added mousetracker.callback("click", ...) and mousetracker.log("click")
-   + Added mousetracker.test.over
-   + selector.keys now accepts special keycodes (Enter, Escape, ArrowLeft, LeftShift, etc.)
-   + It is now possible to split results-sending across multiple chunks (use with caution)
-   + It is now possible to send the results to a custom URL by using SendResults as an in-trial command
+ - Version 2.0.alpha
+ - Last Update:  2021, March 12
+ - Major changes in version 2.0.alpha:
+   * Fixed Controller element duplicating lines and not rerunning properly
+   * Fixed selector.shuffle and its order logging
+   * Improved handling of trial end for the MediaRecorder element
+   * Improved audio/video recording upload

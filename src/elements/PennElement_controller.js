@@ -38,8 +38,8 @@ window.PennController._AddElementType("Controller", function(PennEngine) {
 
         let controllerNames = Object.getOwnPropertyNames($.ui).filter( name => $.ui[name] instanceof Function && $.ui[name]._ibex_options );
         if (controllerNames.indexOf(this.controller)>=0){
-            addSafeBindMethodPair(this.controller);
-            this.jQueryElement[this.controller](this.options);
+            // addSafeBindMethodPair(this.controller);
+            // this.jQueryElement[this.controller](this.options);
         }
         else{
             let lowest = {score: 1, controllerName: ""};
@@ -86,6 +86,16 @@ window.PennController._AddElementType("Controller", function(PennEngine) {
     
 
     this.actions = {
+        print: function(resolve,...args){
+            this.done = false;
+            this.jQueryElement.empty();
+            const callback = ()=>{
+                addSafeBindMethodPair(this.controller);
+                this.jQueryElement[this.controller](this.options);
+                resolve();
+            }
+            PennEngine.elements.standardCommands.actions.print.call(this, callback, ...args);
+        },
         wait: function(resolve, test){   /* $AC$ Controller PElement.wait() Waits until the controller has been completed before proceeding $AC$ */
             if (test == "first" && this.done)       // If first and already complete, resolve already
                 resolve();
