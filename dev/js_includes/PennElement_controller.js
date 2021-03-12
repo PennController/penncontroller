@@ -86,6 +86,19 @@ window.PennController._AddElementType("Controller", function(PennEngine) {
     
 
     this.actions = {
+        callback: function(resolve, ...commands){
+            const oldCallback = this.finishedCallback;
+            this.finishedCallback = function(...args){
+                oldCallback.call(this, args);
+                commands.forEach( async c => {
+                    if (c.hasProperty("_runPromises") && c._runPromises instanceof Function)
+                        await c._runPromises();
+                    else if (c instanceof Function)
+                        await c.call(this);
+                });
+            }
+            resolve();
+        },
         print: function(resolve,...args){
             this.done = false;
             this.jQueryElement.empty();

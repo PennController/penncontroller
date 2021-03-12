@@ -1,7 +1,7 @@
 PennController.ResetPrefix(null); // Shorten command names (keep this line here)
 
 newTrial(
-    newController("mySentence", "DashedSentence", {s: "this is an example"})
+    newController("mySentence", "DashedSentence", {s: "this is an example of a rather long line that is likely to incur a linebreak"})
     ,
     newButton("Read")
         .callback(

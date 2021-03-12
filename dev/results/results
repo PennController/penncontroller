@@ -243,3 +243,565 @@
 1615532027,7e4fa5c1f963f8682534acd89863e3cf,PennController,1,0,unlabeled,NULL,PennController,1,_Trial_,Start,1615532016466,NULL
 1615532027,7e4fa5c1f963f8682534acd89863e3cf,PennController,1,0,unlabeled,NULL,Selector,choice,Selection,second,1615532026979,third;second;first
 1615532027,7e4fa5c1f963f8682534acd89863e3cf,PennController,1,0,unlabeled,NULL,PennController,1,_Trial_,End,1615532026992,NULL
+#
+# Results on Friday March 12 2021 20:10:11 UTC.
+# USER AGENT: Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:86.0) Gecko/20100101 Firefox/86.0
+# Design number was non-random = 144
+#
+# The lines below this comment are in groups of 2.
+# The formats of the lines in each of these groups are as follows:
+#
+# Line 1:
+#     Col. 1: Time results were received.
+#     Col. 2: MD5 hash of participant's IP address.
+#     Col. 3: Controller name.
+#     Col. 4: Item number.
+#     Col. 5: Element number.
+#     Col. 6: Type.
+#     Col. 7: Group.
+#     Col. 8: PennElementType.
+#     Col. 9: PennElementName.
+#     Col. 10: Parameter.
+#     Col. 11: Value.
+#     Col. 12: EventTime.
+#     Col. 13: Comments.
+# Line 2:
+#     Col. 1: Time results were received.
+#     Col. 2: MD5 hash of participant's IP address.
+#     Col. 3: Controller name.
+#     Col. 4: Item number.
+#     Col. 5: Element number.
+#     Col. 6: Type.
+#     Col. 7: Group.
+#     Col. 8: PennElementType.
+#     Col. 9: PennElementName.
+#     Col. 10: Parameter.
+#     Col. 11: Value.
+#     Col. 12: EventTime.
+#     Col. 13: Reading time.
+#     Col. 14: Newline?
+#     Col. 15: Sentence (or sentence MD5).
+#     Col. 16: Comments.
+1615579811,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,PennController,0,_Trial_,Start,1615579801435,NULL
+1615579811,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,1,this,1615579806163,218,false,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+# Columns below this comment are as follows:
+# 1. Time results were received.
+# 2. MD5 hash of participant's IP address.
+# 3. Controller name.
+# 4. Item number.
+# 5. Element number.
+# 6. Type.
+# 7. Group.
+# 8. PennElementType.
+# 9. PennElementName.
+# 10. Parameter.
+# 11. Value.
+# 12. EventTime.
+# 13. Reading time.
+# 14. Newline?
+# 15. Sentence (or sentence MD5).
+# 16. Comments.
+1615579811,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,2,is,1615579806163,147,false,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615579811,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,3,an,1615579806163,155,false,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615579811,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,4,example,1615579806163,214,false,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615579811,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,5,of,1615579806163,122,false,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615579811,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,6,a,1615579806163,174,false,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615579811,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,7,rather,1615579806163,183,false,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615579811,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,8,long,1615579806163,195,false,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615579811,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,9,line,1615579806163,180,false,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615579811,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,10,that,1615579806163,177,false,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615579811,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,11,is,1615579806163,133,false,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615579811,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,12,likely,1615579806163,312,false,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615579811,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,13,to,1615579806163,273,false,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615579811,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,14,incur,1615579806163,188,false,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615579811,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,15,a,1615579806163,168,false,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615579811,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,16,linebreak,1615579806163,139,false,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615579811,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,1,this,1615579810284,161,false,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615579811,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,2,is,1615579810284,138,false,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615579811,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,3,an,1615579810284,155,false,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615579811,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,4,example,1615579810284,117,false,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615579811,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,5,of,1615579810284,136,false,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615579811,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,6,a,1615579810284,129,false,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615579811,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,7,rather,1615579810284,133,false,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615579811,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,8,long,1615579810284,175,false,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615579811,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,9,line,1615579810284,97,false,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615579811,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,10,that,1615579810284,135,false,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615579811,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,11,is,1615579810284,145,false,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615579811,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,12,likely,1615579810284,201,false,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615579811,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,13,to,1615579810284,263,false,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615579811,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,14,incur,1615579810284,186,false,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615579811,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,15,a,1615579810284,184,false,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615579811,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,16,linebreak,1615579810284,220,false,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+# Columns below this comment are as follows:
+# 1. Time results were received.
+# 2. MD5 hash of participant's IP address.
+# 3. Controller name.
+# 4. Item number.
+# 5. Element number.
+# 6. Type.
+# 7. Group.
+# 8. PennElementType.
+# 9. PennElementName.
+# 10. Parameter.
+# 11. Value.
+# 12. EventTime.
+# 13. Comments.
+1615579811,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,PennController,0,_Trial_,End,1615579811158,NULL
+1615579811,7e4fa5c1f963f8682534acd89863e3cf,PennController,1,0,unlabeled,NULL,PennController,1,_Trial_,Start,1615579811184,NULL
+1615579811,7e4fa5c1f963f8682534acd89863e3cf,PennController,1,0,unlabeled,NULL,Selector,choice,Selection,second,1615579811332,first;second;third
+1615579811,7e4fa5c1f963f8682534acd89863e3cf,PennController,1,0,unlabeled,NULL,PennController,1,_Trial_,End,1615579811342,NULL
+#
+# Results on Friday March 12 2021 20:12:13 UTC.
+# USER AGENT: Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:86.0) Gecko/20100101 Firefox/86.0
+# Design number was non-random = 145
+#
+# The lines below this comment are in groups of 2.
+# The formats of the lines in each of these groups are as follows:
+#
+# Line 1:
+#     Col. 1: Time results were received.
+#     Col. 2: MD5 hash of participant's IP address.
+#     Col. 3: Controller name.
+#     Col. 4: Item number.
+#     Col. 5: Element number.
+#     Col. 6: Type.
+#     Col. 7: Group.
+#     Col. 8: PennElementType.
+#     Col. 9: PennElementName.
+#     Col. 10: Parameter.
+#     Col. 11: Value.
+#     Col. 12: EventTime.
+#     Col. 13: Comments.
+# Line 2:
+#     Col. 1: Time results were received.
+#     Col. 2: MD5 hash of participant's IP address.
+#     Col. 3: Controller name.
+#     Col. 4: Item number.
+#     Col. 5: Element number.
+#     Col. 6: Type.
+#     Col. 7: Group.
+#     Col. 8: PennElementType.
+#     Col. 9: PennElementName.
+#     Col. 10: Parameter.
+#     Col. 11: Value.
+#     Col. 12: EventTime.
+#     Col. 13: Reading time.
+#     Col. 14: Newline?
+#     Col. 15: Sentence (or sentence MD5).
+#     Col. 16: Comments.
+1615579934,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,PennController,0,_Trial_,Start,1615579927386,NULL
+1615579934,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,1,this,1615579931066,179,false,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+# Columns below this comment are as follows:
+# 1. Time results were received.
+# 2. MD5 hash of participant's IP address.
+# 3. Controller name.
+# 4. Item number.
+# 5. Element number.
+# 6. Type.
+# 7. Group.
+# 8. PennElementType.
+# 9. PennElementName.
+# 10. Parameter.
+# 11. Value.
+# 12. EventTime.
+# 13. Reading time.
+# 14. Newline?
+# 15. Sentence (or sentence MD5).
+# 16. Comments.
+1615579934,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,2,is,1615579931066,142,false,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615579934,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,3,an,1615579931066,129,false,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615579934,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,4,example,1615579931066,130,false,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615579934,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,5,of,1615579931066,136,false,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615579934,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,6,a,1615579931066,143,false,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615579934,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,7,rather,1615579931066,130,false,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615579934,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,8,long,1615579931066,127,false,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615579934,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,9,line,1615579931066,126,false,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615579934,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,10,that,1615579931066,131,false,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615579934,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,11,is,1615579931066,142,false,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615579934,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,12,likely,1615579931066,133,false,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615579934,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,13,to,1615579931066,141,false,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615579934,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,14,incur,1615579931066,138,false,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615579934,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,15,a,1615579931066,144,false,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615579934,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,16,linebreak,1615579931066,138,false,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+# Columns below this comment are as follows:
+# 1. Time results were received.
+# 2. MD5 hash of participant's IP address.
+# 3. Controller name.
+# 4. Item number.
+# 5. Element number.
+# 6. Type.
+# 7. Group.
+# 8. PennElementType.
+# 9. PennElementName.
+# 10. Parameter.
+# 11. Value.
+# 12. EventTime.
+# 13. Comments.
+1615579934,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,PennController,0,_Trial_,End,1615579932667,NULL
+1615579934,7e4fa5c1f963f8682534acd89863e3cf,PennController,1,0,unlabeled,NULL,PennController,1,_Trial_,Start,1615579932690,NULL
+1615579934,7e4fa5c1f963f8682534acd89863e3cf,PennController,1,0,unlabeled,NULL,Selector,choice,Selection,second,1615579933776,first;second;third
+1615579934,7e4fa5c1f963f8682534acd89863e3cf,PennController,1,0,unlabeled,NULL,PennController,1,_Trial_,End,1615579933785,NULL
+#
+# Results on Friday March 12 2021 20:13:32 UTC.
+# USER AGENT: Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:86.0) Gecko/20100101 Firefox/86.0
+# Design number was non-random = 146
+#
+# The lines below this comment are in groups of 2.
+# The formats of the lines in each of these groups are as follows:
+#
+# Line 1:
+#     Col. 1: Time results were received.
+#     Col. 2: MD5 hash of participant's IP address.
+#     Col. 3: Controller name.
+#     Col. 4: Item number.
+#     Col. 5: Element number.
+#     Col. 6: Type.
+#     Col. 7: Group.
+#     Col. 8: PennElementType.
+#     Col. 9: PennElementName.
+#     Col. 10: Parameter.
+#     Col. 11: Value.
+#     Col. 12: EventTime.
+#     Col. 13: Comments.
+# Line 2:
+#     Col. 1: Time results were received.
+#     Col. 2: MD5 hash of participant's IP address.
+#     Col. 3: Controller name.
+#     Col. 4: Item number.
+#     Col. 5: Element number.
+#     Col. 6: Type.
+#     Col. 7: Group.
+#     Col. 8: PennElementType.
+#     Col. 9: PennElementName.
+#     Col. 10: Parameter.
+#     Col. 11: Value.
+#     Col. 12: EventTime.
+#     Col. 13: Reading time.
+#     Col. 14: Newline?
+#     Col. 15: Sentence (or sentence MD5).
+#     Col. 16: Comments.
+1615580013,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,PennController,0,_Trial_,Start,1615580005135,NULL
+1615580013,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,1,this,1615580011118,147,false,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+# Columns below this comment are as follows:
+# 1. Time results were received.
+# 2. MD5 hash of participant's IP address.
+# 3. Controller name.
+# 4. Item number.
+# 5. Element number.
+# 6. Type.
+# 7. Group.
+# 8. PennElementType.
+# 9. PennElementName.
+# 10. Parameter.
+# 11. Value.
+# 12. EventTime.
+# 13. Reading time.
+# 14. Newline?
+# 15. Sentence (or sentence MD5).
+# 16. Comments.
+1615580013,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,2,is,1615580011118,155,false,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615580013,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,3,an,1615580011118,501,false,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615580013,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,4,example,1615580011118,31,false,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615580013,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,5,of,1615580011118,30,false,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615580013,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,6,a,1615580011118,31,false,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615580013,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,7,rather,1615580011118,30,false,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615580013,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,8,long,1615580011118,31,false,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615580013,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,9,line,1615580011118,31,false,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615580013,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,10,that,1615580011118,182,false,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615580013,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,11,is,1615580011118,171,false,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615580013,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,12,likely,1615580011118,148,false,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615580013,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,13,to,1615580011118,152,false,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615580013,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,14,incur,1615580011118,151,false,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615580013,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,15,a,1615580011118,156,false,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615580013,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,16,linebreak,1615580011118,134,false,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+# Columns below this comment are as follows:
+# 1. Time results were received.
+# 2. MD5 hash of participant's IP address.
+# 3. Controller name.
+# 4. Item number.
+# 5. Element number.
+# 6. Type.
+# 7. Group.
+# 8. PennElementType.
+# 9. PennElementName.
+# 10. Parameter.
+# 11. Value.
+# 12. EventTime.
+# 13. Comments.
+1615580013,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,PennController,0,_Trial_,End,1615580012054,NULL
+1615580013,7e4fa5c1f963f8682534acd89863e3cf,PennController,1,0,unlabeled,NULL,PennController,1,_Trial_,Start,1615580012077,NULL
+1615580013,7e4fa5c1f963f8682534acd89863e3cf,PennController,1,0,unlabeled,NULL,Selector,choice,Selection,second,1615580012878,first;second;third
+1615580013,7e4fa5c1f963f8682534acd89863e3cf,PennController,1,0,unlabeled,NULL,PennController,1,_Trial_,End,1615580012887,NULL
+#
+# Results on Friday March 12 2021 20:15:52 UTC.
+# USER AGENT: Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:86.0) Gecko/20100101 Firefox/86.0
+# Design number was non-random = 147
+#
+# The lines below this comment are in groups of 2.
+# The formats of the lines in each of these groups are as follows:
+#
+# Line 1:
+#     Col. 1: Time results were received.
+#     Col. 2: MD5 hash of participant's IP address.
+#     Col. 3: Controller name.
+#     Col. 4: Item number.
+#     Col. 5: Element number.
+#     Col. 6: Type.
+#     Col. 7: Group.
+#     Col. 8: PennElementType.
+#     Col. 9: PennElementName.
+#     Col. 10: Parameter.
+#     Col. 11: Value.
+#     Col. 12: EventTime.
+#     Col. 13: Comments.
+# Line 2:
+#     Col. 1: Time results were received.
+#     Col. 2: MD5 hash of participant's IP address.
+#     Col. 3: Controller name.
+#     Col. 4: Item number.
+#     Col. 5: Element number.
+#     Col. 6: Type.
+#     Col. 7: Group.
+#     Col. 8: PennElementType.
+#     Col. 9: PennElementName.
+#     Col. 10: Parameter.
+#     Col. 11: Value.
+#     Col. 12: EventTime.
+#     Col. 13: Reading time.
+#     Col. 14: Newline?
+#     Col. 15: Sentence (or sentence MD5).
+#     Col. 16: Comments.
+1615580152,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,PennController,0,_Trial_,Start,1615580135751,NULL
+1615580152,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,1,this,1615580149169,175,false,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+# Columns below this comment are as follows:
+# 1. Time results were received.
+# 2. MD5 hash of participant's IP address.
+# 3. Controller name.
+# 4. Item number.
+# 5. Element number.
+# 6. Type.
+# 7. Group.
+# 8. PennElementType.
+# 9. PennElementName.
+# 10. Parameter.
+# 11. Value.
+# 12. EventTime.
+# 13. Reading time.
+# 14. Newline?
+# 15. Sentence (or sentence MD5).
+# 16. Comments.
+1615580152,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,2,is,1615580149169,150,false,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615580152,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,3,an,1615580149169,145,false,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615580152,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,4,example,1615580149169,119,false,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615580152,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,5,of,1615580149169,135,false,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615580152,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,6,a,1615580149169,129,false,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615580152,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,7,rather,1615580149169,127,false,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615580152,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,8,long,1615580149169,117,false,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615580152,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,9,line,1615580149169,141,false,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615580152,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,10,that,1615580149169,135,false,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615580152,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,11,is,1615580149169,273,false,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615580152,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,12,likely,1615580149169,160,false,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615580152,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,13,to,1615580149169,148,false,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615580152,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,14,incur,1615580149169,217,false,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615580152,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,15,a,1615580149169,229,false,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615580152,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,16,linebreak,1615580149169,264,false,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+# Columns below this comment are as follows:
+# 1. Time results were received.
+# 2. MD5 hash of participant's IP address.
+# 3. Controller name.
+# 4. Item number.
+# 5. Element number.
+# 6. Type.
+# 7. Group.
+# 8. PennElementType.
+# 9. PennElementName.
+# 10. Parameter.
+# 11. Value.
+# 12. EventTime.
+# 13. Comments.
+1615580152,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,PennController,0,_Trial_,End,1615580150552,NULL
+1615580152,7e4fa5c1f963f8682534acd89863e3cf,PennController,1,0,unlabeled,NULL,PennController,1,_Trial_,Start,1615580150579,NULL
+1615580152,7e4fa5c1f963f8682534acd89863e3cf,PennController,1,0,unlabeled,NULL,Selector,choice,Selection,second,1615580152347,first;second;third
+1615580152,7e4fa5c1f963f8682534acd89863e3cf,PennController,1,0,unlabeled,NULL,PennController,1,_Trial_,End,1615580152359,NULL
+#
+# Results on Friday March 12 2021 20:16:48 UTC.
+# USER AGENT: Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:86.0) Gecko/20100101 Firefox/86.0
+# Design number was non-random = 148
+#
+# The lines below this comment are in groups of 2.
+# The formats of the lines in each of these groups are as follows:
+#
+# Line 1:
+#     Col. 1: Time results were received.
+#     Col. 2: MD5 hash of participant's IP address.
+#     Col. 3: Controller name.
+#     Col. 4: Item number.
+#     Col. 5: Element number.
+#     Col. 6: Type.
+#     Col. 7: Group.
+#     Col. 8: PennElementType.
+#     Col. 9: PennElementName.
+#     Col. 10: Parameter.
+#     Col. 11: Value.
+#     Col. 12: EventTime.
+#     Col. 13: Comments.
+# Line 2:
+#     Col. 1: Time results were received.
+#     Col. 2: MD5 hash of participant's IP address.
+#     Col. 3: Controller name.
+#     Col. 4: Item number.
+#     Col. 5: Element number.
+#     Col. 6: Type.
+#     Col. 7: Group.
+#     Col. 8: PennElementType.
+#     Col. 9: PennElementName.
+#     Col. 10: Parameter.
+#     Col. 11: Value.
+#     Col. 12: EventTime.
+#     Col. 13: Reading time.
+#     Col. 14: Newline?
+#     Col. 15: Sentence (or sentence MD5).
+#     Col. 16: Comments.
+1615580208,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,PennController,0,_Trial_,Start,1615580199227,NULL
+1615580208,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,1,this,1615580205398,278,false,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+# Columns below this comment are as follows:
+# 1. Time results were received.
+# 2. MD5 hash of participant's IP address.
+# 3. Controller name.
+# 4. Item number.
+# 5. Element number.
+# 6. Type.
+# 7. Group.
+# 8. PennElementType.
+# 9. PennElementName.
+# 10. Parameter.
+# 11. Value.
+# 12. EventTime.
+# 13. Reading time.
+# 14. Newline?
+# 15. Sentence (or sentence MD5).
+# 16. Comments.
+1615580208,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,2,is,1615580205398,181,false,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615580208,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,3,an,1615580205398,159,false,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615580208,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,4,example,1615580205398,158,false,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615580208,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,5,of,1615580205398,139,false,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615580208,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,6,a,1615580205398,219,false,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615580208,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,7,rather,1615580205398,126,false,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615580208,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,8,long,1615580205398,113,false,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615580208,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,9,line,1615580205398,145,false,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615580208,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,10,that,1615580205398,160,false,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615580208,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,11,is,1615580205398,149,false,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615580208,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,12,likely,1615580205398,136,false,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615580208,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,13,to,1615580205398,161,false,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615580208,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,14,incur,1615580205398,216,false,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615580208,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,15,a,1615580205398,255,false,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615580208,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,16,linebreak,1615580205398,522,false,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+# Columns below this comment are as follows:
+# 1. Time results were received.
+# 2. MD5 hash of participant's IP address.
+# 3. Controller name.
+# 4. Item number.
+# 5. Element number.
+# 6. Type.
+# 7. Group.
+# 8. PennElementType.
+# 9. PennElementName.
+# 10. Parameter.
+# 11. Value.
+# 12. EventTime.
+# 13. Comments.
+1615580208,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,PennController,0,_Trial_,End,1615580207272,NULL
+1615580208,7e4fa5c1f963f8682534acd89863e3cf,PennController,1,0,unlabeled,NULL,PennController,1,_Trial_,Start,1615580207296,NULL
+1615580208,7e4fa5c1f963f8682534acd89863e3cf,PennController,1,0,unlabeled,NULL,Selector,choice,Selection,second,1615580208184,first;second;third
+1615580208,7e4fa5c1f963f8682534acd89863e3cf,PennController,1,0,unlabeled,NULL,PennController,1,_Trial_,End,1615580208194,NULL
+#
+# Results on Friday March 12 2021 20:19:54 UTC.
+# USER AGENT: Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:86.0) Gecko/20100101 Firefox/86.0
+# Design number was non-random = 149
+#
+# The lines below this comment are in groups of 2.
+# The formats of the lines in each of these groups are as follows:
+#
+# Line 1:
+#     Col. 1: Time results were received.
+#     Col. 2: MD5 hash of participant's IP address.
+#     Col. 3: Controller name.
+#     Col. 4: Item number.
+#     Col. 5: Element number.
+#     Col. 6: Type.
+#     Col. 7: Group.
+#     Col. 8: PennElementType.
+#     Col. 9: PennElementName.
+#     Col. 10: Parameter.
+#     Col. 11: Value.
+#     Col. 12: EventTime.
+#     Col. 13: Comments.
+# Line 2:
+#     Col. 1: Time results were received.
+#     Col. 2: MD5 hash of participant's IP address.
+#     Col. 3: Controller name.
+#     Col. 4: Item number.
+#     Col. 5: Element number.
+#     Col. 6: Type.
+#     Col. 7: Group.
+#     Col. 8: PennElementType.
+#     Col. 9: PennElementName.
+#     Col. 10: Parameter.
+#     Col. 11: Value.
+#     Col. 12: EventTime.
+#     Col. 13: Reading time.
+#     Col. 14: Newline?
+#     Col. 15: Sentence (or sentence MD5).
+#     Col. 16: Comments.
+1615580395,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,PennController,0,_Trial_,Start,1615580387517,NULL
+1615580395,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,1,this,1615580392324,235,0,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+# Columns below this comment are as follows:
+# 1. Time results were received.
+# 2. MD5 hash of participant's IP address.
+# 3. Controller name.
+# 4. Item number.
+# 5. Element number.
+# 6. Type.
+# 7. Group.
+# 8. PennElementType.
+# 9. PennElementName.
+# 10. Parameter.
+# 11. Value.
+# 12. EventTime.
+# 13. Reading time.
+# 14. Newline?
+# 15. Sentence (or sentence MD5).
+# 16. Comments.
+1615580395,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,2,is,1615580392324,212,0,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615580395,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,3,an,1615580392324,226,0,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615580395,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,4,example,1615580392324,187,0,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615580395,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,5,of,1615580392324,192,0,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615580395,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,6,a,1615580392324,206,0,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615580395,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,7,rather,1615580392324,204,0,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615580395,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,8,long,1615580392324,187,0,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615580395,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,9,line,1615580392324,187,0,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615580395,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,10,that,1615580392324,182,0,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615580395,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,11,is,1615580392324,156,0,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615580395,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,12,likely,1615580392324,169,0,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615580395,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,13,to,1615580392324,172,1,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615580395,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,14,incur,1615580392324,235,0,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615580395,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,15,a,1615580392324,200,0,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+1615580395,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,Controller-DashedSentence,mySentence,16,linebreak,1615580392324,346,0,this is an example of a rather long line that is likely to incur a linebreak,Any addtional parameters were appended as additional columns
+# Columns below this comment are as follows:
+# 1. Time results were received.
+# 2. MD5 hash of participant's IP address.
+# 3. Controller name.
+# 4. Item number.
+# 5. Element number.
+# 6. Type.
+# 7. Group.
+# 8. PennElementType.
+# 9. PennElementName.
+# 10. Parameter.
+# 11. Value.
+# 12. EventTime.
+# 13. Comments.
+1615580395,7e4fa5c1f963f8682534acd89863e3cf,PennController,0,0,unlabeled,NULL,PennController,0,_Trial_,End,1615580393536,NULL
+1615580395,7e4fa5c1f963f8682534acd89863e3cf,PennController,1,0,unlabeled,NULL,PennController,1,_Trial_,Start,1615580393559,NULL
+1615580395,7e4fa5c1f963f8682534acd89863e3cf,PennController,1,0,unlabeled,NULL,Selector,choice,Selection,second,1615580394676,first;second;third
+1615580395,7e4fa5c1f963f8682534acd89863e3cf,PennController,1,0,unlabeled,NULL,PennController,1,_Trial_,End,1615580394685,NULL

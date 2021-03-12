@@ -1,7 +1,6 @@
 import { lazyPromiseFromArrayOfLazyPromises, parseElementCommands, printAndRefreshUntil, levensthein } from "./utils.js";
 import { PennController } from "./controller.js";
 import { PennEngine } from "./engine.js";
-import { last } from "lodash";
 
 PennController.Elements = {};       // Will add newX/getX/defaultX commands for each element type (see _AddElementType)
 
@@ -453,7 +452,7 @@ let standardCommands = {
                     const currentController = PennEngine.controllers.running;
                     printAndRefreshUntil.call(div,
                         /*x=*/where,/*y=*/y,/*where=*/$("body"),
-                        /*until=*/()=>currentController!=PennEngine.controllers.running || this.lastPrint!=lastPrint
+                        /*until=*/()=>currentController!=PennEngine.controllers.running || this._lastPrint!=lastPrint
                     );
                 }
                 else                                                // Or to main element by default

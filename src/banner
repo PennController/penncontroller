@@ -8,3 +8,4 @@ This software is licensed under a BSD license; see the LICENSE file for details.
    * Fixed selector.shuffle and its order logging
    * Improved handling of trial end for the MediaRecorder element
    * Improved audio/video recording upload
+   + Added controller.callback

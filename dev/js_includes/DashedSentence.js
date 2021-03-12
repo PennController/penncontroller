@@ -138,6 +138,10 @@ jqueryWidget: {
                 this.iwsnjq.push(ispan[0]);
                 this.owsnjq.push(ospan[0]);
             }
+            console.log(this.wordOSpans);
+            setTimeout( ()=> {this.newlines = this.wordOSpans.map( 
+                (s,i) => i<this.wordOSpans.length-1 && $(s).offset().top < this.wordOSpans[i+1].offset().top 
+            ); console.log(this.newlines); } , 100 );
         }
 
         if (this.mode == "speeded acceptability") {
@@ -294,13 +298,17 @@ jqueryWidget: {
         }
 
         for (var i = 0; i < nonSpaceWords.length; ++i) {
+            console.log("display", this.display);
+            console.log("display?", (! this.display == "in place"));
+            console.log("newline", this.newlines[i]);
             this.resultsLines.push([
                 ["Word number", i+1],
                 ["Word", csv_url_encode(nonSpaceWords[i])],
                 ["Reading time", this.sprResults[i][0] - this.sprResults[i][1]],
-                ["Newline?", (! this.display == "in place") &&
+                ["Newline?", (this.display != "in place") &&
                              boolToInt(((i+1) < this.wordOSpans.length) &&
-                             (this.wordOSpans[i].offset().top != this.wordOSpans[i+1].offset().top))],
+                            (this.wordOSpans[i].offset().top != this.wordOSpans[i+1].offset().top))],
+                            //  this.newlines[i] ],
                 ["Sentence (or sentence MD5)", this.sentenceDesc]
             ]);
         }
