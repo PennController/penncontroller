@@ -503,7 +503,7 @@ define_ibex_controller({
                 }
                 for (let t in _t.controller.elements)   // Call end on each element (when defined)
                     for (let e in _t.controller.elements[t])
-                        _t.controller.elements[t][e].end();
+                        await _t.controller.elements[t][e].end();
                 _t.save("PennController", _t.id, "_Trial_", "End", Date.now(), "NULL");
                 linesToSave.sort((a,b)=>a[4][1]>b[4][1]);// sort the lines by time
                 linesToSave.map(line=>{

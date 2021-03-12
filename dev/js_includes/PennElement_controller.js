@@ -28,7 +28,8 @@ window.PennController._AddElementType("Controller", function(PennEngine) {
             if (t.done) return;
             t.results.push( [Date.now(), resultsArray] );
             addSafeBindMethodPair("PennController");
-            t.finishedCallback() 
+            t.finishedCallback();
+            this.destroy();
         };
         this.options._cssPrefix = this.controller+'-';
         this.options._utils = PennEngine.controllers.running.utils;

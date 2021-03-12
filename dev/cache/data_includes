@@ -1,18 +1,20 @@
-PennController.ResetPrefix(null) // Shorten command names (keep this)
-
-PreloadZip("https://files.lab.florianschwarz.net/ibexfiles/OnlyCleftsVW/Pictures.zip")
-PreloadZip("https://files.lab.florianschwarz.net/ibexfiles/OnlyCleftsVW/AudioContext.zip")
-PreloadZip("https://files.lab.florianschwarz.net/ibexfiles/OnlyCleftsVW/AudioTest.zip")
-
+PennController.ResetPrefix(null); // Shorten command names (keep this line here)
 
 newTrial(
-  newCanvas("waf","100vw","100vh").print()
-  ,
-  newButton("Send results to https://test.pcibex.net/r/KKNQwv/").print().wait()
-  ,
-  SendResults("https://test.pcibex.net/r/KKNQwv/")
-  ,
-  newButton().wait()
+    newText("first")
+        .print()
+    ,
+    newCanvas("container", 500, 200)
+        .add(0,0,newText("second"))
+        .add("right at 100%","bottom at 100%",newText("third"))
+        .print()
+    ,
+    newButton("shuffle").print().wait()
+    ,
+    newSelector("choice")
+        .add(getText("first"),getText("second"),getText("third"))
+        .shuffle()
+        .wait()
 )
 
 

@@ -1,3 +1,6 @@
+- Audio resource's object would never get created, and value would always remain as blob:url
+    when the same audio file was referenced in multiple rows/trials in a Template command
+    (and the audio files are part of a zip file)
 - Order reported in results after selector.shuffle is off 
     >   also selector.shuffle does not work with plain print() commands
     >>  solution: run the print() commands randomly rather than in order!

@@ -41,35 +41,42 @@ export function overToScale(x,y){
 }
 
 
-export async function uploadToPresignedS3(presignedUrl,fileObj){
-    const getPresignedPostData = filename => {
-        return new Promise(resolve => {
-          const xhr = new XMLHttpRequest();
-          xhr.open("GET", presignedUrl+"&fileName="+filename, true);
-          xhr.setRequestHeader("Content-Type", "application/json");
-          xhr.send();
-          xhr.onload = function() {
-            resolve(JSON.parse(this.responseText));
-          };
-        });
-    };
-    const uploadFileToS3 = (presignedPostData, file) => new Promise((resolve, reject) => {
-        const formData = new FormData();
-        Object.keys(presignedPostData.fields).forEach(key => {
-            formData.append(key, presignedPostData.fields[key]);
-        });
-        // Actual file has to be appended last.
-        formData.append("file", file);
+export async function upload(url,filename,file,mimeType){
+    const presignedPostData = await new Promise(resolve => {
         const xhr = new XMLHttpRequest();
-        xhr.open("POST", presignedPostData.url, true);
-        xhr.send(formData);
+        const addParamCharacter = (url.match(/\?/) ? "?" : "&");
+        xhr.open("GET", url+addParamCharacter+"filename="+filename+"&mimetype="+mimeType, true);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.send();
         xhr.onload = function() {
-            this.status === 204 ? resolve(presignedPostData) : reject(this.responseText);
+            if (this.responseType=="json")
+                resolve(JSON.parse(this.responseText));
+            else if (this.responseType==""||this.responseType=="text")
+                resolve(this.responseText);
         };
     });
-    const presignedPostData = await getPresignedPostData(fileObj.name);
-    // Step 2 - upload the file to S3.
-    return uploadFileToS3(presignedPostData, fileObj);
+    const formData = new FormData();
+    if (presignedPostData===undefined||typeof presignedPostData=="text"){
+        formData.append('fileName', filename);
+        formData.append('file', file);
+        formData.append('mimeType', mimeType);
+    }
+    else{
+        Object.keys(presignedPostData).forEach(key => formData.append(key, presignedPostData[key]) );
+        // Actual file has to be appended last.
+        formData.append("file", file);
+        url = presignedPostData.url;
+        if (presignedPostData.key)
+            filename = presignedPostData.key;
+    }
+    return new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open("POST", url, true);
+        xhr.send(formData);
+        xhr.onload = function() {
+            this.status === 204 ? resolve(filename) : reject(this.responseText);
+        };
+    });
 }
 
 // See https://mimesniff.spec.whatwg.org/#matching-an-image-type-pattern

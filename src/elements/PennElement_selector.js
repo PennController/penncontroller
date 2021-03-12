@@ -24,11 +24,31 @@ window.PennController._AddElementType("Selector", function(PennEngine) {
         }
         let shuffledIndices = [...indicesToShuffle];
         fisherYates(shuffledIndices);                              // Now, shuffle the indices
-        const prints = shuffledIndices.map(i=>this.elements[i][0]._lastPrint);
+        const tmpPrints = [];
+        const prints = shuffledIndices.map(i=>{
+            const element = this.elements[i][0];
+            const lastPrint = element._lastPrint;
+            if (lastPrint[0]===undefined){
+                const container = element.jQueryContainer;
+                if (container instanceof jQuery && container.parent().length){
+                    const tmpContainer = $("<span>");
+                    container.before( tmpContainer );
+                    tmpPrints[i] = tmpContainer;
+                }
+            }
+            return lastPrint;
+        });
+        console.log("lastprints", prints);
         for (let i=0; i<indicesToShuffle.length; i++){
             let index = indicesToShuffle[i], element = this.elements[index][0], print = prints[i];
+            console.log("reprinting",element.id,"from",element._lastPrint,"to",prints[i]);
             if (print===undefined) continue;
             await window.PennController.Elements['get'+element.type](element.id).print(...prints[i])._runPromises();
+            const tmpPrint = tmpPrints[shuffledIndices[i]];
+            if (tmpPrint instanceof jQuery){
+                tmpPrint.before(element.jQueryContainer);
+                tmpPrint.remove();
+            }
         }
         const copyOfElements = [...this.elements];
         indicesToShuffle.map((original_index,i)=>this.elements[original_index]=copyOfElements[shuffledIndices[i]]);

@@ -1,6 +1,7 @@
 import { lazyPromiseFromArrayOfLazyPromises, parseElementCommands, printAndRefreshUntil, levensthein } from "./utils.js";
 import { PennController } from "./controller.js";
 import { PennEngine } from "./engine.js";
+import { last } from "lodash";
 
 PennController.Elements = {};       // Will add newX/getX/defaultX commands for each element type (see _AddElementType)
 
@@ -414,7 +415,9 @@ let standardCommands = {
         },
         // Adds the element to the page (or to the provided element)
         print: async function(resolve, where, y, canvas){      /* $AC$ all PElements.print() Prints the element $AC$ */
-            this._lastPrint = [where,y,canvas];
+            const lastPrint = [where,y,canvas]
+            console.log(this.id, "lastprint",this._lastPrint,"newlastprint",lastPrint);
+            this._lastPrint = lastPrint;
             if (canvas && typeof(canvas)=="string")
                 canvas = PennController.Elements.getCanvas(canvas);
             if (canvas && canvas instanceof PennElementCommands && canvas.type=="Canvas")
@@ -451,7 +454,7 @@ let standardCommands = {
                     const currentController = PennEngine.controllers.running;
                     printAndRefreshUntil.call(div,
                         /*x=*/where,/*y=*/y,/*where=*/$("body"),
-                        /*until=*/()=>currentController!=PennEngine.controllers.running
+                        /*until=*/()=>currentController!=PennEngine.controllers.running || this.lastPrint!=lastPrint
                     );
                 }
                 else                                                // Or to main element by default

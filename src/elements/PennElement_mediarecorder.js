@@ -386,6 +386,7 @@ window.PennController._AddElementType("MediaRecorder", function(PennEngine) {
         else if (this.mediaType=="video")
             this.mediaPlayer = document.createElement("video");
         this.mediaPlayer.setAttribute("controls", true);
+        this.mediaPlayer.onended = ()=>this.hasPlayed=true;
         this.videoFeedback = $("<div>").css({position:"absolute"});
         this.jQueryElement = $("<span>").addClass("PennController-"+this.type.replace(/[\s_]/g,'')+"-ui");   // The general UI 
         let recordButton = $("<button>Record</button>").addClass("PennController-"+this.type.replace(/[\s_]/g,'')+"-record");// The record button
@@ -434,10 +435,18 @@ window.PennController._AddElementType("MediaRecorder", function(PennEngine) {
         resolve();
     }
     
-    this.end = function(){
+    this.end = async function(){
         currentMediaElement = this;
         if (this.recorder && this.recorder.state=="recording")
-            this.recorder.stop();
+            await new Promise(r=>{  // Wait that the recorder has fully stopped
+                const oldStop = this.recorder.onstop;
+                this.recorder.onstop = function(...args){
+                    if (typeof oldStop == "function")
+                        oldStop.apply(this, args);
+                    r();
+                }
+                this.recorder.stop();
+            });
         if (this.blob){
             let extension = getMimeExtension(this.mediaType).extension;
             let filename = this.id+'.'+extension;
