@@ -30,7 +30,7 @@ window.PennController._AddElementType("DropDown", function(PennEngine) {
         this.jQueryElement = $("<select>").append(
             $("<option>").html(this.initialText)
                         .attr({value: this.initialText, selected: true, disabled: true, hidden: true})
-        ).change(()=>this.change());
+        );
         resolve();
     };
 
@@ -59,6 +59,12 @@ window.PennController._AddElementType("DropDown", function(PennEngine) {
     
     let t = this;       // Needed to call settings form actions
     this.actions = {
+        print: function(resolve, ...args){
+            PennEngine.elements.standardCommands.actions.print.call(this, ()=>{
+                this.jQueryElement.change(()=>this.change());
+                resolve();
+            }, ...args);
+        },
         shuffle: function(resolve, keepSelected){   /* $AC$ DropDown PElement.shuffle() Shuffles the options currently in the drop-down $AC$ */
             if (keepSelected){
                 let selected = this.jQueryElement.find("option:selected");

@@ -47,7 +47,9 @@ window.PennController._AddElementType("TextInput", function(PennEngine) {
                 if (returns instanceof Array && returns.length+1 >= this.rows)
                     e.preventDefault();
             }
-            if (!e.key.isSpecialKey() && this.length==this.jQueryElement.val().length)
+            if (!e.key.isSpecialKey() && 
+                this.length==this.jQueryElement.val().length && 
+                this.jQueryElement[0].selectionStart==this.jQueryElement[0].selectionEnd)
                 e.preventDefault();                        // Prevent insertion if printable character and length limit reached
         })
         this.jQueryElement[0].addEventListener("keyup", e=>{ // KEYUP [special case: pasted text]
@@ -130,6 +132,19 @@ window.PennController._AddElementType("TextInput", function(PennEngine) {
     };
     
     this.actions = {
+        callback: function(resolve, ...commands){
+            let oldPressEnter = this.pressEnter;
+            this.pressEnter = ()=> {
+                oldPressEnter.apply(this);
+                commands.forEach( async c=>{
+                    if (c instanceof Function) 
+                        await c.apply(this);
+                    else if (c instanceof PennEngine.PennElementCommands)
+                        await c._runPromises();
+                });
+            };
+            resolve();
+        },
         print: function(resolve, ...where){
             let afterPrint = ()=>{
                 this.jQueryElement.focus();         // Put focus on element when printed

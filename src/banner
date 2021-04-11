@@ -2,10 +2,14 @@ PennController for IBEX
 This software is licensed under a BSD license; see the LICENSE file for details.
 
  - Version 2.0.alpha
- - Last Update:  2021, March 12
+ - Last Update:  2021, April 2
  - Major changes in version 2.0.alpha:
    * Fixed Controller element duplicating lines and not rerunning properly
    * Fixed selector.shuffle and its order logging
    * Improved handling of trial end for the MediaRecorder element
    * Improved audio/video recording upload
+   * Fixed print/canvas.add coordinates format bug (introduced in 1.9)
+   * Can now pass opacity of 0 to audio.disable and video.disable
+   * Fixed all-digit strings passed to Key element
    + Added controller.callback
+   + Added textinput.callback

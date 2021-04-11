@@ -181,6 +181,7 @@ class PennElement {
             this.end = function(){ type.end.apply(this); };
     }
 }
+PennEngine.PennElement = PennElement;
 
 let errorCommand = (command, type, name, dict) => {
     let add = "";
@@ -354,6 +355,7 @@ class PennElementCommands {
         return lazyPromiseFromArrayOfLazyPromises(this._promises)();
     }
 }
+PennEngine.PennElementCommands = PennElementCommands;
 
 // The commands shared by all elements
 let standardCommands = {

@@ -1,18 +1,21 @@
+- "Reach trial" won't work because of a log command that fails with this mousetracking experiment:
+    https://farm.pcibex.net/experiments/cOTofa/edit
 - Audio resource's object would never get created, and value would always remain as blob:url
     when the same audio file was referenced in multiple rows/trials in a Template command
     (and the audio files are part of a zip file)
-- Order reported in results after selector.shuffle is off 
-    >   also selector.shuffle does not work with plain print() commands
-    >>  solution: run the print() commands randomly rather than in order!
+- Flickering on Chrome with .scaling("page")
+- Global Var handling got messy again...
+    > .value in general acts weird ("command 0 unknown")
+    > eg. newText().text( getTextInput() ) should work (it doesn't)
+- Add a 'Warning' tab?
+    > many problems with duplicates (elements sharing the same name)
+    > throw warning when callback comes after wait
+    > throw warnings/errors when no 'stop' command for relevant elements
 - MediaRecorder.stop won't validate promise?
 - InititateRecorder no longer detects video only for MediaRecorder("video")?
-- Flickering on Chrome with .scaling("page")
-- Disable on audio makes the element disappear (because controls=false)
-    > change behavior so that it always adds a fully transparent layer on video (controls false), semi-transparent on audio (controls true)
-- Re-printing DropDown elements cancels their onchange event
-- Global Var handling got messy again...
 - Go through command arguments not being executed as commands
-- Make .text a standard command < ?
+    > serious problems with .value and recursion?
+- Make .text a standard command < ? maybe with jQuery().text()?
 - Do something about new* in callbacks? resets properties when it shouldn't?
     >   have getOrNew? or just no new/get prefix?
 
@@ -36,6 +39,17 @@
 
 
 - canvas.add should not reprint the canvas (messes with order)      < FIXED?
+
+
+Since 2.0
+- Disable on audio makes the element disappear (because controls=false)
+    > change behavior so that it always adds a fully transparent layer on video (controls false), semi-transparent on audio (controls true)
+- Order reported in results after selector.shuffle is off 
+    >   also selector.shuffle does not work with plain print() commands
+    >>  solution: run the print() commands randomly rather than in order!
+- Re-printing DropDown elements cancels their onchange event
+- TextInput should be overwritable when all text selected
+    > https://www.pcibex.net/forums/topic/filled-textinput/page/2/#post-6787
 
 
 Since 1.9

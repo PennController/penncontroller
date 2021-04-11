@@ -58,7 +58,8 @@ window.PennController._AddElementType("Audio", function(PennEngine) {
             this.bufferEvents.push(["buffer",this.audio.currentTime,Date.now()]);
         };
         this.printDisable = opacity=>{
-            opacity = Number(opacity) || 0.5;
+            if (isNaN(opacity)||opacity===null)
+                opacity = 0.5;
             if (this.jQueryDisable instanceof jQuery)
                 this.jQueryDisable.remove();
             this.jQueryDisable = $("<div>").css({
@@ -70,7 +71,7 @@ window.PennController._AddElementType("Audio", function(PennEngine) {
                 height: this.jQueryElement.height()
             });
             this.jQueryElement.before(this.jQueryDisable);
-            this.jQueryElement.removeAttr("controls");
+            // this.jQueryElement.removeAttr("controls"); // don't remove controls: woud no longer print the player
         };
         resolve();
     };
@@ -138,8 +139,8 @@ window.PennController._AddElementType("Audio", function(PennEngine) {
         ,
         print: function(resolve, ...where){      /* $AC$ Audio PElement.print() Prints an interface to control the audio playback $AC$ */
             let afterPrint = ()=>{
-                if (this.disabled)
-                    this.printDisable();
+                if (this.disabled || (this.disabled!==null&&this.disabled!==false&&!isNaN(this.disabled)))
+                    this.printDisable(this.disabled);
                 resolve();
             };
             PennEngine.elements.standardCommands.actions.print.apply(this, [afterPrint, ...where]);
@@ -186,8 +187,10 @@ window.PennController._AddElementType("Audio", function(PennEngine) {
         disable: function(resolve, opacity){      /* $AC$ Audio PElement.disable(opacity) Disables the interface $AC$ */
             this.jQueryElement.addClass("PennController-disabled");
             this.jQueryContainer.addClass("PennController-disabled");
+            if (isNaN(opacity)||opacity===null) opacity = true;
+            else opacity = Number(opacity);
+            this.disabled = opacity;
             this.printDisable(opacity);
-            this.disabled = opacity || true;
             resolve();
         }
         ,

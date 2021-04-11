@@ -49,17 +49,19 @@ function _preloadZip () {
                                 for (let r in PennEngine.resources.list){
                                     let resource = PennEngine.resources.list[r];
                                     if (resource.name==filename && resource.status!="ready"){
-                                        resource.create.apply(                              // Create the resource's object
-                                            $.extend({}, resource, {                        // using a copy of the resource found
-                                                value: url,                                 // with its value set to the Blob's URL
-                                                resolve: function() {                       // and its resolve taking care of object
-                                                    if (resource.status=="ready")
-                                                        return;                             // Assign copy's object to original's
-                                                    resource.object = this.object;
-                                                    resource.resolve();
-                                                }
-                                            })
-                                        );
+                                        resource.value = url;
+                                        resource.create();
+                                        // resource.create.apply(                              // Create the resource's object
+                                        //     $.extend({}, resource, {                        // using a copy of the resource found
+                                        //         value: url,                                 // with its value set to the Blob's URL
+                                        //         resolve: function() {                       // and its resolve taking care of object
+                                        //             if (resource.status=="ready")
+                                        //                 return;                             // Assign copy's object to original's
+                                        //             resource.object = this.object;
+                                        //             resource.resolve();
+                                        //         }
+                                        //     })
+                                        // );
                                         resourceFound = true;
                                     }
                                 }

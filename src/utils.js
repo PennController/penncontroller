@@ -204,12 +204,13 @@ export function parseCoordinates(x,y){
     }
     let anchorX = String(x).match(/^(.+)\s+at\s+(.+)$/i);
     let anchorY = String(y).match(/^(.+)\s+at\s+(.+)$/i);
-    if (anchorX && anchorX[2].match(/^-?\d+(\.\d+)?$/))   // raw number
-        x = String(anchorX[2])+"px";
-    if (anchorY && anchorY[2].match(/^-?\d+(\.\d+)?$/))   // raw number
-        y = String(anchorY[2])+"px";
+    if (anchorX)// && anchorX[2].match(/^-?\d+(\.\d+)?$/))   // raw number
+        x = String(anchorX[2]);
+    if (anchorY)// && anchorY[2].match(/^-?\d+(\.\d+)?$/))   // raw number
+        y = String(anchorY[2]);
+    if (!isNaN(x)) x = x+"px";   // raw number
+    if (!isNaN(y)) y = y+"px";   // raw number
     if (anchorX){
-        x = anchorX[2];
         if (anchorX[1].match(/top|bottom/i)) throw "Passed Y coordinate in place of X";
         else if (anchorX[1].match(/center|middle/i))
             x = `calc(${x} - ${original_width/2}px)`;
@@ -219,9 +220,8 @@ export function parseCoordinates(x,y){
             x = `calc(${x} + ${(width-original_width)/2}px)`;
     }
     else
-        x = `calc(${x}px + ${(width-original_width)/2}px)`;
+        x = `calc(${x} + ${(width-original_width)/2}px)`;
     if (anchorY){
-        y = anchorY[2];
         if (anchorY[1].match(/left|right/i)) throw "Passed X coordinate in place of Y";
         else if (anchorY[1].match(/center|middle/i))
             y = `calc(${y} - ${original_height/2}px)`;
@@ -231,7 +231,7 @@ export function parseCoordinates(x,y){
             y = `calc(${y} + ${(height-original_height)/2}px)`;
     }
     else
-        y = `calc(${y}px + ${(height-original_height)/2}px)`;
+        y = `calc(${y} + ${(height-original_height)/2}px)`;
     return {x: x, y: y};
 }
 function RefreshUntil(x,y,element,until){

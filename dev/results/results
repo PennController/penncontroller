@@ -805,3 +805,24 @@
 1615580395,7e4fa5c1f963f8682534acd89863e3cf,PennController,1,0,unlabeled,NULL,PennController,1,_Trial_,Start,1615580393559,NULL
 1615580395,7e4fa5c1f963f8682534acd89863e3cf,PennController,1,0,unlabeled,NULL,Selector,choice,Selection,second,1615580394676,first;second;third
 1615580395,7e4fa5c1f963f8682534acd89863e3cf,PennController,1,0,unlabeled,NULL,PennController,1,_Trial_,End,1615580394685,NULL
+#
+# Results on Wednesday March 24 2021 17:04:38 UTC.
+# USER AGENT: Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:86.0) Gecko/20100101 Firefox/86.0
+# Design number was non-random = 150
+#
+# Columns below this comment are as follows:
+# 1. Time results were received.
+# 2. MD5 hash of participant's IP address.
+# 3. Controller name.
+# 4. Item number.
+# 5. Element number.
+# 6. Type.
+# 7. Group.
+# 8. PennElementType.
+# 9. PennElementName.
+# 10. Parameter.
+# 11. Value.
+# 12. EventTime.
+# 13. Comments.
+1616605478,5200f5c3deb1d0eed2877fa9c414d5f5,PennController,0,0,unlabeled,NULL,PennController,0,_Trial_,Start,1616605474009,NULL
+1616605478,5200f5c3deb1d0eed2877fa9c414d5f5,PennController,0,0,unlabeled,NULL,PennController,0,_Trial_,End,1616605478166,NULL

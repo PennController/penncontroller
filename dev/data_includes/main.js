@@ -1,51 +1,26 @@
 PennController.ResetPrefix(null); // Shorten command names (keep this line here)
 
 newTrial(
-    newController("mySentence", "DashedSentence", {s: "this is an example of a rather long line that is likely to incur a linebreak"})
-    ,
-    newButton("Read")
+    newTextInput("test", "")
+        .length(2)
+        .print()
         .callback(
-            clear()
-            ,
-            getController("mySentence")
-                .print()
-                .log()
-                .wait()
-                .remove()
-            ,
-            getButton("Read")
-                .print()
-            ,
-            getButton("Next")
+            newText("waf")
+                .text( getTextInput("test") )
                 .print()
         )
+    ,
+    newDropDown("waf", "...")
+        .add("wouf", "wef")
+        .callback( newText("hello").print() )
         .print()
     ,
-    newButton("Next")
-        .wait()
-)
-
-newTrial(
-    defaultText.center()
+    newButton("next")
+        .print().wait()
     ,
-    newText("first")
-        .print()
+    getText("hello").remove()
     ,
-    newCanvas("container", 500, 200)
-        .add(0,0,newText("second"))
-        .add("right at 100%","bottom at 100%",newText("third"))
-        .center()
-        .print()
+    getDropDown("waf").print()
     ,
-    newSelector("choice")
-        .add(getText("first"),getText("second"),getText("third"))
-    ,
-    newButton("shuffle")
-        .callback( getSelector("choice").shuffle() )
-        .center()
-        .print()
-    ,
-    getSelector("choice")
-        .log()
-        .wait()
+    getButton("next").wait()
 )

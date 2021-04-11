@@ -14,7 +14,7 @@ window.PennController._AddElementType("Key", function(PennEngine) {
         this.keys = [];
         this.specialKeys = [];
         for (let i = 0 ; i < keys.length ; i++) {
-            if (Number(keys[i])>0)
+            if (typeof keys[i]=="number" && keys[i]>0)
                 this.keys.push(String.fromCharCode(keys[i]));
             else if (typeof(keys[i])!="string")
                 PennEngine.debug.error("Invalid key(s) passed to new Key &quot;"+id+"&quot; (should be a string or a key code number)", keys[i]);

@@ -72,6 +72,8 @@ window.PennController._AddElementType("Text", function(PennEngine) {
 
     this.settings = {
         text: function(resolve,  text){ /* $AC$ Text PElement.text(text) Redefines the text of the element $AC$ */
+            if (text instanceof PennEngine.PennElementCommands)
+                text = text.value;
             this.text = text;
             this.jQueryElement.html(text);
             resolve();
