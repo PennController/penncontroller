@@ -1,0 +1,5 @@
+group,itemID,type,question,condition,undistortedForm,expectedResponse,audioFile,questionDuration
+A,1,critical,Wie viele Tiere von jeder Art wurden vor der großen Flut von Moses auf eine Arche gebracht?,early,Noah,Zwei,01e,6469
+B,1,critical,Wie viele Tiere von jeder Art brachte Moses vor der großen Flut auf eine Arche?,late,Noah,Zwei,01l,6483
+B,2,critical,Welche Tiere helfen dem Weihnachtsmann beim Verteilen der Neujahrsgeschenke?,early,Weihnachtsgeschenke,Rentieren,02e,4912
+A,2,critical,Der Weihnachtsmann verteilt die Neujahrsgeschenke mit der Hilfe von welchen Tieren?,late,Weihnachtsgeschenke,Rentieren,02l,5556

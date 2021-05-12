@@ -1,3 +1,12 @@
+- Fix self in chained self's (or just in .and?)
+- Add .nolog or something to trials to skip 'start' and 'end' events
+- Use conf_modifyRunningOrder to return a Proxy instance:
+    > keep track of current trial's index
+    > when index is incremented, insert trials into or splice the sequence if jumping earlier/later in the sequence
+- Calling print with *no* arguments after calling it *with* arguments first
+    wrongly keeps the absolute position
+- Revise Selector's frame to use printAndRefresh? 
+    > or just getBoundingRect in requestAnimationFrame
 - "Reach trial" won't work because of a log command that fails with this mousetracking experiment:
     https://farm.pcibex.net/experiments/cOTofa/edit
 - Audio resource's object would never get created, and value would always remain as blob:url
@@ -5,6 +14,7 @@
     (and the audio files are part of a zip file)
 - Flickering on Chrome with .scaling("page")
 - Global Var handling got messy again...
+    > creating newVar it in Template is executed *AFTER* in newTrial
     > .value in general acts weird ("command 0 unknown")
     > eg. newText().text( getTextInput() ) should work (it doesn't)
 - Add a 'Warning' tab?

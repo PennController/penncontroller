@@ -42,23 +42,33 @@ export function overToScale(x,y){
 
 
 export async function upload(url,filename,file,mimeType){
-    const presignedPostData = await new Promise(resolve => {
-        const xhr = new XMLHttpRequest();
-        const addParamCharacter = (url.match(/\?/) ? "&" : "?");
-        xhr.open("GET", url+addParamCharacter+"filename="+encodeURIComponent(filename)+"&mimetype="+encodeURIComponent(mimeType), true);
-        xhr.setRequestHeader("Content-Type", "application/json");
-        xhr.onload = function() {
-            let obj = null;
-            try{
-                obj = JSON.parse(this.responseText);
-            }
-            catch {
-                obj = this.responseText;
-            }
-            resolve(obj);
-        };
-        xhr.send();
-    });
+    let presignedPostData;
+    try {
+        presignedPostData = await new Promise((resolve,reject) => {
+            const xhr = new XMLHttpRequest();
+            const addParamCharacter = (url.match(/\?/) ? "&" : "?");
+            xhr.open("GET", url+addParamCharacter+"filename="+encodeURIComponent(filename)+"&mimetype="+encodeURIComponent(mimeType), true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.onerror = e=>reject("Could not GET "+url+";");
+            xhr.onload = function() {
+                let obj = null;
+                try{
+                    obj = JSON.parse(this.responseText);
+                }
+                catch {
+                    obj = this.responseText;
+                }
+                console.log("response",obj);
+                resolve(obj);
+            };
+            console.log("before sending xhr");
+            xhr.send();
+            console.log("after sending xhr");
+        });
+    } catch (e){
+        return new Promise((resolve,reject)=>reject(e));
+    }
+    console.log("presignedPostData",presignedPostData);
     const formData = new FormData();
     if (presignedPostData===undefined || typeof presignedPostData=="string"){
         formData.append('fileName', filename);
@@ -82,7 +92,11 @@ export async function upload(url,filename,file,mimeType){
         xhr.open("POST", url, true);
         xhr.onload = () => resolve(filename);
         xhr.onerror = () => reject(xhr.responseText);
-        xhr.send(formData);
+        try {
+            xhr.send(formData);
+        } catch (e){
+            return reject("Could not POST to "+url+"; "+e);
+        }
     });
 }
 

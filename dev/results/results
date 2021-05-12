@@ -826,3 +826,204 @@
 # 13. Comments.
 1616605478,5200f5c3deb1d0eed2877fa9c414d5f5,PennController,0,0,unlabeled,NULL,PennController,0,_Trial_,Start,1616605474009,NULL
 1616605478,5200f5c3deb1d0eed2877fa9c414d5f5,PennController,0,0,unlabeled,NULL,PennController,0,_Trial_,End,1616605478166,NULL
+#
+# Results on Tuesday May 11 2021 23:32:32 UTC.
+# USER AGENT: Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:88.0) Gecko/20100101 Firefox/88.0
+# Design number was non-random = 151
+#
+# Columns below this comment are as follows:
+# 1. Time results were received.
+# 2. MD5 hash of participant's IP address.
+# 3. Controller name.
+# 4. Item number.
+# 5. Element number.
+# 6. Type.
+# 7. Group.
+# 8. PennElementType.
+# 9. PennElementName.
+# 10. Parameter.
+# 11. Value.
+# 12. EventTime.
+# 13. Comments.
+1620775953,fc8ed7dab60c543c8e779dbb4e3af831,PennController,3,0,welcome1,NULL,PennController,0,_Trial_,Start,1620775858930,NULL
+1620775953,fc8ed7dab60c543c8e779dbb4e3af831,PennController,3,0,welcome1,NULL,PennController,0,_Trial_,End,1620775867954,NULL
+1620775953,fc8ed7dab60c543c8e779dbb4e3af831,PennController,0,0,init,NULL,PennController,InitiateRecorder,_Trial_,Start,1620775867981,NULL
+1620775953,fc8ed7dab60c543c8e779dbb4e3af831,PennController,0,0,init,NULL,PennController,InitiateRecorder,_Trial_,End,1620775872297,NULL
+1620775953,fc8ed7dab60c543c8e779dbb4e3af831,PennController,4,0,welcome2,NULL,PennController,2,_Trial_,Start,1620775872311,NULL
+1620775953,fc8ed7dab60c543c8e779dbb4e3af831,PennController,4,0,welcome2,NULL,TextInput,inputID,First,,1620775887488,h
+1620775953,fc8ed7dab60c543c8e779dbb4e3af831,PennController,4,0,welcome2,NULL,MediaRecorder,testRecorder,Filename,testRecorder.webm,1620775892095,NULL
+1620775953,fc8ed7dab60c543c8e779dbb4e3af831,PennController,4,0,welcome2,NULL,TextInput,inputID,Final,hjkhtttt,1620775892098,NULL
+1620775953,fc8ed7dab60c543c8e779dbb4e3af831,PennController,4,0,welcome2,NULL,PennController,2,_Trial_,End,1620775892104,NULL
+# Columns below this comment are as follows:
+# 1. Time results were received.
+# 2. MD5 hash of participant's IP address.
+# 3. Controller name.
+# 4. Item number.
+# 5. Element number.
+# 6. Type.
+# 7. Group.
+# 8. PennElementType.
+# 9. PennElementName.
+# 10. Parameter.
+# 11. Value.
+# 12. EventTime.
+# 13. audioFile.
+# 14. Comments.
+1620775953,fc8ed7dab60c543c8e779dbb4e3af831,PennController,5,0,record,NULL,PennController,4,_Trial_,Start,1620775892127,01l,NULL
+1620775953,fc8ed7dab60c543c8e779dbb4e3af831,PennController,5,0,record,NULL,PennController,4,_Trial_,End,1620775900961,01l,NULL
+1620775953,fc8ed7dab60c543c8e779dbb4e3af831,PennController,6,0,record,NULL,PennController,5,_Trial_,Start,1620775900973,02e,NULL
+1620775953,fc8ed7dab60c543c8e779dbb4e3af831,PennController,6,0,record,NULL,MediaRecorder,theRecorder,Filename,theRecorder.webm,1620775925890,02e,NULL
+1620775953,fc8ed7dab60c543c8e779dbb4e3af831,PennController,6,0,record,NULL,PennController,5,_Trial_,End,1620775925893,02e,NULL
+# Columns below this comment are as follows:
+# 1. Time results were received.
+# 2. MD5 hash of participant's IP address.
+# 3. Controller name.
+# 4. Item number.
+# 5. Element number.
+# 6. Type.
+# 7. Group.
+# 8. PennElementType.
+# 9. PennElementName.
+# 10. Parameter.
+# 11. Value.
+# 12. EventTime.
+# 13. Comments.
+1620775953,fc8ed7dab60c543c8e779dbb4e3af831,PennController,1,0,sync,NULL,PennController,UploadRecordings,_Trial_,Start,1620775925903,NULL
+1620775953,fc8ed7dab60c543c8e779dbb4e3af831,PennController,1,0,sync,NULL,PennController,UploadRecordings,Filename,36002108-0339-e1fa-af1c-4b3d5c1fc203.zip,1620775926996,NULL
+1620775953,fc8ed7dab60c543c8e779dbb4e3af831,PennController,1,0,sync,NULL,PennController,UploadRecordings,Status,Failed,1620775927011,Error Text: Could not GET https://p2zy9gmzfg.execute-api.us-east-2.amazonaws.com/default/getPresignedURL; Could not GET https://p2zy9gmzfg.execute-api.us-east-2.amazonaws.com/default/getPresignedURL; [object ProgressEvent]
+1620775953,fc8ed7dab60c543c8e779dbb4e3af831,PennController,1,0,sync,NULL,PennController,UploadRecordings,_Trial_,End,1620775952533,NULL
+#
+# Results on Tuesday May 11 2021 23:53:07 UTC.
+# USER AGENT: Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:88.0) Gecko/20100101 Firefox/88.0
+# Design number was non-random = 152
+#
+# Columns below this comment are as follows:
+# 1. Time results were received.
+# 2. MD5 hash of participant's IP address.
+# 3. Controller name.
+# 4. Item number.
+# 5. Element number.
+# 6. Type.
+# 7. Group.
+# 8. PennElementType.
+# 9. PennElementName.
+# 10. Parameter.
+# 11. Value.
+# 12. EventTime.
+# 13. Comments.
+1620777188,fc8ed7dab60c543c8e779dbb4e3af831,PennController,3,0,welcome1,NULL,PennController,0,_Trial_,Start,1620777141459,NULL
+1620777188,fc8ed7dab60c543c8e779dbb4e3af831,PennController,3,0,welcome1,NULL,PennController,0,_Trial_,End,1620777155476,NULL
+1620777188,fc8ed7dab60c543c8e779dbb4e3af831,PennController,0,0,init,NULL,PennController,InitiateRecorder,_Trial_,Start,1620777155503,NULL
+1620777188,fc8ed7dab60c543c8e779dbb4e3af831,PennController,0,0,init,NULL,PennController,InitiateRecorder,_Trial_,End,1620777157962,NULL
+1620777188,fc8ed7dab60c543c8e779dbb4e3af831,PennController,4,0,welcome2,NULL,PennController,2,_Trial_,Start,1620777157976,NULL
+1620777188,fc8ed7dab60c543c8e779dbb4e3af831,PennController,4,0,welcome2,NULL,TextInput,inputID,First,,1620777172439,s
+1620777188,fc8ed7dab60c543c8e779dbb4e3af831,PennController,4,0,welcome2,NULL,MediaRecorder,testRecorder,Filename,testRecorder.webm,1620777173978,NULL
+1620777188,fc8ed7dab60c543c8e779dbb4e3af831,PennController,4,0,welcome2,NULL,TextInput,inputID,Final,sdfdsfsd,1620777173979,NULL
+1620777188,fc8ed7dab60c543c8e779dbb4e3af831,PennController,4,0,welcome2,NULL,PennController,2,_Trial_,End,1620777173979,NULL
+# Columns below this comment are as follows:
+# 1. Time results were received.
+# 2. MD5 hash of participant's IP address.
+# 3. Controller name.
+# 4. Item number.
+# 5. Element number.
+# 6. Type.
+# 7. Group.
+# 8. PennElementType.
+# 9. PennElementName.
+# 10. Parameter.
+# 11. Value.
+# 12. EventTime.
+# 13. audioFile.
+# 14. Comments.
+1620777188,fc8ed7dab60c543c8e779dbb4e3af831,PennController,6,0,record,NULL,PennController,5,_Trial_,Start,1620777174444,02l,NULL
+1620777188,fc8ed7dab60c543c8e779dbb4e3af831,PennController,6,0,record,NULL,PennController,5,_Trial_,End,1620777181051,02l,NULL
+1620777188,fc8ed7dab60c543c8e779dbb4e3af831,PennController,5,0,record,NULL,PennController,4,_Trial_,Start,1620777181076,01e,NULL
+1620777188,fc8ed7dab60c543c8e779dbb4e3af831,PennController,5,0,record,NULL,MediaRecorder,theRecorder,Filename,theRecorder.webm,1620777181117,01e,NULL
+1620777188,fc8ed7dab60c543c8e779dbb4e3af831,PennController,5,0,record,NULL,PennController,4,_Trial_,End,1620777184919,01e,NULL
+# Columns below this comment are as follows:
+# 1. Time results were received.
+# 2. MD5 hash of participant's IP address.
+# 3. Controller name.
+# 4. Item number.
+# 5. Element number.
+# 6. Type.
+# 7. Group.
+# 8. PennElementType.
+# 9. PennElementName.
+# 10. Parameter.
+# 11. Value.
+# 12. EventTime.
+# 13. Comments.
+1620777188,fc8ed7dab60c543c8e779dbb4e3af831,PennController,1,0,sync,NULL,PennController,UploadRecordings,_Trial_,Start,1620777184931,NULL
+1620777188,fc8ed7dab60c543c8e779dbb4e3af831,PennController,1,0,sync,NULL,MediaRecorder,theRecorder,Filename,theRecorder-1.webm,1620777185096,NULL
+1620777188,fc8ed7dab60c543c8e779dbb4e3af831,PennController,1,0,sync,NULL,PennController,UploadRecordings,Filename,18f69263-eaf5-fcca-4fdc-5fb4e8d5927b.zip,1620777186178,NULL
+1620777188,fc8ed7dab60c543c8e779dbb4e3af831,PennController,1,0,sync,NULL,PennController,UploadRecordings,Status,Failed,1620777186197,Error Text: Could not GET https://p2zy9gmzfg.execute-api.us-east-2.amazonaws.com/default/getPresignedURL;
+1620777188,fc8ed7dab60c543c8e779dbb4e3af831,PennController,1,0,sync,NULL,PennController,UploadRecordings,_Trial_,End,1620777187848,NULL
+#
+# Results on Wednesday May 12 2021 00:00:48 UTC.
+# USER AGENT: Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:88.0) Gecko/20100101 Firefox/88.0
+# Design number was non-random = 153
+#
+# Columns below this comment are as follows:
+# 1. Time results were received.
+# 2. MD5 hash of participant's IP address.
+# 3. Controller name.
+# 4. Item number.
+# 5. Element number.
+# 6. Type.
+# 7. Group.
+# 8. PennElementType.
+# 9. PennElementName.
+# 10. Parameter.
+# 11. Value.
+# 12. EventTime.
+# 13. Comments.
+1620777648,fc8ed7dab60c543c8e779dbb4e3af831,PennController,3,0,welcome1,NULL,PennController,0,_Trial_,Start,1620777612608,NULL
+1620777648,fc8ed7dab60c543c8e779dbb4e3af831,PennController,3,0,welcome1,NULL,PennController,0,_Trial_,End,1620777615713,NULL
+1620777648,fc8ed7dab60c543c8e779dbb4e3af831,PennController,0,0,init,NULL,PennController,InitiateRecorder,_Trial_,Start,1620777615731,NULL
+1620777648,fc8ed7dab60c543c8e779dbb4e3af831,PennController,0,0,init,NULL,PennController,InitiateRecorder,_Trial_,End,1620777617374,NULL
+1620777648,fc8ed7dab60c543c8e779dbb4e3af831,PennController,4,0,welcome2,NULL,PennController,2,_Trial_,Start,1620777617388,NULL
+1620777648,fc8ed7dab60c543c8e779dbb4e3af831,PennController,4,0,welcome2,NULL,TextInput,inputID,First,,1620777633108,j
+1620777648,fc8ed7dab60c543c8e779dbb4e3af831,PennController,4,0,welcome2,NULL,TextInput,inputID,EnterReturn,jklkj;,1620777633917,NULL
+1620777648,fc8ed7dab60c543c8e779dbb4e3af831,PennController,4,0,welcome2,NULL,MediaRecorder,testRecorder,Filename,testRecorder.webm,1620777635751,NULL
+1620777648,fc8ed7dab60c543c8e779dbb4e3af831,PennController,4,0,welcome2,NULL,TextInput,inputID,Final,jklkj,1620777635754,NULL
+1620777648,fc8ed7dab60c543c8e779dbb4e3af831,PennController,4,0,welcome2,NULL,PennController,2,_Trial_,End,1620777635755,NULL
+# Columns below this comment are as follows:
+# 1. Time results were received.
+# 2. MD5 hash of participant's IP address.
+# 3. Controller name.
+# 4. Item number.
+# 5. Element number.
+# 6. Type.
+# 7. Group.
+# 8. PennElementType.
+# 9. PennElementName.
+# 10. Parameter.
+# 11. Value.
+# 12. EventTime.
+# 13. audioFile.
+# 14. Comments.
+1620777648,fc8ed7dab60c543c8e779dbb4e3af831,PennController,5,0,record,NULL,PennController,4,_Trial_,Start,1620777635770,01l,NULL
+1620777648,fc8ed7dab60c543c8e779dbb4e3af831,PennController,5,0,record,NULL,PennController,4,_Trial_,End,1620777641821,01l,NULL
+1620777648,fc8ed7dab60c543c8e779dbb4e3af831,PennController,6,0,record,NULL,PennController,5,_Trial_,Start,1620777641831,02e,NULL
+1620777648,fc8ed7dab60c543c8e779dbb4e3af831,PennController,6,0,record,NULL,MediaRecorder,theRecorder,Filename,theRecorder.webm,1620777641866,02e,NULL
+1620777648,fc8ed7dab60c543c8e779dbb4e3af831,PennController,6,0,record,NULL,PennController,5,_Trial_,End,1620777644549,02e,NULL
+# Columns below this comment are as follows:
+# 1. Time results were received.
+# 2. MD5 hash of participant's IP address.
+# 3. Controller name.
+# 4. Item number.
+# 5. Element number.
+# 6. Type.
+# 7. Group.
+# 8. PennElementType.
+# 9. PennElementName.
+# 10. Parameter.
+# 11. Value.
+# 12. EventTime.
+# 13. Comments.
+1620777648,fc8ed7dab60c543c8e779dbb4e3af831,PennController,1,0,sync,NULL,PennController,UploadRecordings,_Trial_,Start,1620777644556,NULL
+1620777648,fc8ed7dab60c543c8e779dbb4e3af831,PennController,1,0,sync,NULL,MediaRecorder,theRecorder,Filename,theRecorder-1.webm,1620777644708,NULL
+1620777648,fc8ed7dab60c543c8e779dbb4e3af831,PennController,1,0,sync,NULL,PennController,UploadRecordings,Filename,4f45eb24-d743-b7a4-a8c1-f756f5e7c1cd.zip,1620777646272,NULL
+1620777648,fc8ed7dab60c543c8e779dbb4e3af831,PennController,1,0,sync,NULL,PennController,UploadRecordings,Status,Failed,1620777646288,Error Text: Could not GET https://p2zy9gmzfg.execute-api.us-east-2.amazonaws.com/default/getPresignedURL;
+1620777648,fc8ed7dab60c543c8e779dbb4e3af831,PennController,1,0,sync,NULL,PennController,UploadRecordings,_Trial_,End,1620777648041,NULL

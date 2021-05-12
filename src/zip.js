@@ -33,6 +33,7 @@ function _preloadZip () {
         getBinaryContent(url, function(error, data) {
             if (error) {
                 removeURL();    // Problem with downloading the file: remove the URL from the array
+                PennEngine.debug.error("Error downloading "+url+":", error);
                 throw error;    // Throw the error
             }
             zip.loadAsync(data).then(function(){                // Load the zip object with the data stream
@@ -98,7 +99,4 @@ function _preloadZip () {
     }
 };
 
-
-$(document).ready(function(){       // Start to download as soon as document is ready
-    _preloadZip();                  // Preload any zip file
-});
+PennEngine.Prerun( _preloadZip);

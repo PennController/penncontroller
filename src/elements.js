@@ -178,7 +178,7 @@ class PennElement {
         this.validate = ()=>this.hasValidated = true;
         this._printCallback = [];
         if (type.hasOwnProperty("end"))     // Called at the end of a trial
-            this.end = function(){ type.end.apply(this); };
+            this.end = async function(){ await type.end.apply(this); };
     }
 }
 PennEngine.PennElement = PennElement;
@@ -886,7 +886,7 @@ PennController._AddElementType = function(name, Type) {
         };
 
         let end = type.end;                             // Set a default end
-        type.end = function(){
+        type.end = async function(){
             //if (this.jQueryElement instanceof jQuery && this.jQueryElement.parent().length)
             if (this.jQueryElement instanceof jQuery)
                 this.jQueryElement.remove();            // Remove jQueryElement from DOM
@@ -899,7 +899,7 @@ PennController._AddElementType = function(name, Type) {
             if (this.jQueryContainer instanceof jQuery)
                 this.jQueryContainer.remove();
             if (end instanceof Function)
-                end.apply(this);                        // Call end for this type
+                await end.apply(this);                        // Call end for this type
         };
 
         type.name = name;

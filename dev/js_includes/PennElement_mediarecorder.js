@@ -29,12 +29,14 @@ window.PennController._AddElementType("MediaRecorder", function(PennEngine) {
     let streams = [];               // This array contains all the samples recorded so far
     let uploadURL = "";             // The URL to the PHP file that saves the archive
     let initiated = false;          // Whether PennController.InitiateRecorder has been called
+    let useMediaRecorder = false;   // Whether a newMediaRecorder command is present in the code
     let currentMediaElement;        // The media element currently active
     let statusElement;              // The top-right DOM element indicating whether it is currently recording
     let resolveStart = [];          // List of promises to resolve on start
-    let resolveStop = [];           // List of promises to resolve on stop
+    let resolveStop = new Map();    // Associates MediaRecorder elements with promises to stop
     let controllerLogs = [];        // List of columns to log for both InitiateRecorder and uploadcontroller
     let pendingRequests = [];       // The requests not resolved so far
+    const checkRequests = ()=>new Promise(r=>setTimeout( ()=>pendingRequests.length==0&&r()||checkRequests() , 10 ));
 
     let captureAudio = false;
     let captureVideo = false;
@@ -109,11 +111,12 @@ window.PennController._AddElementType("MediaRecorder", function(PennEngine) {
                         let mime = getMimeExtension(currentMediaElement.mediaType).mimeType;
                         currentMediaElement.mediaPlayer.srcObject = null;
                         currentMediaElement.blob = new Blob(chunks,{type:mime});                        // Blob from chunks
+                        console.log("Created blob");
                         currentMediaElement.mediaPlayer.src = URL.createObjectURL(currentMediaElement.blob);    // Can replay now
                         chunks = [];                                                                            // Reset chunks
-                        // currentMediaElement = null;                                                             // Reset current element
-                        if (resolveStop.length)
-                            resolveStop.shift().call();
+                        const thisResolveStop = resolveStop.get(currentMediaElement);
+                        while (thisResolveStop && thisResolveStop instanceof Array && thisResolveStop.length)
+                            thisResolveStop.shift().call();
                         mediaRecorder.recording = false;
                     };
                     mediaRecorder.onstart = function(e) {           // When a recording starts
@@ -194,24 +197,23 @@ window.PennController._AddElementType("MediaRecorder", function(PennEngine) {
         uploadController.runFooter = false;
         uploadController.countsForProgressBar = false;
         uploadController.sequence = ()=>new Promise(async function(resolve){
+            console.log("start uploadrecordings");
+            console.log("list of streams");
+            streams.forEach(s=>console.log(s.name));
             let controller = PennEngine.controllers.running;    // In SEQUENCE, controller is running instance
             controller.element.append($("<p>Please wait while the archive of your recordings is being uploaded to the server...</p>"));
-            let zip = new PennEngine.utils.JSZip(); // Create the object representing the zip file
-            let uploadingStreams = [];
-            if (!async)                     // If not an async upload, wait for all requests to finish before proceeding
-                await new Promise(r=>{
-                    let checkRequests = ()=>setTimeout( ()=>pendingRequests.length==0&&r()||checkRequests() , 10 );
-                    checkRequests();
-                });
-            for (let s in streams){             // Add each recording to the zip instance
-                if (streams[s].uploadStatus!="uploaded"){
-                    zip.file(streams[s].name, streams[s].data);
-                    streams[s].uploadStatus = "uploading";
-                    uploadingStreams.push(streams[s]);
-                }
-            }
+            if (!async) await checkRequests();  // If not an async upload, wait for all requests to finish before proceeding
+            const zip = new PennEngine.utils.JSZip(); // Create the object representing the zip file
+            const uploadingStreams = [];
+            streams.forEach(s=>{
+                if (s.uploadStatus==="uploaded") return;
+                zip.file(s.name, s.data);
+                s.uploadStatus = "uploading";
+                uploadingStreams.push(s);
+            });
+            if (uploadingStreams.length===0) return resolve();
             // Create and push the request now, without any further delay
-            let request = {};
+            const request = {};
             pendingRequests.push(request);
             zip.generateAsync({
                 compression: 'DEFLATE',
@@ -220,97 +222,43 @@ window.PennController._AddElementType("MediaRecorder", function(PennEngine) {
                 window.PennController.downloadRecordingsArchive = ()=>PennEngine.utils.saveAs(zc, "RecordingsArchive.zip");
                 let fileName = PennEngine.utils.guidGenerator()+'.zip';
                 var fileObj = new File([zc], fileName); // Create file object to upload with uniquename
-                if (uploadURL.match(/^aws:/i)){
+                if (uploadURL.match(/^aws:/i))
                     PennEngine.debug.error("The 'aws:' prefix in InitiateRecorder is no longer supported");
-                    // let strippedUploadURL = uploadURL.replace(/^aws:/i,'');
-                    // PennEngine.utils.uploadToPresignedS3(strippedUploadURL,fileObj).then( response => {
-                    //     let key = fileName;
-                    //     if (response.fields && response.fields.key) key = response.fields.key;
-                    //     PennEngine.controllers.running
-                    //         .save("PennController", "UploadRecordings", "Filename", key, Date.now(), (async?"async":"NULL"));
-                    //     PennEngine.controllers.running
-                    //         .save("PennController", "UploadRecordings", "Status", "Success", Date.now(), (async?"async":"NULL"));
-                    //     for (let i = 0; i < uploadingStreams.length; i++)
-                    //         uploadingStreams[i].uploadStatus = "uploaded";
-                    //     PennEngine.debug.log("Recordings sent to the S3 bucket");
-                    //     if (!async) resolve();
-                    //     pendingRequests = pendingRequests.filter(v=>v!=request);
-                    // }, error => {
-                    //     PennEngine.controllers.running
-                    //         .save("PennController", "UploadRecordings", "Filename", fileName, Date.now(), (async?"async":"NULL"));
-                    //     PennEngine.controllers.running
-                    //         .save("PennController", "UploadRecordings", "Status", "Failed", Date.now(), error);
-                    //     PennEngine.debug.error("MediaRecorder's presigned S3 post failed.", error);
-                    //     PennEngine.controllers.running.element
-                    //         .append($("<p>There was an error uploading the recordings: "+xhr.responseText+"</p>"))
-                    //         .append($("<p>Please click here to download a copy of your recordings "+
-                    //                 "in case you need to send them manually.</p>").bind('click', ()=>{
-                    //                         PennEngine.utils.saveAs(zc, "RecordingsArchive.zip");
-                    //                         if (!async)
-                    //                             resolve();
-                    //                 }).addClass("Message-continue-link"));
-                    //     pendingRequests = pendingRequests.filter(v=>v!=request);
-                    // } );
-                }
                 else {
-                    // var fd = new FormData();                // Submission-friendly format
-                    // fd.append('fileName', fileName);
-                    // fd.append('file', fileObj);
-                    // fd.append('mimeType', 'application/zip');
-                    // var xhr = new XMLHttpRequest();     // XMLHttpRequest rather than jQuery's Ajax (mysterious CORS problems with jQuery 1.8)
-                    // xhr.open('POST', uploadURL, true);
-                    // xhr.onreadystatechange = ()=>{
-                    //     if (xhr.readyState == 4){       // 4 means finished and response ready
                     PennEngine.utils.upload(uploadURL, fileName, fileObj, 'application/zip')
                         .then( f=>{
                             fileName = f;
-                            // let success = xhr.status == 200 && !xhr.responseText.match(/problem|error/i);
-                            // console.log("Upload XHR response", xhr);
-                            // if (success){ // Success
-                            //     if (typeof xhr.response == "string" && xhr.response.match(/"filename":/))
-                            //         fileName = JSON.parse(xhr.response).filename;
-                                PennEngine.controllers.running
-                                    .save("PennController", "UploadRecordings", "Filename", fileName, Date.now(), (async?"async":"NULL"));
-                                PennEngine.controllers.running
-                                    .save("PennController", "UploadRecordings", "Status", "Success", Date.now(), (async?"async":"NULL"));
-                                PennEngine.debug.log("Recordings sent to the server");
-                                for (let i = 0; i < uploadingStreams.length; i++)
-                                    uploadingStreams[i].uploadStatus = "uploaded";
-                                    // uploadingStreams[i].alreadyUploaded = true;
-                                if (!async)
-                                    resolve();              // Successful request
-                                pendingRequests = pendingRequests.filter(v=>v!=request);
-                            // }else {                                                              // Error
+                            PennEngine.controllers.running
+                                .save("PennController", "UploadRecordings", "Filename", fileName, Date.now(), (async?"async":"NULL"));
+                            PennEngine.controllers.running
+                                .save("PennController", "UploadRecordings", "Status", "Success", Date.now(), (async?"async":"NULL"));
+                            PennEngine.debug.log("Recordings sent to the server");
+                            for (let i = 0; i < uploadingStreams.length; i++)
+                                uploadingStreams[i].uploadStatus = "uploaded";
+                            if (!async)
+                                resolve();              // Successful request
+                            pendingRequests = pendingRequests.filter(v=>v!=request);
+                    // Error
                         }).catch( e => {
-                                PennEngine.controllers.running
-                                    .save("PennController", "UploadRecordings", "Filename", fileName, Date.now(), (async?"async":"NULL"));
-                                for (let i = 0; i < uploadingStreams.length; i++)
-                                    uploadingStreams[i].uploadStatus = "local";
-                                // window.PennController.UploadRecordingsError = xhr.responseText||"error";
-                                window.PennController.UploadRecordingsError = e||"error";
-                                // PennEngine.debug.error("MediaRecorder's Ajax post failed. ("+xhr.status+")", xhr.responseText);
-                                PennEngine.debug.error("MediaRecorder's Ajax post failed", e);
-                                PennEngine.controllers.running
-                                        .save("PennController", "UploadRecordings", "Status", "Failed", Date.now(), 
-                                            "Error Text: "+e);
-                                            // "Error Text: "+xhr.responseText+"; Status: "+xhr.status);
-                                controller.element
-                                    // .append($("<p>There was an error uploading the recordings: "+xhr.responseText+"</p>"))
-                                    .append($("<p>There was an error uploading the recordings: "+e+"</p>"))
-                                    .append($("<p>Please click here to download a copy of your recordings "+
-                                            "in case you need to send them manually.</p>").bind('click', ()=>{
-                                                    PennEngine.utils.saveAs(zc, "RecordingsArchive.zip");
-                                                    if (!async)
-                                                        resolve();
-                                            }).addClass("Message-continue-link"));
-                            // }
+                            PennEngine.controllers.running
+                                .save("PennController", "UploadRecordings", "Filename", fileName, Date.now(), (async?"async":"NULL"));
+                            for (let i = 0; i < uploadingStreams.length; i++)
+                                uploadingStreams[i].uploadStatus = "local";
+                            window.PennController.UploadRecordingsError = e||"error";
+                            PennEngine.debug.error("MediaRecorder's Ajax post failed", e);
+                            PennEngine.controllers.running
+                                    .save("PennController", "UploadRecordings", "Status", "Failed", Date.now(), 
+                                        "Error Text: "+e);
+                            controller.element
+                                .append($("<p>There was an error uploading the recordings: "+e+"</p>"))
+                                .append($("<p>Please click here to download a copy of your recordings "+
+                                        "in case you need to send them manually.</p>").bind('click', ()=>{
+                                                PennEngine.utils.saveAs(zc, "RecordingsArchive.zip");
+                                                if (!async)
+                                                    resolve();
+                                        }).addClass("Message-continue-link"));
                             pendingRequests = pendingRequests.filter(v=>v!=request);
                         });
-                            // This request is no longer pending
-                            // pendingRequests = pendingRequests.filter(v=>v!=request);
-                        // } 
-                    // };
-                    // xhr.send(fd);                       // Send the request
                     }
             });
             if (async)
@@ -329,21 +277,28 @@ window.PennController._AddElementType("MediaRecorder", function(PennEngine) {
         window.conf_modifyRunningOrder = function (ro){     // Add the upload step automatically when sequence has been built  
             if (oldModify instanceof Function)
                 ro = oldModify.apply(this, [ro]);
-            if (!initiated)                                 // If InitiateRecorder has not been called, leave running order as is
+            // if (!initiated)                                 // If InitiateRecorder has not been called, leave running order as is
+            if (!useMediaRecorder)
                 return ro;
             let manualUpload = false;                       // Whether the sequence contains manual uploading of the results
+            let initiateRecorder = false;                   // Wehther InitiateRecorder is in the Sequence
             let sendResultsID = [-1,-1];                    // Item + Element IDs of the __SendResults__ controller
             for (let item = 0; item < ro.length; ++item) {  // Go through each element of each item in the running order
                 for (let element = 0; element < ro[item].length; ++element) {
-                    if (ro[item][element].controller == "PennController" && ro[item][element].options.id == "UploadRecordings") {
+                    const type = ro[item][element].controller, id = ro[item][element].options.id;
+                    if (type == "PennController" && id == "UploadRecordings") {
                         manualUpload = true;                // Uploading of recordings is manual
                         if (sendResultsID[0]>=0)            // If __SendResults__ was found before
                             alert("WARNING: upload of recording archive set AFTER sending of results; check your Sequence definition.");
                     }
-                    else if (ro[item][element].controller == "__SendResults__" && sendResultsID[0]<0 && !manualUpload)
+                    else if (type == "__SendResults__" && sendResultsID[0]<0 && !manualUpload)
                         sendResultsID = [item, element];    // Found __SendResults__: store item+element IDs
+                    else if (type == "PennController" && id == "InitiateRecorder")
+                        initiateRecorder = true;
                 }
             }
+            if (!initiateRecorder)
+                PennEngine.debug.error("This project uses MediaRecorder but InitiateRecorder is not included in the Sequence");
             // Edit v1.8: always try uploading one last time before sending, just in case
             // if (!manualUpload) {                            // If no manual upload, add the upload controller before __SendResults__
             //     console.log("No manual upload");
@@ -351,7 +306,7 @@ window.PennController._AddElementType("MediaRecorder", function(PennEngine) {
                 PennEngine.tmpItems.pop();                  // Remove controller form list: manually added here
                 let uploadElement = new DynamicElement("PennController", uploadController);
                 if (sendResultsID[0]>=0)                    // Manual __SendResults__, add upload controller before it
-                    ro[sendResultsID[0]].splice(sendResultsID[1], 0, uploadElement);
+                    ro[sendResultsID[0]].splice(sendResultsID[0], 0, uploadElement);
                 else                                        // Else, just add uploadElement at the end
                     ro.push([uploadElement]);
             // }
@@ -364,6 +319,7 @@ window.PennController._AddElementType("MediaRecorder", function(PennEngine) {
 
 
     this.immediate = function(id, type){
+        useMediaRecorder = true;
         if (id===undefined||typeof(id)!="string"||id.length==0)
             id = "MediaRecorder";
         else if (type===undefined)
@@ -388,7 +344,8 @@ window.PennController._AddElementType("MediaRecorder", function(PennEngine) {
 
     this.uponCreation = function(resolve){
         if (uploadURL.length==0)
-            PennEngine.debug.error("Recorder not initiated. Make sure the sequence of items contains an InitiateRecorder PennController.");
+            PennEngine.debug.error("Recorder not initiated. Make sure the sequence of items contains an InitiateRecorder trial.");
+        resolveStop.set(this, []);  // no callback for mediarecorder.onstop yet
         this.log = false;
         this.recordings = [];
         this.recording = false;
@@ -431,11 +388,12 @@ window.PennController._AddElementType("MediaRecorder", function(PennEngine) {
 
         this.stop = ()=>new Promise(r=>{
             this.recording = false;
-            currentMediaElement = this;
-            resolveStop.push( ()=>{ this.recordings.push(["Recording", "Stop", Date.now(), "NULL"]); r(); } );
             recordButton.text("Record");
-            if (this.recorder.state=="recording")
+            currentMediaElement = this;
+            if (this.recorder.state=="recording"){
+                resolveStop.get(this).push( ()=>{ this.recordings.push(["Recording", "Stop", Date.now(), "NULL"]); r(); } );
                 this.recorder.stop();                                                  // This will look at currentMediaElement
+            }
             else
                 r();
         });
@@ -458,12 +416,15 @@ window.PennController._AddElementType("MediaRecorder", function(PennEngine) {
                 }
                 this.recorder.stop();
             });
+        const thisResolveStop = resolveStop.get(this);
+        if (thisResolveStop instanceof Array && thisResolveStop.length>0)
+            await new Promise(r=>thisResolveStop.push(r));  // Wait until blob is created so stream can be pushed
         if (this.blob){
-            let extension = getMimeExtension(this.mediaType).extension;
+            const extension = getMimeExtension(this.mediaType).extension;
+            const existing_filenames = streams.map(a=>a.name);
             let filename = this.id+'.'+extension;
-            let existing_fileanames = streams.map(a=>a.name);
             let i = 0;
-            while (existing_fileanames.indexOf(filename)>=0){
+            while (existing_filenames.indexOf(filename)>=0){
                 i++;
                 filename = this.id+'-'+i+'.'+extension;
             }
@@ -472,11 +433,13 @@ window.PennController._AddElementType("MediaRecorder", function(PennEngine) {
                 data: this.blob,
                 uploadStatus: "local"
             });
+            console.log("pushed stream");
             PennEngine.controllers.running.save(this.type, this.id, "Filename", filename, Date.now(), "NULL");
         }
         if (this.log)
             for (let r in this.recordings)
                 PennEngine.controllers.running.save(this.type, this.id, ...this.recordings[r]);
+        console.log("MediaRecorder element ended");
     };
 
     this.value = function(){        // Value is blob of recording
