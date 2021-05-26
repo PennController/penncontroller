@@ -1,4 +1,3 @@
-- Selector shuffle with before/after elements doesn't work
 - Revise Selector's frame to use printAndRefresh? 
     > or just getBoundingRect in requestAnimationFrame
 - "Reach trial" won't work because of a log command that fails with this mousetracking experiment:
@@ -44,6 +43,7 @@
 
 
 Since 2.0
+- Selector shuffle with before/after elements doesn't work
 - Flickering on Chrome with .scaling("page")
 - Add .nolog or something to trials to skip 'start' and 'end' events
 - Fix self in chained self's (or just in .and?)

@@ -35,12 +35,46 @@ window.PennController._AddElementType("Selector", function(PennEngine) {
                     tmpPrints[i] = tmpContainer;
                 }
             }
+            else if (lastPrint[0] instanceof jQuery && (lastPrint[0].hasClass("PennController-after")||lastPrint[0].hasClass("PennController-before"))){
+                // this print command was called to add this element before or after another element
+                const r = {};
+                let befOrAft = lastPrint[0][0].className.replace(/^.*PennController-(after|before).*$/,"$1");
+                befOrAft = befOrAft.replace(/^[ab]/,c=>c.toUpperCase());
+                // let us find out whether the other element is part of the shuffle
+                for (let n = 0; n < indicesToShuffle.length; n++){
+                    const other_element = this.elements[indicesToShuffle[n]][0];
+                    if (!(other_element['jQuery'+befOrAft] instanceof Array)) continue;
+                    const prelength = other_element['jQuery'+befOrAft].length;
+                    other_element['jQuery'+befOrAft] = other_element['jQuery'+befOrAft].filter(a=>a._element!=element);
+                    if (other_element['jQuery'+befOrAft].length<prelength){
+                        // the other element is part of the shuffle, 
+                        // so we'll want to print on the associated post-shuffle element instead
+                        r[befOrAft] = this.elements[shuffledIndices[n]][0];
+                        console.log("returning r", r);
+                        return r;
+                    }
+                }
+            }
+            console.log("returning lastPrint",lastPrint);
             return lastPrint;
+        });
+        indicesToShuffle.forEach(async i=>{
+            const el = this.elements[i][0];
+            await window.PennController.Elements['get'+el.type](el.id).remove()._runPromises();
         });
         shuffledIndices.forEach(async (index,i)=>{
             let element = this.elements[index][0], print = prints[i];
             if (print===undefined) return;
-            await window.PennController.Elements['get'+element.type](element.id).print(...prints[i])._runPromises();
+            console.log("current print", print);
+            console.log("current element",element,"type",element.type);
+            const handler = window.PennController.Elements['get'+element.type](element.id);
+            console.log("handler", handler);
+            if (print.hasOwnProperty("After"))
+                await window.PennController.Elements['get'+print.After.type](print.After.id).after( handler )._runPromises();
+            else if (print.hasOwnProperty("Before"))
+                await window.PennController.Elements['get'+print.Before.type](print.Before.id).after( handler )._runPromises();
+            else
+                await handler.print(...print)._runPromises();
             const tmpPrint = tmpPrints[indicesToShuffle[i]];
             if (tmpPrint instanceof jQuery){
                 element.jQueryContainer.css('position', 'unset');

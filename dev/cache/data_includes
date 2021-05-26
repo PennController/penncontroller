@@ -1,66 +1,33 @@
 PennController.ResetPrefix(null) // Shorten command names (keep this line here)
 
-newDot = (color,diameter="24px") => newCanvas(color, diameter, diameter).color(color).css("border-radius","100%");
-getDot = name=>getCanvas(name)
-// coordinates
-matrix = (width=600,height=400,step=28)=>[...new Array(parseInt(width/step))].map( (v,i) =>
-    [...new Array(parseInt(height/step))].map( (w,n) => Object({x: i*step, y: n*step}) )
-).flat()
-
-newTrial(newButton("start").print().wait())
-
 newTrial(
-    fullscreen()
+    newCanvas("container", 640, 480).color('gray').print()
     ,
-    defaultText.color("white").css("font-size","3em")
+    newCanvas("green",200,200).color("green").print("center at 50%","top at 0%", getCanvas("container"))
     ,
-    newSelector("dots").disable()
+    newCanvas("blue",200,200).color("blue").after(newCanvas("red",200,200).color("red"))
+        .print("left at 25%", "bottom at 90%", getCanvas("container"))
     ,
-    newCanvas("background", "100vw","100vh").color("gray").print(0,0)
+    newSelector("select")
+        .add(getCanvas("green"),getCanvas("blue"),getCanvas("red"))
+        .frame("solid 2px purple")
+        .shuffle()
     ,
-    newText("sentence", "Qualche cerchio è verde").css({
-        "text-align": "center",
-        "max-width": "20em"
-    })
-    ,
-    positions = matrix(),fisherYates(positions)
-    ,
-    newCanvas("container", 800,600)
-        .add( "center at 50%", "top at 5%" , getText("sentence") )
-        .add( 100+positions[0].x, 100+positions[0].y, newDot("#50C878").selector("dots") )
-        .add( 100+positions[1].x, 100+positions[1].y, newDot("#008000").selector("dots") )
-        .add( 100+positions[2].x, 100+positions[2].y, newDot("#00A36C").selector("dots") )
-        .add( 100+positions[3].x, 100+positions[3].y, newDot("#811331").selector("dots"))
-        .add( 100+positions[4].x, 100+positions[4].y, newDot("#C41E3A").selector("dots"))
-        .add( 100+positions[5].x, 100+positions[5].y, newDot("t","#800020").selector("dots"))
-        .add( 100+positions[6].x, 100+positions[6].y, newDot("#800020").selector("dots"))
-        .add( "left at 10%" , "bottom at 95%", newText("VERO") )
-        .add( "right at 90%" , "bottom at 95%", newText("FALSO") )
-        .print("center at 50vw","middle at 50vh")
-        .scaling("auto","100vh")
-    ,
-    getSelector("dots").shuffle()
-    ,
-    newKey("FJ").log().wait().disable()
-    ,
-    getCanvas("container").hidden()
-    ,
-    newTimer(500).start().wait() // gray screen
-    ,
-    getDot("t").color("#AFE1AF")
-    ,
-    getText("sentence").text("Uno dei cerchi verdi ha cambiato colore")
-    ,
-    getCanvas("container").visible()
-    ,
-    getKey("FJ").enable().wait()
+    newButton("finish").print().log().wait()
 )
+.noTrialLog()
+
 
 // Working on shuffle with before/after
 newTrial(
+    newCanvas("green",200,200).color("green").print()
+    ,
     newCanvas("blue",200,200).color("blue").after(newCanvas("red",200,200).color("red")).print()
     ,
-    newSelector("select").add(getCanvas("blue"),getCanvas("red")).frame("solid 2px purple").shuffle()
+    newSelector("select")
+        .add(getCanvas("green"),getCanvas("blue"),getCanvas("red"))
+        .frame("solid 2px purple")
+        .shuffle(getCanvas("green"),getCanvas("red"))
     ,
     newButton("finish").print().log().wait()
 )

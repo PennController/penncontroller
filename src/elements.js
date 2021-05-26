@@ -586,6 +586,8 @@ let standardCommands = {
     settings: {
         after: function(resolve,  commands){    /* $AC$ all PElements.after(element) Prints an element to the right of the current element $AC$ */
             if (commands._element && commands._element.jQueryElement instanceof jQuery){
+                if (commands._element.jQueryAfter instanceof Array)
+                    commands._element.jQueryAfter = commands._element.jQueryAfter.filter(a=>a._element!=this);
                 if (this.jQueryElement instanceof jQuery && this.jQueryElement.printed()) // If this element already printed
                     commands = commands.print( this.jQueryContainer.find(".PennController-after") );
                 commands._runPromises().then(()=>{
@@ -600,6 +602,8 @@ let standardCommands = {
         },
         before: function(resolve,  commands){    /* $AC$ all PElements.before(element) Prints an element to the left of the current element $AC$ */
             if (commands._element && commands._element.jQueryElement instanceof jQuery){
+                if (commands._element.jQueryBefore instanceof Array)
+                    commands._element.jQueryBefore = commands._element.jQueryBefore.filter(a=>a._element!=this);
                 if (this.jQueryElement instanceof jQuery && this.jQueryElement.printed()) // If this element already printed
                     commands.print( this.jQueryContainer.find(".PennController-"+this.type+"-before") )
                 commands._runPromises().then(()=>{

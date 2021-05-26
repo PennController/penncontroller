@@ -1,10 +1,33 @@
 PennController.ResetPrefix(null) // Shorten command names (keep this line here)
 
+newTrial(
+    newCanvas("container", 640, 480).color('gray').print()
+    ,
+    newCanvas("green",200,200).color("green").print("center at 50%","top at 0%", getCanvas("container"))
+    ,
+    newCanvas("blue",200,200).color("blue").after(newCanvas("red",200,200).color("red"))
+        .print("left at 25%", "bottom at 90%", getCanvas("container"))
+    ,
+    newSelector("select")
+        .add(getCanvas("green"),getCanvas("blue"),getCanvas("red"))
+        .frame("solid 2px purple")
+        .shuffle()
+    ,
+    newButton("finish").print().log().wait()
+)
+.noTrialLog()
+
+
 // Working on shuffle with before/after
 newTrial(
+    newCanvas("green",200,200).color("green").print()
+    ,
     newCanvas("blue",200,200).color("blue").after(newCanvas("red",200,200).color("red")).print()
     ,
-    newSelector("select").add(getCanvas("blue"),getCanvas("red")).frame("solid 2px purple").shuffle()
+    newSelector("select")
+        .add(getCanvas("green"),getCanvas("blue"),getCanvas("red"))
+        .frame("solid 2px purple")
+        .shuffle(getCanvas("green"),getCanvas("red"))
     ,
     newButton("finish").print().log().wait()
 )
