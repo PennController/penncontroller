@@ -1,7 +1,7 @@
-- Revise Selector's frame to use printAndRefresh? 
-    > or just getBoundingRect in requestAnimationFrame
 - "Reach trial" won't work because of a log command that fails with this mousetracking experiment:
     https://farm.pcibex.net/experiments/cOTofa/edit
+- Revise Selector's frame to use printAndRefresh? 
+    > or just getBoundingRect in requestAnimationFrame
 - Audio resource's object would never get created, and value would always remain as blob:url
     when the same audio file was referenced in multiple rows/trials in a Template command
     (and the audio files are part of a zip file)
