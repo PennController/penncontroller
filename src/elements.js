@@ -42,12 +42,16 @@ Object.defineProperty(PennController.Elements, "self", {get: () => {
 const evaluateArgumentsCallbacks = [];
 PennEngine.ArgumentCallback = f=>evaluateArgumentsCallbacks.push(f);
 // Replace Var with their values and self with pointers
-const evaluateArguments = function(args){
+const evaluateArguments = async function(args){
     for (let r = 0; r < args.length; r++){
         evaluateArgumentsCallbacks.map(f=>f instanceof Function && f.call(null,args[r]));
-        if (args[r] instanceof PennElementCommands && args[r].type == "Var" && !args[r]._promises.length){
-            args[r]._runPromises();
-            args[r] = args[r]._element.evaluate();
+        // if (args[r] instanceof PennElementCommands && args[r].type == "Var" && !args[r]._promises.length){
+        //     args[r]._runPromises();
+        //     args[r] = args[r]._element.evaluate();
+        // }
+        if (args[r] instanceof PennElementCommands && args[r].type == "Var"){
+            if (args[r]._runPromises instanceof Function) await args[r]._runPromises();
+            args[r] = args[r].value;
         }
         else if (args[r] instanceof Self) {
             let pcommands = new PennElementCommands(this, elementTypes[this.type]), handler = pcommands._proxy;
@@ -80,11 +84,11 @@ PennEngine.utils.evaluateArguments = evaluateArguments;
 let newCommand = function(command) {
     return function(...rest){
         let element = this;
-        return new Promise( function(resolve){
+        return new Promise( async resolve => {
             let controller = PennEngine.controllers.running;
             PennEngine.debug.currentPromise = resolve;
             let resolveOnlyForCurrentController = (...args)=>(PennEngine.controllers.running!=controller||resolve(...args));
-            evaluateArguments.call(element, rest);
+            await evaluateArguments.call(element, rest);
             command.apply(element, [resolveOnlyForCurrentController].concat(rest));
         });
     }
@@ -105,7 +109,7 @@ let newTest = function(condition){
             let controller = PennEngine.controllers.running;
             PennEngine.debug.currentPromise = resolve;
             let resolveOnlyForCurrentController = (...args)=>(PennEngine.controllers.running!=controller||resolve(...args));
-            evaluateArguments.call(element, rest);
+            await evaluateArguments.call(element, rest);
             let result = condition.apply(element, rest);    // Result of this test
             let connective = "and";                     // Going through conjunctions/disjunction tests
             for (let c = 0; c < complex.length; c++){
@@ -122,6 +126,7 @@ let newTest = function(condition){
             }
             if (result){
                 await success();
+                // evaluateArguments.call(t._element,
                 resolveOnlyForCurrentController("success");
             }
             else{
@@ -133,8 +138,19 @@ let newTest = function(condition){
     test.and = t=>{ complex.push("and"); complex.push(t); }
     test.or = t=>{ complex.push("or"); complex.push(t); }
     // Mapping directly to _runPromises doesn't work so map to ()=>_runPromises()
-    test.success = (...commands)=>success = lazyPromiseFromArrayOfLazyPromises(commands.map(c=>()=>c._runPromises()));
-    test.failure = (...commands)=>failure = lazyPromiseFromArrayOfLazyPromises(commands.map(c=>()=>c._runPromises()));
+    test.success = function (...commands) {
+        success = lazyPromiseFromArrayOfLazyPromises(commands.map(c=>async()=>{
+            const new_c =  await evaluateArguments.call(this,[c]);
+            new_c[0]._runPromises();
+        }));
+    };
+    test.failure = function (...commands) {
+        failure = lazyPromiseFromArrayOfLazyPromises(commands.map(c=>async()=>{
+            const new_c =  await evaluateArguments.call(this,[c]);
+            new_c[0]._runPromises();
+        }));
+    };
+    // test.failure = (...commands)=>failure = lazyPromiseFromArrayOfLazyPromises(commands.map(c=>()=>c._runPromises()));
 
     return test;
 }
@@ -320,8 +336,8 @@ class PennElementCommands {
                 t._promises.push( () => test.apply(t._element, rest) );
 
                 // Methods defined in newTest, encapsulating them to return t
-                t.success = (...commands)=>{ test.success.apply(t._element, evaluateArguments.call(t._element,commands)); return t; };
-                t.failure = (...commands)=>{ test.failure.apply(t._element, evaluateArguments.call(t._element,commands)); return t; };
+                t.success = (...commands)=>{ test.success.apply(t._element, commands); return t; };
+                t.failure = (...commands)=>{ test.failure.apply(t._element, commands); return t; };
                 t.and = tst=>{ test.and.call(t._element, tst); return t; };
                 t.or = tst=>{ test.or.call(t._element, tst); return t; };
                 
@@ -338,8 +354,8 @@ class PennElementCommands {
                 t._promises.push( () => test.apply(t._element, rest) );
 
                 // Methods defined in newTest, encapsulating them to return t
-                t.success = (...commands)=>{ test.success.apply(t._element, evaluateArguments.call(t._element,commands)); return t; };
-                t.failure = (...commands)=>{ test.failure.apply(t._element, evaluateArguments.call(t._element,commands)); return t; };
+                t.success = (...commands)=>{ test.success.apply(t._element, commands); return t; };
+                t.failure = (...commands)=>{ test.failure.apply(t._element, commands); return t; };
                 t.and = tst=>{ test.and.call(t._element, tst); return t; };
                 t.or = tst=>{ test.or.call(t._element, tst); return t; };
                 
@@ -422,10 +438,13 @@ let standardCommands = {
                 canvas = PennController.Elements.getCanvas(canvas);
             if (canvas && canvas instanceof PennElementCommands && canvas.type=="Canvas")
                 return canvas.settings.add(where,y,PennController.Elements['get'+this.type](this.id))
-                    ._runPromises().then(()=>resolve());
+                    ._runPromises().then(resolve);
             if (this.jQueryElement && this.jQueryElement instanceof jQuery){
                 this.jQueryContainer.detach();
                 this.jQueryContainer.empty();
+                // this.jQueryElement.css({position:"unset",top:"unset",left:"unset"});
+                if (this.cssToApply instanceof Array)
+                    this.cssToApply.forEach(css=>this.jQueryElement.css(...css));
                 this.jQueryElement.addClass("PennController-"+this.type.replace(/[\s_]/g,''));
                 this.jQueryElement.addClass("PennController-"+this.id.replace(/[\s_]/g,''));
                 let div = this.jQueryContainer;
@@ -460,10 +479,8 @@ let standardCommands = {
                 else                                                // Or to main element by default
                     PennEngine.controllers.running.element.append(div);
                     // PennEngine.controllers.running.element.append(div.css("width", "100%"));
-                if (this.cssContainer instanceof Array && this.cssContainer.length){ // Apply custom css if defined
-                    for (let i = 0; i < this.cssContainer.length; i++)
-                        div.css.apply(div, this.cssContainer[i]);
-                }
+                if (this.cssContainer instanceof Array) // Apply custom css if defined
+                    this.cssContainer.forEach(css=>div.css(...css));
                 // div.css({
                 //     "min-width": this.jQueryElement.width(),
                 //     "min-height": this.jQueryElement.height()
@@ -631,6 +648,8 @@ let standardCommands = {
             resolve();
         },
         css: function(resolve, ...rest){        /* $AC$ all PElements.css(option,value) Applies the CSS to the element $AC$ */
+            if (!this.cssToApply) this.cssToApply = [];
+            this.cssToApply.push(rest);
             if (this.jQueryElement instanceof jQuery)
                 this.jQueryElement.css(...rest);
             else
@@ -745,83 +764,109 @@ let standardCommands = {
 PennEngine.elements.standardCommands = standardCommands;
 
 
-// Special command to go fullscreen
-PennController.Elements.fullscreen = function(){       /* $AC$ Special Command.fullscreen() Makes the page fullscreen $AC$ */
-    return {
-        _promises: [()=>new Promise(
-            function(resolve){
-                if (document.documentElement.requestFullscreen)
-                    return document.documentElement.requestFullscreen().then( resolve ).catch( resolve );
-                else if (document.documentElement.mozRequestFullScreen) /* Firefox */
-                    document.documentElement.mozRequestFullScreen();
-                else if (document.documentElement.webkitRequestFullscreen) /* Chrome, Safari and Opera */
-                    document.documentElement.webkitRequestFullscreen();
-                else if (document.documentElement.msRequestFullscreen) /* IE/Edge */
-                    document.documentElement.msRequestFullscreen();
-                resolve();
+// Special command to navigate the sequence
+PennController.Elements.jump = function(predicate){ /* $AC$ Special Command.jump(label) Jumps to the first found label in the sequence $AC$ */
+    if (typeof(predicate)=="string")            // Convert any string into a predicate (see IBEX's shuffle.js)
+        (p=>predicate = s=>s==p)(predicate);
+    let trialIndex = -1;
+    const gotRO = r=>PennEngine.runningOrder&&r() || setTimeout(()=>gotRO(r),50);
+    new Promise(r=>gotRO(r)).then(()=>{
+        console.log("ro", PennEngine.runningOrder);
+        for (let i = 0; i < PennEngine.runningOrder.original.length; i++){
+            const label = PennEngine.runningOrder.original[i][0].type;
+            if (predicate(label)) {
+                trialIndex = i;
+                break;
             }
-        )]
+        }
+        if (trialIndex<0)
+            PennEngine.debug.error(`No trial has a label matching jump's predicate (${predicate})`);
+    });
+    const promisefn = ()=>new Promise(resolve=>{
+        if (trialIndex<0) return resolve();
+        PennEngine.runningOrder.active.splice(
+            PennEngine.runningOrder.runningIndex+1,
+            PennEngine.runningOrder.active.length,
+            ...PennEngine.runningOrder.original.slice(trialIndex,PennEngine.runningOrder.original.length)
+        );
+        resolve();
+    });
+    return {
+        _promises: [promisefn]
         ,
-        _runPromises: () => lazyPromiseFromArrayOfLazyPromises(this._promises)()
+        _runPromises: () => lazyPromiseFromArrayOfLazyPromises([promisefn])()
     }
 } // Exit full screen
-PennController.Elements.exitFullscreen = function(){       /* $AC$ Special Command.exitFullscreen() Goes back to non-fullscreen $AC$ */
-    return {
-        _promises: [()=>new Promise(
-            function(resolve){
-                if (document.exitFullscreen)
-                    return document.exitFullscreen().then( resolve ).catch( resolve );
-                else if (document.mozCancelFullScreen) /* Firefox */
-                    document.mozCancelFullScreen();
-                else if (document.webkitExitFullscreen) /* Chrome, Safari and Opera */
-                    document.webkitExitFullscreen();
-                else if (document.msExitFullscreen) /* IE/Edge */
-                    document.msExitFullscreen();
-                resolve();
-            }
-        )]
-        ,
-        _runPromises: () => lazyPromiseFromArrayOfLazyPromises(this._promises)()
-    }
-}
 
+
+// Special command to go fullscreen
+PennController.Elements.fullscreen = function(){       /* $AC$ Special Command.fullscreen() Makes the page fullscreen $AC$ */
+    const promisefn = ()=>new Promise(resolve=>{
+        if (document.documentElement.requestFullscreen)
+            return document.documentElement.requestFullscreen().then( resolve ).catch( resolve );
+        else if (document.documentElement.mozRequestFullScreen) /* Firefox */
+            document.documentElement.mozRequestFullScreen();
+        else if (document.documentElement.webkitRequestFullscreen) /* Chrome, Safari and Opera */
+            document.documentElement.webkitRequestFullscreen();
+        else if (document.documentElement.msRequestFullscreen) /* IE/Edge */
+            document.documentElement.msRequestFullscreen();
+        resolve();
+    });
+    return {
+        _promises: [promisefn]
+        ,
+        _runPromises: () => lazyPromiseFromArrayOfLazyPromises([promisefn])()
+    }
+}; // Exit full screen
+PennController.Elements.exitFullscreen = function(){       /* $AC$ Special Command.exitFullscreen() Goes back to non-fullscreen $AC$ */
+    const promisefn = ()=>new Promise(resolve => {
+        if (document.exitFullscreen)
+            return document.exitFullscreen().then( resolve ).catch( resolve );
+        else if (document.mozCancelFullScreen) /* Firefox */
+            document.mozCancelFullScreen();
+        else if (document.webkitExitFullscreen) /* Chrome, Safari and Opera */
+            document.webkitExitFullscreen();
+        else if (document.msExitFullscreen) /* IE/Edge */
+            document.msExitFullscreen();
+        resolve();
+    });
+    return {
+        _promises: [promisefn]
+        ,
+        _runPromises: () => lazyPromiseFromArrayOfLazyPromises([promisefn])()
+    }
+};
 
 // Special commands (to replace with Trial?)
 PennController.Elements.clear = function(){     /* $AC$ Special Command.clear() Removes all the PElements currently on the page $AC$ */
-    let t = {
-        _element: $("<p></p>"),
-        _promises: [()=>new Promise(                        // PennController cares for _promises
-            async function(resolve) {
-                let controller = PennEngine.controllers.list[PennEngine.controllers.running.id];
-                for (let t in controller.elements){
-                    for (let e in controller.elements[t]){
-                        let element = controller.elements[t][e];
-                        let commands = PennController.Elements["get"+element.type](element.id);
-                        await commands.remove()._runPromises(); // Call element's own remove
-                    }
-                }
-                resolve();
+    const promisefn = ()=>new Promise(async resolve => {
+        let controller = PennEngine.controllers.list[PennEngine.controllers.running.id];
+        for (let t in controller.elements){
+            for (let e in controller.elements[t]){
+                let element = controller.elements[t][e];
+                let commands = PennController.Elements["get"+element.type](element.id);
+                await commands.remove()._runPromises(); // Call element's own remove
             }
-        )]
+        }
+        resolve();
+    });
+    return {
+        _promises: [promisefn]
         ,
-        _runPromises: () => lazyPromiseFromArrayOfLazyPromises(t._promises)()
-    };
-    return t;
+        _runPromises: () => lazyPromiseFromArrayOfLazyPromises([promisefn])()
+    };;
 };
 
 PennController.Elements.end = function(){     /* $AC$ Special Command.end() Ends the trial immediately $AC$ */
-    let t = {
-        _element: $("<p></p>"),
-        _promises: [()=>new Promise(                        // PennController cares for _promises
-            async function(resolve) {
-                await PennEngine.controllers.running.endTrial();
-                resolve();
-            }
-        )]
+    const promisefn = ()=>new Promise(async resolve => {
+        await PennEngine.controllers.running.endTrial();
+        resolve();
+    });
+    return {
+        _promises: [promisefn]
         ,
-        _runPromises: () => lazyPromiseFromArrayOfLazyPromises(t._promises)()
+        _runPromises: () => lazyPromiseFromArrayOfLazyPromises([promisefn])()
     };
-    return t;
 };
 
 
@@ -913,7 +958,7 @@ PennController._AddElementType = function(name, Type) {
         // for (let t in elementTypes)                             // Check that all types have been defined
         //     if (elementTypes[t] instanceof Function)
         //         elementTypes[t] = getType(elementTypes[t]);
-        evaluateArguments.call(null, rest);
+        // evaluateArguments.call(null, rest);
         let type = elementTypes[name];
         let controller = PennEngine.controllers.underConstruction; // Controller under construction
         if (PennEngine.controllers.running)                     // Or running, if in running phase
@@ -925,14 +970,17 @@ PennController._AddElementType = function(name, Type) {
         else if (typeof(rest[0])=="string"&&rest[0].length>0)   // If an ID was provided, use it
             id = rest[0];                                       
         let element = new PennElement(id, name, type);          // Creation of the element itself
+        evaluateArguments.call(element, rest);
         if (type.hasOwnProperty("immediate") && type.immediate instanceof Function)
             type.immediate.apply(element, rest);                // Immediate initiation of the element
         // If id already exists, add a number
         let oldId = element.id;
         for (let n = 2; controller.elements.hasOwnProperty(name) && controller.elements[name].hasOwnProperty(element.id); n++)
             element.id = oldId + String(n);
-        if (oldId != element.id)
+        if (oldId != element.id){
             PennEngine.debug.log("Found an existing "+element.type+" element named &ldquo;"+oldId+"&rdquo;--using name &ldquo;"+element.id+"&rdquo; instead for new element");
+            controller.ambiguousElementNames.push(oldId);
+        }
         controller._addElement(element);                        // Adding the element to the controller's dictionary
         let commands = new PennElementCommands(element, type);  // An instance of PennElementCommands bound to the element
         commands = commands._proxy;
@@ -954,7 +1002,14 @@ PennController._AddElementType = function(name, Type) {
     };
     // 'get'
     PennController.Elements["get"+name] = function (id) {
+        let controller = PennEngine.controllers.underConstruction; // Controller under construction
+        if (PennEngine.controllers.running)                     // Or running, if in running phase
+            controller = PennEngine.controllers.list[PennEngine.controllers.running.id];
         let type = elementTypes[name];
+        if (controller.ambiguousElementNames.indexOf(id)>=0)
+            PennEngine.debug.error("Ambiguous use of get"+name+"(&ldquo;"+id+"&rdquo;):\
+                                    more than one elements were created with that name--\
+                                    get"+name+"(&ldquo;"+id+"&rdquo;) will refer to the first one");
         return (new PennElementCommands(id, type))._proxy;      // Return the command API
     };
     // 'default'        Use a getter method to run setType when called

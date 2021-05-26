@@ -5,10 +5,8 @@ window.PennController._AddElementType("Tooltip", function(PennEngine) {
 
     function remove(){                          // Special function to remove element from DOM
         this.jQueryElement.remove();
-        console.log("element removed");
         if (this.jQueryContainer instanceof jQuery)
             this.jQueryContainer.detach();
-        console.log("container detached");
         if (this.frame && this.frame instanceof jQuery)
             this.frame.detach();
     }

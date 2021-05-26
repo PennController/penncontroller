@@ -112,7 +112,6 @@ window.PennController._AddElementType("Selector", function(PennEngine) {
 
     this.end = function(){
         this.select = ()=>undefined;
-        this.elements = [];
         if (this.frame && this.frame instanceof jQuery)
             this.frame.remove();
         if (this.log && this.log instanceof Array){
@@ -130,6 +129,7 @@ window.PennController._AddElementType("Selector", function(PennEngine) {
                     PennEngine.controllers.running.save(this.type, this.id, ...this.selections[this.selections.length-1]);
             }
         }
+        this.elements = [];
     };
 
     this.value = function(){                                // Value is last selection

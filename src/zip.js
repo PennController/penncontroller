@@ -46,23 +46,26 @@ function _preloadZip () {
                             let type = getMimetype( hexFromArrayBuffer(content.slice(0,28)) , filename ); // Get type using magic numbers (see utils.js)
                             if (type){                                                        // Add only type was recognized
                                 let url = URL.createObjectURL(new Blob([content], {type: type}));   // The URL of the Blob
+                                console.log("Found a resource named",filename,"of type",type,"with url",url);
                                 var resourceFound = false;                                    // Check extent resources
                                 for (let r in PennEngine.resources.list){
                                     let resource = PennEngine.resources.list[r];
                                     if (resource.name==filename && resource.status!="ready"){
-                                        resource.value = url;
-                                        resource.create();
-                                        // resource.create.apply(                              // Create the resource's object
-                                        //     $.extend({}, resource, {                        // using a copy of the resource found
-                                        //         value: url,                                 // with its value set to the Blob's URL
-                                        //         resolve: function() {                       // and its resolve taking care of object
-                                        //             if (resource.status=="ready")
-                                        //                 return;                             // Assign copy's object to original's
-                                        //             resource.object = this.object;
-                                        //             resource.resolve();
-                                        //         }
-                                        //     })
-                                        // );
+                                        console.log("Applying create to a copye of",filename);
+                                        resource.create.apply(                              // Create the resource's object
+                                            $.extend({}, resource, {                        // using a copy of the resource found
+                                                value: url,                                 // with its value set to the Blob's URL
+                                                object: null,                               // No object yet
+                                                resolve: function() {                       // and its resolve taking care of object
+                                                    console.log("Resolving",filename,"current status",resource.status);
+                                                    if (resource.status=="ready")
+                                                        return;                             // Assign copy's object to original's
+                                                    resource.object = this.object;
+                                                    console.log("Set",filename," object to",resource.object,"calling resolve now");
+                                                    resource.resolve();
+                                                }
+                                            })
+                                        );
                                         resourceFound = true;
                                     }
                                 }

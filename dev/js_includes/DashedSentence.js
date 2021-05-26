@@ -298,9 +298,6 @@ jqueryWidget: {
         }
 
         for (var i = 0; i < nonSpaceWords.length; ++i) {
-            console.log("display", this.display);
-            console.log("display?", (! this.display == "in place"));
-            console.log("newline", this.newlines[i]);
             this.resultsLines.push([
                 ["Word number", i+1],
                 ["Word", csv_url_encode(nonSpaceWords[i])],

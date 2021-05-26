@@ -331,14 +331,9 @@ let showTables = table=>{
 
 
 
-let newItem = () => {
+const newItem = () => {
     if (debug.runningIndex<0)
         debug.runningIndex = 0;
-    else if (PennEngine.debug.on){
-        let li = $(debug.sequenceTab.content.find("li")[debug.runningIndex]);
-        li.css("color","gray");
-        li.find("button").attr("disabled",true);
-    }
     if (debug.runningElement<0)
         debug.runningElement = 0;
     else{
@@ -356,6 +351,9 @@ let newItem = () => {
         window.items = undefined;
         return;
     }
+    
+    refreshSequenceTab();
+    updateProgressBar();
     
     jumpToRow.detach();
     hideOtherGroups.detach();
@@ -380,8 +378,6 @@ let newItem = () => {
         .append($("<div><strong>Trial's type (controller):</strong> "+trial.controller+"</div>"))
         .append($("<div><strong>Trial's index:</strong> "+trial.itemNumber+" / "+window.items.length+"</div>"))
         .append($("<div><strong>From table:</strong> "+debug.currentTableName+"</div>"));
-    debug.sequenceTab.content.find("li").css("background-color","transparent");
-    $(debug.sequenceTab.content.find("li")[debug.runningIndex]).css("background-color","pink");
     if (trial.controller=="PennController")
         $(debug.logTab.controls.children()[1]).css("display","inline-block")
     else
@@ -396,6 +392,51 @@ window.dget = (...args) => {    // Called whenever a new item shows up
       newItem();
     return r;
 };
+
+const updateProgressBar = () =>{
+    if (window.conf_showProgressBar) {
+        let nPoints = 0, multiplier = 0;
+        debug.runningOrder.forEach((item,ni)=>item.forEach((element,ne)=>{
+            const count = ibex_controller_get_property(element.controller, "countsForProgressBar");
+            if (count===undefined||count) {
+                nPoints++;
+                if (ni<debug.runningIndex||(ni==debug.runningIndex&&ne<=debug.runningElement)) multiplier++;
+            }
+        }));
+        const barContainer = $("#bod > table div.bar-container"), bar = barContainer.find(".bar");
+        const progressBarMaxWidth = nPoints * 5 < 300 ? nPoints * 5 : 300;
+        const currentProgressBarWidth = multiplier * progressBarMaxWidth / nPoints;
+        barContainer.css("width",progressBarMaxWidth);
+        bar.css('width', Math.round(currentProgressBarWidth) + "px");
+    }
+}
+const jumpToTrial = n => {
+    if (debug.runningIndex < n){
+        if (debug.currentController._cssPrefix=="PennController-") PennEngine.controllers.running.endTrial();
+        else debug.currentController._finishedCallback();
+        setTimeout(()=>jumpToTrial(n), 1);
+    }
+}
+const refreshSequenceTab = ()=>{
+    const list = $("<ol>");
+    for (let i = 0; i < debug.runningOrder.length; i++){
+        let item = debug.runningOrder[i];
+        let elements = [];
+        for (let e = 0; e < item.length; e++)
+            elements.push(item[e].controller);
+        let tableInfo = [];
+        if (item[0].options.hasOwnProperty("_PennController"))
+            tableInfo = [':',item[0].options._PennController.table.id,item[0].options._PennController.row+1];
+        let text = item[0].type+" ("+elements.join(",")+tableInfo.join(":")+")";
+        const li = $("<li>").append(text);
+        if (i<=debug.runningIndex)
+            li.css({color:"gray",'background-color':(i==debug.runningIndex?"pink":"transparent")});
+        else
+            li.append($("<button>Reach</button>").click(()=>jumpToTrial(i)));
+        list.append(li);
+    }
+    debug.sequenceTab.content.empty().append(list);
+}
 
 let init_debug = () => {
     // If there are any tables, add a tab to the debug popin
@@ -412,27 +453,7 @@ let init_debug = () => {
     // Info tab
     debug.infoTab = debug.popin.newTab("Info");
 
-    let jumpToTrial = n => {
-        if (debug.runningIndex < n){
-            if (debug.currentController._cssPrefix=="PennController-") PennEngine.controllers.running.endTrial();
-            else debug.currentController._finishedCallback();
-            setTimeout(()=>jumpToTrial(n), 1);
-        }
-    }
-    let list = $("<ol>");
-    for (let i = 0; i < debug.runningOrder.length; i++){
-        let item = debug.runningOrder[i];
-        let elements = [];
-        for (let e = 0; e < item.length; e++)
-            elements.push(item[e].controller);
-        let tableInfo = [];
-        if (item[0].options.hasOwnProperty("_PennController"))
-            tableInfo = [':',item[0].options._PennController.table.id,item[0].options._PennController.row+1];
-        let text = item[0].type+" ("+elements.join(",")+tableInfo.join(":")+")";
-        list.append($("<li>").append(text).append($("<button>Reach</button>").click(()=>jumpToTrial(i))));
-    }
-    debug.sequenceTab.content.append(list);
-
+    refreshSequenceTab();
     debug.errorsTab.jQuery.click();
 
     // Key to open the debugger
@@ -443,6 +464,9 @@ let init_debug = () => {
             debug.popin.x = x;
             debug.popin.y = y;
             debug.popin.container.css({top: y, left: x});
+            e.preventDefault();
+            e.stopPropagation();
+            return false;
         }
     });
 };
@@ -483,6 +507,22 @@ PennEngine.Prerun(
                     debug.runningOrder = oldModify.call(this, ro);
                 else
                     debug.runningOrder = ro;
+
+                PennEngine.runningOrder = {
+                    active: debug.runningOrder,
+                    original: [...debug.runningOrder]
+                };
+                const oldPush = PennEngine.runningOrder.active.push;
+                let once = false;
+                PennEngine.runningOrder.active.push = function(...args){
+                    const r = oldPush.apply(this,args);
+                    if (!once && args[0] instanceof Array && args[0][0] && args[0][0].controller == "__SendResults__"){
+                        PennEngine.runningOrder.original = [...this];
+                        once = true;
+                    }
+                    return r;
+                }
+                Object.defineProperty(PennEngine.runningOrder,"runningIndex",{get:()=>debug.runningIndex});
 
                 if (PennEngine.debug.on)
                     init_debug();

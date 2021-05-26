@@ -17,7 +17,7 @@ class Resource {
     }
     create() {
         this.status = "pending";
-        this.creator.apply(this, [()=>this.resolve()]);
+        this.creator.call(this, ()=>this.resolve());
     }
     resolve() {
         this.status = "ready";
@@ -45,6 +45,7 @@ export var PennEngine = {
                 return resource;
             else                                // If resource not created yet, (re)set the creation method to this one
                 resource.creator = creation;
+            PennEngine.resources.list.push(resource);   // Add the resource to the list
             resource.create();                  // Resource is void: try to create it
             if (useURLs)                        // Also try adding candidate URLs (if not explicitly prevented)
                 for (let url in PennEngine.URLs) 
@@ -59,7 +60,6 @@ export var PennEngine = {
                             }
                         })
                     );
-            PennEngine.resources.list.push(resource);   // Add the resource to the list
             return resource;                            // Return the resource itself
         }
     }

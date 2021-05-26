@@ -101,9 +101,10 @@ window.PennController._AddElementType("Controller", function(PennEngine) {
         },
         print: function(resolve,...args){
             this.done = false;
-            this.jQueryElement.empty();
             const callback = ()=>{
+                this.jQueryElement[this.controller]("destroy");
                 addSafeBindMethodPair(this.controller);
+                this.jQueryElement.empty();
                 this.jQueryElement[this.controller](this.options);
                 resolve();
             }

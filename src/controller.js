@@ -17,6 +17,7 @@ export class Controller {
         this.linesToSave = [];                          // What will be added to the results file at the end
         this.resources = [];                            // Resources used by the controller (see PennEngine.resources.fetch)
         this.elements = {};                             // Elements defined in the sequence of commands
+        this.ambiguousElementNames = [];                // Element names that were given the same name in newELEMENT
         this.preloadDelay = PRELOADDELAY;               // Default delay to check that resources are preloaded
         PennEngine.controllers.list.push(this);         // Add this instance to the global list of controllers
         this.defaultCommands = {};                      // Default commands for each element type
@@ -51,7 +52,7 @@ export class Controller {
         return this.elements[type][id];
     }
     //  PUBLIC METHODS  (return the instance)
-    label(text){        /* $AC$ PennController().label(label) Assigns a label to the generated PennController trial $AC$ */
+    label(text){        /* $AC$ newTrial().label(label) Assigns a label to the generated PennController trial $AC$ */
         this.useLabel = text;
         return this;
     }
@@ -59,24 +60,33 @@ export class Controller {
         this.linesToSave.push(["PennController", this.id,  parameter, value, Date.now(), comments]);
         return this;
     }
-    log(name, value) {        /* $AC$ PennController().log(name,value) Adds value to each line of this trial in the results file $AC$ */
+    log(name, value) {        /* $AC$ newTrial().log(name,value) Adds value to each line of this trial in the results file $AC$ */
         if (value==undefined)
             value = name;
+        if (name===undefined){
+            PennEngine.debug.error("Used <tt>newTrial().log</tt> with no arguments");
+            return this;
+        }
         this.appendResultLine.push([csv_url_encode(name), value]);
         return this;
     }
-    noHeader(){         /* $AC$ PennController().noHeader() Will not run commands from the header at the beginning of this trial $AC$ */
+    noHeader(){         /* $AC$ newTrial().noHeader() Will not run commands from the header at the beginning of this trial $AC$ */
         this.runHeader = false;
         return this;
     }
-    noFooter(){         /* $AC$ PennController().noFooter() Will not run commands from the footer at the end of this trial $AC$ */
+    noFooter(){         /* $AC$ newTrial().noFooter() Will not run commands from the footer at the end of this trial $AC$ */
         this.runFooter = false;
         return this;
     }
-    setOption(option, value){   /* $AC$ PennController().setOption(option,value) Sets options for the controller (see Ibex manual) $AC$ */
+    setOption(option, value){   /* $AC$ newTrial().setOption(option,value) Sets options for the controller (see Ibex manual) $AC$ */
         this[option] = value;
         return this;
     }
+    noTrialLog(...what){   /* $AC$ newTrial().noTrialLog("start","end") Skips the Start and/or End log rows for this trial $AC$ */
+        this.skipLog = what;
+        return this;
+    }
+    
 }
 
 // Immediately create a new instance for construction
@@ -496,15 +506,18 @@ define_ibex_controller({
                 trialEnded = true;
                 // FOOTER
                 if (_t.runFooter && footerController instanceof Controller){
-                    _t.save("PennController", _t.id, "_Footer_", "Start", Date.now(), "NULL");
+                    if (!(footerController.skipLog instanceof Array) || (footerController.skipLog.length>0 && footerController.skipLog.filter(v=>v.match(/start/i)).length==0))
+                        _t.save("PennController", _t.id, "_Footer_", "Start", Date.now(), "NULL");
                     footerController._getElement = (id, type) => _t.controller._getElement(id, type);
                     await footerController.sequence();  // Run footer
-                    _t.save("PennController", _t.id, "_Footer_", "End", Date.now(), "NULL");
+                    if (!(footerController.skipLog instanceof Array) || (footerController.skipLog.length>0 && footerController.skipLog.filter(v=>v.match(/end/i)).length==0))
+                        _t.save("PennController", _t.id, "_Footer_", "End", Date.now(), "NULL");
                 }
                 for (let t in _t.controller.elements)   // Call end on each element (when defined)
                     for (let e in _t.controller.elements[t])
                         await _t.controller.elements[t][e].end();
-                _t.save("PennController", _t.id, "_Trial_", "End", Date.now(), "NULL");
+                if (!(_t.controller.skipLog instanceof Array) || (_t.controller.skipLog.length>0 && _t.controller.skipLog.filter(v=>v.match(/end/i)).length==0))
+                    _t.save("PennController", _t.id, "_Trial_", "End", Date.now(), "NULL");
                 linesToSave.sort((a,b)=>a[4][1]>b[4][1]);// sort the lines by time
                 linesToSave.map(line=>{
                     for (let e in line){
@@ -556,12 +569,15 @@ define_ibex_controller({
                         );
                 }
                 preloadElement.remove();                // Remove preload message
-                _t.save("PennController", _t.id, "_Trial_", "Start", Date.now(), "NULL");
+                if (!(_t.controller.skipLog instanceof Array) || (_t.controller.skipLog.length>0 && _t.controller.skipLog.filter(v=>v.match(/start/i)).length==0))
+                    _t.save("PennController", _t.id, "_Trial_", "Start", Date.now(), "NULL");
                 // HEADER
                 if (_t.runHeader && headerController instanceof Controller){
-                    _t.save("PennController", _t.id, "_Header_", "Start", Date.now(), "NULL");
+                    if (!(headerController.skipLog instanceof Array) || (headerController.skipLog.length>0 && headerController.skipLog.filter(v=>v.match(/start/i)).length==0))
+                        _t.save("PennController", _t.id, "_Header_", "Start", Date.now(), "NULL");
                     await headerController.sequence();  // Run header
-                    _t.save("PennController", _t.id, "_Header_", "End", Date.now(), "NULL");
+                    if (!(headerController.skipLog instanceof Array) || (headerController.skipLog.length>0 && headerController.skipLog.filter(v=>v.match(/end/i)).length==0))
+                        _t.save("PennController", _t.id, "_Header_", "End", Date.now(), "NULL");
                 }
                 _t.controller.sequence().then(endTrial); // Run the sequence of commands
             };

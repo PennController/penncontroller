@@ -11,12 +11,16 @@ window.PennController._AddElementType("EyeTracker", function(PennEngine) {
     let past50Array = [[], []];
     let calibrated = false;
     let moveEvent = null;
+    let clickEvent = null;
     let uploadURL = "";
+    let detectedFace = false;
 
     window.PennController.EyeTrackerURL = url => uploadURL = url; /* $AC$ PennController.EyeTrackerURL(url) Will send eye-tracking data to specified URL $AC$ */
 
     // GENERIC FUNCTIONS
     //
+    // from https://stackoverflow.com/a/23395136
+    const beep = new Audio("data:audio/wav;base64,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qJrx4KOQjahZxWbcZgztj2c49nKmkId44S71j0c8eV9yDK6uPRzx5X18eDvjvQ6yKo9ZSS6l//8elePK/Lf//IInrOF/FvDoADYAGBMGb7FtErm5MXMlmPAJQVgWta7Zx2go+8xJ0UiCb8LHHdftWyLJE0QIAIsI+UbXu67dZMjmgDGCGl1H+vpF4NSDckSIkk7Vd+sxEhBQMRU8j/12UIRhzSaUdQ+rQU5kGeFxm+hb1oh6pWWmv3uvmReDl0UnvtapVaIzo1jZbf/pD6ElLqSX+rUmOQNpJFa/r+sa4e/pBlAABoAAAAA3CUgShLdGIxsY7AUABPRrgCABdDuQ5GC7DqPQCgbbJUAoRSUj+NIEig0YfyWUho1VBBBA//uQZB4ABZx5zfMakeAAAAmwAAAAF5F3P0w9GtAAACfAAAAAwLhMDmAYWMgVEG1U0FIGCBgXBXAtfMH10000EEEEEECUBYln03TTTdNBDZopopYvrTTdNa325mImNg3TTPV9q3pmY0xoO6bv3r00y+IDGid/9aaaZTGMuj9mpu9Mpio1dXrr5HERTZSmqU36A3CumzN/9Robv/Xx4v9ijkSRSNLQhAWumap82WRSBUqXStV/YcS+XVLnSS+WLDroqArFkMEsAS+eWmrUzrO0oEmE40RlMZ5+ODIkAyKAGUwZ3mVKmcamcJnMW26MRPgUw6j+LkhyHGVGYjSUUKNpuJUQoOIAyDvEyG8S5yfK6dhZc0Tx1KI/gviKL6qvvFs1+bWtaz58uUNnryq6kt5RzOCkPWlVqVX2a/EEBUdU1KrXLf40GoiiFXK///qpoiDXrOgqDR38JB0bw7SoL+ZB9o1RCkQjQ2CBYZKd/+VJxZRRZlqSkKiws0WFxUyCwsKiMy7hUVFhIaCrNQsKkTIsLivwKKigsj8XYlwt/WKi2N4d//uQRCSAAjURNIHpMZBGYiaQPSYyAAABLAAAAAAAACWAAAAApUF/Mg+0aohSIRobBAsMlO//Kk4soosy1JSFRYWaLC4qZBYWFRGZdwqKiwkNBVmoWFSJkWFxX4FFRQWR+LsS4W/rFRb/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////VEFHAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAU291bmRib3kuZGUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMjAwNGh0dHA6Ly93d3cuc291bmRib3kuZGUAAAAAAAAAACU=");
     // from https://gist.github.com/revolunet/843889
     function lzw_encode(s) {
         var dict = {};
@@ -63,36 +67,33 @@ window.PennController._AddElementType("EyeTracker", function(PennEngine) {
 
     // Calibration functions from WebGazer's example page
     function calculatePrecisionPercentages(precisionPercentages, windowHeight, x50, y50, staringPointX, staringPointY) {
-        for (x = 0; x < 50; x++) {
+        for (n = 0; n < 50; n++) {
           // Calculate distance between each prediction and staring point
-          let xDiff = staringPointX - x50[x];
-          let yDiff = staringPointY - y50[x];
+          let xDiff = staringPointX - x50[n];
+          let yDiff = staringPointY - y50[n];
           let distance = Math.sqrt((xDiff * xDiff) + (yDiff * yDiff));
           // Calculate precision percentage
           let halfWindowHeight = windowHeight / 2;
           let precision = 0;
-          if (distance <= halfWindowHeight && distance > -1) {
+          if (distance <= halfWindowHeight)
             precision = 100 - (distance / halfWindowHeight * 100);
-          } else if (distance > halfWindowHeight) {
+          else
             precision = 0;
-          } else if (distance > -1) {
-            precision = 100;
-          }
           // Store the precision
-          precisionPercentages[x] = precision;
+          precisionPercentages[n] = precision;
         }
     }
     function calculateAverage(precisionPercentages) {
         let precision = 0;
-        for (x = 0; x < 50; x++) {
-          precision += precisionPercentages[x];
+        for (n = 0; n < 50; n++) {
+          precision += precisionPercentages[n];
         }
         precision = precision / 50;
         return precision;
     }
     function calculatePrecision(past50Array) {
-        let windowHeight = $(window).height();
-        let windowWidth = $(window).width();
+        let windowHeight = window.innerHeight;
+        let windowWidth = window.innerWidth;
         // Retrieve the last 50 gaze prediction points
         let x50 = past50Array[0];
         let y50 = past50Array[1];
@@ -110,119 +111,154 @@ window.PennController._AddElementType("EyeTracker", function(PennEngine) {
     // Shows a calibration screen
     function calibrate(resolve, element, threshold, remainingAttempts){
         // Start training the model
-        getGazer().addMouseEventListeners();
-        if (!element.trainOnMouseMove)
-            document.removeEventListener("mousemove", moveEvent, true);
+        getGazer().addMouseEventListeners();        // Retrieve moveEvent
         PennEngine.debug.log("Starting calibration");
         past50Array = [[], []];                 // To keep track of 50 last looks
         let calibrationDiv = $("<div>").css({
             position: 'absolute', left: 0, top: 0, width: "100vw", height: "100vh",
             'background-color': 'white', 'text-align': 'center'
         });
-        // Will print a button in the middle of the screen
-        let startCalculation = ()=>{
-            calibrationDiv.find('button').remove();
-            calibrationDiv.append($("<button>+</button>").css({
-                position: 'absolute', top: 'calc(50vh - 1.25vw)', bottom: '48.75vw', width: "2.5vw", height: "2.5vw"
-            }).click(function(){
-                // Launches calculation per se
-                $(this).attr('disabled', true);
-                storePoints = true;
-                setTimeout(()=>{
-                    console.log("Past 50", past50Array);
-                    let precision = calculatePrecision(past50Array);
-                    element._precision = precision;
-                    PennEngine.debug.log("Tracker's precision: "+precision);
-                    storePoints = false;
-                    past50Array = [[],[]];
-                    PennEngine.controllers.running.save(element.type, element.id, "calibration", precision, 
-                                                        Date.now(), (remainingAttempts==1?"Last attempt":"NULL"));
-                    if (threshold && Number(threshold)>0 && precision < threshold && remainingAttempts != 1){
-                        calibrated = false;
-                        $(this).remove();
-                        showTracker(true);
-                        calibrationDiv.append(
-                            $("<div>").html("<p>It looks like we were not able to precisely calibrate the tracker:</p>"+
-                                            "<p>You calibration score is "+precision+" and you need at least "+threshold+"</p>"+
-                                            "<p>Here are a few tips to help you better self-calibrate:</p>"+
-                                            "<p>- try adjusting your webcam based on the video in the top-left corner.</p>"+
-                                            "<p>- if you use an external webcam, make sure it is fixed to the top of your screen.</p>"+
-                                            "<p>- try raising your screen so as to align your webcam with your eyes</p>"+
-                                            "<p><img style='display: inline-block; height: 75px;' src='http://files.lab.florianschwarz.net/ibexfiles/Pictures/lookdown.png'>"+
-                                            "<img style='display: inline-block; height: 75px;' src='http://files.lab.florianschwarz.net/ibexfiles/Pictures/lookstraight.png'></p>"+
-                                            "<p>- make sure no one is standing next to you.</p>"+
-                                            "<p>- make sure you are not wearing eyeglasses reflecting ambiant light.</p>"+
-                                            "<p>- make sure the algorithm detects your face (it should appear green).</p>"+
-                                            "<p>- make sure there is enough ambient light for face-detection.</p>"+
-                                            "<p>- make sure you follow your mouse pointer with your eyes.</p>"+
-                                            "<p>- make sure you keep looking at the middle button until the end.</p>")
-                                        .css({margin: 'auto', 'margin-top': '5em'})
-                        ).append(
-                            // Retry button
-                            $("<button>Retry</button>").click(function(){
-                                calibrationDiv.remove();
-                                // Reset the model (forget previous estimations)
-                                window.webgazer.reg.RidgeWeightedReg.call(window.webgazer.getRegression()[0]);
-                                calibrate(resolve, element, threshold, remainingAttempts-1);
-                            }).css('margin','auto')
-                        );
-                    }
-                    // Threshold met: tracker is calibrated OR no attempts left
-                    else {
-                        calibrated = true;
-                        calibrationDiv.remove();
-                        showTracker(false);
-                        // Do not train the model on actual trials (too much on screen)
-                        getGazer().removeMouseEventListeners();
-                        resolve();
-                    }
-                }, 2000);   // 2s for calculation
-            }));
+        // Will print a dot in the middle of the screen
+        let startCalculation = async()=>{
+            await new Promise(r=>setTimeout(r,1000));
+            const dot = $("<div>").css({position:'fixed',display: 'block',width:'48px',height:'48px',background:'green',
+                        'border-radius':'100%',left:'calc(50vw - 24px)',top:'calc(50vh - 24px)','z-index': 999999});
+            $("body").append(dot);
+            clickEvent({clientX: window.innerWidth/2, clientY: window.innerHeight/2});
+            // Launches calculation per se
+            $(this).attr('disabled', true);
+            storePoints = true;
+            setTimeout(()=>{
+                storePoints = false;
+                dot.detach();
+                let precision = calculatePrecision(past50Array);
+                element._precision = precision;
+                PennEngine.debug.log("Tracker's precision: "+precision);
+                past50Array = [[],[]];
+                PennEngine.controllers.running.save(element.type, element.id, "calibration", precision, 
+                                                    Date.now(), (remainingAttempts==1?"Last attempt":"NULL"));
+                if (threshold && Number(threshold)>0 && precision < threshold && remainingAttempts != 1){
+                    calibrated = false;
+                    $(this).remove();
+                    showTracker(true);
+                    calibrationDiv.append(
+                        $("<div>").html("<p>It looks like we were not able to precisely calibrate the tracker:</p>"+
+                                        "<p>You calibration score is "+precision+" and you need at least "+threshold+"</p>"+
+                                        "<p>Here are a few tips to help you better self-calibrate:</p>"+
+                                        "<p>- try adjusting your webcam based on the video in the top-left corner.</p>"+
+                                        "<p>- if you use an external webcam, make sure it is fixed to the top of your screen.</p>"+
+                                        "<p>- try raising your screen so as to align your webcam with your eyes</p>"+
+                                        "<p><img style='display: inline-block; height: 75px;' src='http://files.lab.florianschwarz.net/ibexfiles/Pictures/lookdown.png'>"+
+                                        "<img style='display: inline-block; height: 75px;' src='http://files.lab.florianschwarz.net/ibexfiles/Pictures/lookstraight.png'></p>"+
+                                        "<p>- make sure no one is standing next to you.</p>"+
+                                        "<p>- make sure you are not wearing eyeglasses reflecting ambiant light.</p>"+
+                                        "<p>- make sure the algorithm detects your face (it should appear green).</p>"+
+                                        "<p>- make sure there is enough ambient light for face-detection.</p>"+
+                                        "<p>- make sure you follow your mouse pointer with your eyes.</p>"+
+                                        "<p>- make sure you keep looking at the middle button until the end.</p>")
+                                    .css({margin: 'auto', 'margin-top': '5em'})
+                    ).append(
+                        // Retry button
+                        $("<button>Retry</button>").click(function(){
+                            calibrationDiv.remove();
+                            // Reset the model (forget previous estimations)
+                            window.webgazer.reg.RidgeWeightedReg.call(window.webgazer.getRegression()[0]);
+                            calibrate(resolve, element, threshold, remainingAttempts-1);
+                        }).css('margin','auto')
+                    );
+                }
+                // Threshold met: tracker is calibrated OR no attempts left
+                else {
+                    calibrated = true;
+                    calibrationDiv.remove();
+                    // showTracker(false);
+                    // Do not train the model on actual trials (too much on screen)
+                    getGazer().removeMouseEventListeners();
+                    resolve();
+                }
+            }, 3000);   // 3s for calculation
         };
         // If not calibrated yet, print 'Start calibration'
         if (!calibrated){
-            let remainingClicks = 8;
-            let click = function(){
-                $(this).attr("disabled",true);
-                remainingClicks--;
-                // Start calculation after all 8 buttons clicks
-                if (remainingClicks<=0)
-                    startCalculation();
-            };
-            calibrationDiv.append($("<button>Start calibration</button>").css({
-                position: "absolute", top: "calc(50vh - 2.5vw)", left: "47.5vw", width: "5vw", height: "5vw"
-            }).click(function(){
-                // Add 8 buttons to the screen: click on each to calibrate
-                $(this).remove();
-                showTracker(false);
-                // getGazer().showPredictionPoints(true);
-                calibrationDiv
-                    .append($("<button>+</button>").css({
-                        position: 'absolute', top: 0, left: 0, width: "2.5vw", height: "2.5vw"
-                    }).click(click))
-                    .append($("<button>+</button>").css({
-                        position: 'absolute', top: 0, right: 0, width: "2.5vw", height: "2.5vw"
-                    }).click(click))
-                    .append($("<button>+</button>").css({
-                        position: 'absolute', bottom: 0, left: 0, width: "2.5vw", height: "2.5vw"
-                    }).click(click))
-                    .append($("<button>+</button>").css({
-                        position: 'absolute', bottom: 0, right: 0, width: "2.5vw", height: "2.5vw"
-                    }).click(click))
-                    .append($("<button>+</button>").css({
-                        position: 'absolute', top: 'calc(50vh - 1.25vw)', left: 0, width: "2.5vw", height: "2.5vw"
-                    }).click(click))
-                    .append($("<button>+</button>").css({
-                        position: 'absolute', top: 0, left: '48.75vw', width: "2.5vw", height: "2.5vw"
-                    }).click(click))
-                    .append($("<button>+</button>").css({
-                        position: 'absolute', top: 'calc(50vh - 1.25vw)', right: 0, width: "2.5vw", height: "2.5vw"
-                    }).click(click))
-                    .append($("<button>+</button>").css({
-                        position: 'absolute', bottom: 0, left: '48.75vw', width: "2.5vw", height: "2.5vw"
-                    }).click(click));
-            }));
             showTracker(true);
+            const width = 48, height = 48;
+            const stay_cycles = 120;
+            let points = [];
+            const nextDot = async timestamp=>{
+                const position = points.shift();
+                const dot = $("<div>").css({
+                    position:'fixed',
+                    display: 'block',
+                    width:width+'px',
+                    height:height+'px',
+                    background:'green',
+                    'border-radius':'100%',
+                    left: position[0],
+                    top: position[1],
+                    'z-index': 999999
+                });
+                await new Promise(r=>setTimeout(r,750));
+                $("body").append(dot);
+                beep.play();
+                await new Promise(r=>setTimeout(r,250));
+                let remaining_cycles = stay_cycles;
+                const trainDot = ()=> {
+                    if (remaining_cycles%2) // Click ever other cycle
+                        clickEvent({clientX:position[0]+width/2,clientY:position[1]+height/2});
+                    if (remaining_cycles==0){
+                        dot.detach();
+                        if (points.length)
+                            nextDot();
+                        else
+                            startCalculation();
+                    }
+                    else{
+                        remaining_cycles--;
+                        window.requestAnimationFrame(trainDot);
+                    }
+                }
+                trainDot();
+            }
+            const printStartButton = ()=>$("body").append(
+                $("<button>I'm ready. Start calibration</button>").bind('click',e=>{
+                    getGazer().removeMouseEventListeners();     // Will manually call moveEvent
+                    showTracker(false);
+                    $(e.target).detach();
+                    const wwidth = window.innerWidth, wheight = window.innerHeight;
+                    points = [
+                        [(wwidth-width)/2,(wheight-height)/2], // middle center
+                        ...[
+                            [0,0], // top left
+                            [(wwidth-width)/2,0], // top center
+                            [wwidth-width,wheight-height], // bottom right
+                            [(wwidth-width)/2,wheight-height], // bottom center
+                            [wwidth-width,(wheight-height)/2], // middle right
+                            [wwidth-width,0], // top right
+                            [0,(wheight-height)/2], // middle left
+                            [0,wheight-height], // bottom left
+                        ].sort(v=>0.5-Math.random())
+                        ,
+                        [(wwidth-width)/2,(wheight-height)/2] // middle center (again)
+                    ];
+                    nextDot();
+                }).css({position:'fixed',display:'block',left:'50vw',top:'50vh',transform:'translate(-50%,-50%)'})
+            );
+            if (detectedFace) printStartButton();
+            else{
+                const waitmessage = $("<p>Wait until your face is detected (you should see green contours around it)\
+                                    and then click anywhere on the page until you see a red dot</p>");
+                waitmessage.css({position:'fixed',left:'50vw',top:'50vh',transform:'translate(-50%,-50%)'});
+                $("body").append(waitmessage);
+                const gotRedDot = ()=>{
+                    if (detectedFace) {
+                        waitmessage.remove();
+                        printStartButton();
+                    } 
+                    else
+                        window.requestAnimationFrame(gotRedDot);
+                }
+                gotRedDot();
+            }
         }
         else
             startCalculation();
@@ -231,6 +267,7 @@ window.PennController._AddElementType("EyeTracker", function(PennEngine) {
     }
 
     const parseData = (data,clock) => {
+        detectedFace = true;
         if (storePoints){
             past50Array[0].push(data.x);
             past50Array[1].push(data.y);
@@ -255,8 +292,10 @@ window.PennController._AddElementType("EyeTracker", function(PennEngine) {
             });        
         let oldAME = document.addEventListener;         // Catch the mousemove function
         document.addEventListener = function(...args){  // NOW!
-            if (args[0]=="mousemove"&&typeof(args[1])=="function"&&!moveEvent)
+            if (args[0]=="mousemove"&&typeof(args[1])=="function"&&args[2]===true&&!moveEvent)
                 moveEvent = args[1];
+            if (args[0]=="click"&&typeof(args[1])=="function"&&args[2]===true&&!clickEvent)
+                clickEvent = args[1];
             oldAME.apply(document, args);
         };
         tracker.params.showVideoPreview = true;
@@ -306,14 +345,6 @@ window.PennController._AddElementType("EyeTracker", function(PennEngine) {
         this.log = false;
         this.trainOnMouseMove = true;
         let previousClock;
-        // const checkForScale = function(scale){
-        //     const transform = this.css("transform").match(/matrix\(\s*(-?\d+(.\d+)?),[^,]+,[^,]+,\s*(-?\d+(.\d+)?),/);
-        //     if (transform){
-        //         scale.x = scale.x * Number(transform[1]);
-        //         scale.y = scale.y * Number(transform[3]);
-        //     }
-        //     return scale;
-        // }
         // Called every few ms (varies w/ performance) when EyeTracker started
         this.look = function (data,clock) {
             if (!this.enabled || data==null || data.x===undefined || data.y===undefined)
@@ -322,27 +353,6 @@ window.PennController._AddElementType("EyeTracker", function(PennEngine) {
             this.elements.map(el=>el.jQueryElement.removeClass("PennController-eyetracked"));
             // Check every element
             for (let e = 0; e < this.elements.length; e++){
-                // let element = this.elements[e].jQueryElement, inspected_element = element;
-                // let scale = {x: 1, y: 1};
-                // while (inspected_element){
-                //     checkForScale.call(inspected_element, scale);
-                //     inspected_element = inspected_element.parent();
-                //     if (inspected_element[0]===document) inspected_element = undefined;
-                // }
-                // // let offset = element.offset(), w = element.width(), h= element.height();
-                // let offset = element.offset(), w = element.width(), h= element.height(), scale_w = w*scale.x, scale_h = h*scale.y;
-                // // let within = offset.left <= data.x && offset.top <= data.y && offset.left+w >= data.x && offset.top+h>=data.y;
-                // // let within = offset.left-(scale_w-w)/2 <= data.x && offset.top-(scale_h-h)/2 <= data.y && 
-                // //              offset.left-(scale_w-w)/2+scale_w >= data.x && offset.top-(scale_h-h)/2+scale_h>=data.y;
-                // let within = offset.left <= data.x && offset.top <= data.y && 
-                //              offset.left+scale_w >= data.x && offset.top+scale_h>=data.y;
-                // console.log("scale x,y", scale.x, scale.y, "box", 
-                //             offset.left-(scale_w-w)/2,
-                //             offset.top-(scale_h-h)/2,
-                //             offset.left-(scale_w-w)/2+scale_w,
-                //             offset.top-(scale_h-h)/2+scale_h);
-                // Keep track of looks
-                // if (within)
                 const element = this.elements[e].jQueryElement,
                       within = PennEngine.utils.overToScale.call(element,data.x,data.y);
                 if (within)

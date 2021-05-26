@@ -28,7 +28,7 @@ window.PennController._AddElementType("Scale", function(PennEngine) {
         }
     }
 
-    function buildScale(){                                  // Feeds this.jQueryElement according to scale type
+    async function buildScale(){                                  // Feeds this.jQueryElement according to scale type
         let defaultValue = this.defaultValue;
         let orientation = this.orientation;
         let type = this.scaleType;
@@ -58,6 +58,7 @@ window.PennController._AddElementType("Scale", function(PennEngine) {
             for (let i = 0; i < this.buttons.length; i++) {
                 let v = this.buttons[i];
                 if (v===undefined||v===null||v=="") v = i+1;            // If the array's entry is void, use its index
+                else if (v instanceof PennEngine.PennElementCommands) v = i+1;
                 let label = $("<label>").attr({for:this.id+'-'+i}).html(v).css('cursor','pointer');
                 let input = $("<input>").attr({name:this.id,value:v,type:(type=="checkbox"?"checkbox":"radio"),id:this.id+'-'+i});
                 let option = $("<div>").addClass("option")
@@ -77,6 +78,8 @@ window.PennController._AddElementType("Scale", function(PennEngine) {
                 else if (this.labels=="left") option.css('flex-direction','row-reverse');
                 this.jQueryElement.append(option);
                 if (type=="radio"&&this.labels===false) label.css("display","none");
+                else if (this.buttons[i] instanceof PennEngine.PennElementCommands)
+                    await this.buttons[i].print( label.empty() )._runPromises();
             };
             if (orientation=="vertical") this.jQueryElement.css('flex-direction','column');
         }
@@ -168,8 +171,8 @@ window.PennController._AddElementType("Scale", function(PennEngine) {
     };
     
     this.actions = {
-        print: function(resolve, ...where){
-            buildScale.apply(this);                         // (Re)Build the scale when printing
+        print: async function(resolve, ...where){
+            await buildScale.apply(this);                         // (Re)Build the scale when printing
             PennEngine.elements.standardCommands.actions.print.apply(this, [resolve, ...where]);
         },
         select: function(resolve, option, simulate){    /* $AC$ Scale PElement.select(option) Selects the specified option on the scale $AC$ */
@@ -228,9 +231,9 @@ window.PennController._AddElementType("Scale", function(PennEngine) {
     };
     
     this.settings = {
-        button: function(resolve){    /* $AC$ Scale PElement.button() Transforms the scale options into buttons $AC$ */
+        button: async function(resolve){    /* $AC$ Scale PElement.button() Transforms the scale options into buttons $AC$ */
             this.scaleType = "buttons";
-            buildScale.apply(this);                         // Rebuild the scale as a button scale
+            await buildScale.apply(this);                         // Rebuild the scale as a button scale
             resolve();
         },
         callback: function(resolve, ...elementCommands){    /* $AC$ Scale PElement.callback(commands) Will execute the specified command(s) whenever selection happens $AC$ */
@@ -245,9 +248,9 @@ window.PennController._AddElementType("Scale", function(PennEngine) {
             };
             resolve();
         },
-        checkbox: function(resolve){
+        checkbox: async function(resolve){
             this.scaleType = "checkbox";
-            buildScale.apply(this);                      // Rebuild the scale as a checkbox "scale"
+            await buildScale.apply(this);                      // Rebuild the scale as a checkbox "scale"
             resolve();
         },
         default: function(resolve, value){    /* $AC$ Scale PElement.default(value) Sets the specified value to be selected by default $AC$ */
@@ -273,10 +276,10 @@ window.PennController._AddElementType("Scale", function(PennEngine) {
             this.jQueryElement.addClass("PennController-disabled");
             resolve();
         },
-        horizontal: function(resolve){    /* $AC$ Scale PElement.horizontal() Aligns the scale's options horizontally (again) $AC$ */
+        horizontal: async function(resolve){    /* $AC$ Scale PElement.horizontal() Aligns the scale's options horizontally (again) $AC$ */
             this.orientation = "horizontal";
             if (this.jQueryElement.parent().length){
-                buildScale.apply(this);
+                await buildScale.apply(this);
                 // fixAesthetics.apply(this);
             }
             resolve();
@@ -293,30 +296,20 @@ window.PennController._AddElementType("Scale", function(PennEngine) {
                 this.keys = Array.from({length:this.buttons.length},(v,k)=>k+1);
             resolve();
         },
-        label: function(resolve, index, value){    /* $AC$ Scale PElement.label(index,label) Gives the specified label to the option at the specified index on the scale $AC$ */
+        label: async function(resolve, index, value){    /* $AC$ Scale PElement.label(index,label) Gives the specified label to the option at the specified index on the scale $AC$ */
             if (isNaN(Number(index)) || index<0 || index>=this.buttons.length)
                 return resolve();
             this.buttons[index] = value;
-            if (this.jQueryElement.parent().length){    // If displayed, replace
-                let labels = this.jQueryElement.find("label");
-                if (index < labels.length){
-                    let jqLabel = $(labels[index]);
-                    jqLabel.empty();
-                    if ( value._runPromises )
-                        value.print( jqLabel.empty() )._runPromises();
-                    else
-                        jqLabel.html( value );
-                }
-            }
+            await buildScale.apply(this);
             resolve();
         },
         labels: function(resolve, position){            // Deprecated since 1.0
             this.labels = position;                     // Replaced with labelsPosition
             resolve();
         },
-        labelsPosition: function(resolve, position){    /* $AC$ Scale PElement.labelsPosition(position) Will show the labels on top, at the bottom, to the left or to the right of the options $AC$ */
+        labelsPosition: async function(resolve, position){    /* $AC$ Scale PElement.labelsPosition(position) Will show the labels on top, at the bottom, to the left or to the right of the options $AC$ */
             this.labels = position;
-            buildScale.apply(this);
+            await buildScale.apply(this);
             resolve();
         },
         log: function(resolve,  ...what){    /* $AC$ Scale PElement.log() Will log the selected option in the results file $AC$ */
@@ -338,25 +331,25 @@ window.PennController._AddElementType("Scale", function(PennEngine) {
             }
             resolve();
         },
-        radio: function(resolve){    /* $AC$ Scale PElement.radio() Will show the scale's options as radio buttons $AC$ */
+        radio: async function(resolve){    /* $AC$ Scale PElement.radio() Will show the scale's options as radio buttons $AC$ */
             this.scaleType = "radio";
-            buildScale.apply(this);                      // Rebuild the scale as a radio scale
+            await buildScale.apply(this);                      // Rebuild the scale as a radio scale
             resolve();
         },
-        size: function(resolve, width, height){
+        size: async function(resolve, width, height){
             this.width = width;
-            buildScale.apply(this);
+            await buildScale.apply(this);
             PennEngine.elements.standardCommands.settings.size.apply(this, [resolve, width, height]);
         },
-        slider: function(resolve){    /* $AC$ Scale PElement.slider() Will show the scale as a slider $AC$ */
+        slider: async function(resolve){    /* $AC$ Scale PElement.slider() Will show the scale as a slider $AC$ */
             this.scaleType = "slider";
-            buildScale.apply(this);
+            await buildScale.apply(this);
             resolve();
         },
-        vertical: function(resolve){    /* $AC$ Scale PElement.horizontal() Aligns the scale's options vertically $AC$ */
+        vertical: async function(resolve){    /* $AC$ Scale PElement.horizontal() Aligns the scale's options vertically $AC$ */
             this.orientation = "vertical";
             if (this.jQueryElement.parent().length){
-                buildScale.apply(this);
+                await buildScale.apply(this);
                 // fixAesthetics.apply(this);
             }
             resolve();

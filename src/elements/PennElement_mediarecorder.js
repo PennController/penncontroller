@@ -111,7 +111,6 @@ window.PennController._AddElementType("MediaRecorder", function(PennEngine) {
                         let mime = getMimeExtension(currentMediaElement.mediaType).mimeType;
                         currentMediaElement.mediaPlayer.srcObject = null;
                         currentMediaElement.blob = new Blob(chunks,{type:mime});                        // Blob from chunks
-                        console.log("Created blob");
                         currentMediaElement.mediaPlayer.src = URL.createObjectURL(currentMediaElement.blob);    // Can replay now
                         chunks = [];                                                                            // Reset chunks
                         const thisResolveStop = resolveStop.get(currentMediaElement);
@@ -197,9 +196,6 @@ window.PennController._AddElementType("MediaRecorder", function(PennEngine) {
         uploadController.runFooter = false;
         uploadController.countsForProgressBar = false;
         uploadController.sequence = ()=>new Promise(async function(resolve){
-            console.log("start uploadrecordings");
-            console.log("list of streams");
-            streams.forEach(s=>console.log(s.name));
             let controller = PennEngine.controllers.running;    // In SEQUENCE, controller is running instance
             controller.element.append($("<p>Please wait while the archive of your recordings is being uploaded to the server...</p>"));
             if (!async) await checkRequests();  // If not an async upload, wait for all requests to finish before proceeding
@@ -280,18 +276,18 @@ window.PennController._AddElementType("MediaRecorder", function(PennEngine) {
             // if (!initiated)                                 // If InitiateRecorder has not been called, leave running order as is
             if (!useMediaRecorder)
                 return ro;
-            let manualUpload = false;                       // Whether the sequence contains manual uploading of the results
+            let foundUploadRecordings = false;              // Whether the sequence contains manual uploading of the results
             let initiateRecorder = false;                   // Wehther InitiateRecorder is in the Sequence
             let sendResultsID = [-1,-1];                    // Item + Element IDs of the __SendResults__ controller
             for (let item = 0; item < ro.length; ++item) {  // Go through each element of each item in the running order
                 for (let element = 0; element < ro[item].length; ++element) {
                     const type = ro[item][element].controller, id = ro[item][element].options.id;
                     if (type == "PennController" && id == "UploadRecordings") {
-                        manualUpload = true;                // Uploading of recordings is manual
+                        foundUploadRecordings = true;       // Uploading of recordings is manual
                         if (sendResultsID[0]>=0)            // If __SendResults__ was found before
                             alert("WARNING: upload of recording archive set AFTER sending of results; check your Sequence definition.");
                     }
-                    else if (type == "__SendResults__" && sendResultsID[0]<0 && !manualUpload)
+                    else if (type == "__SendResults__" && sendResultsID[0]<0 && !foundUploadRecordings)
                         sendResultsID = [item, element];    // Found __SendResults__: store item+element IDs
                     else if (type == "PennController" && id == "InitiateRecorder")
                         initiateRecorder = true;
@@ -300,13 +296,13 @@ window.PennController._AddElementType("MediaRecorder", function(PennEngine) {
             if (!initiateRecorder)
                 PennEngine.debug.error("This project uses MediaRecorder but InitiateRecorder is not included in the Sequence");
             // Edit v1.8: always try uploading one last time before sending, just in case
-            // if (!manualUpload) {                            // If no manual upload, add the upload controller before __SendResults__
+            // if (!foundUploadRecordings) {                            // If no manual upload, add the upload controller before __SendResults__
             //     console.log("No manual upload");
-                let uploadController = window.PennController.UploadRecordings();
+                const uploadController = window.PennController.UploadRecordings();
                 PennEngine.tmpItems.pop();                  // Remove controller form list: manually added here
-                let uploadElement = new DynamicElement("PennController", uploadController);
+                const uploadElement = new DynamicElement("PennController", uploadController);
                 if (sendResultsID[0]>=0)                    // Manual __SendResults__, add upload controller before it
-                    ro[sendResultsID[0]].splice(sendResultsID[0], 0, uploadElement);
+                    ro.splice(sendResultsID[0], 0, [uploadElement]);
                 else                                        // Else, just add uploadElement at the end
                     ro.push([uploadElement]);
             // }
@@ -433,13 +429,11 @@ window.PennController._AddElementType("MediaRecorder", function(PennEngine) {
                 data: this.blob,
                 uploadStatus: "local"
             });
-            console.log("pushed stream");
             PennEngine.controllers.running.save(this.type, this.id, "Filename", filename, Date.now(), "NULL");
         }
         if (this.log)
             for (let r in this.recordings)
                 PennEngine.controllers.running.save(this.type, this.id, ...this.recordings[r]);
-        console.log("MediaRecorder element ended");
     };
 
     this.value = function(){        // Value is blob of recording

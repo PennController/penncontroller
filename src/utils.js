@@ -199,7 +199,7 @@ export function guidGenerator() {
 // Converts any PennElementCommand in 'array' into a string
 export function parseElementCommands(array){
     return array.map(e=>{
-        if (e instanceof Object && e.hasOwnProperty("_promises"))
+        if (e instanceof Object && e.hasOwnProperty("_promises") && e.type && e._element)
             return e.type + ":" + e._element.id;
         else
             return e;
@@ -210,7 +210,9 @@ export function parseElementCommands(array){
 export function parseCoordinates(x,y){
     // let coordinates = {x:x,y:y,translateX:0,translateY:0};
     const transform = this.css("transform").match(/matrix\(\s*(-?\d+(.\d+)?),[^,]+,[^,]+,\s*(-?\d+(.\d+)?),/);
-    const original_width = this.width(), original_height = this.height();
+    const style = window.getComputedStyle(this[0]);
+    const original_width = Number(style.width.replace(/px$/,'')), 
+          original_height = Number(style.height.replace(/px$/,''));
     let width = original_width, height = original_height;
     if (transform){
         width = Math.abs(width * transform[1]);
@@ -248,18 +250,25 @@ export function parseCoordinates(x,y){
         y = `calc(${y} + ${(height-original_height)/2}px)`;
     return {x: x, y: y};
 }
-function RefreshUntil(x,y,element,until){
-    if (until instanceof Function && until()) return;
+function RefreshUntil(x,y,element,until,oldCss){
+    if (until instanceof Function && until())
+        return this.css(oldCss);
     const coordinates = parseCoordinates.call(this,x,y);
     this.css({position: 'absolute', left: coordinates.x, top: coordinates.y});
-    window.requestAnimationFrame( ()=>RefreshUntil.call(this,x,y,element,until) );
+    window.requestAnimationFrame( ()=>RefreshUntil.call(this,x,y,element,until,oldCss) );
 }
 // Call on a jQuery element
 export function printAndRefreshUntil(x,y,element,until){
     element = element || $("body");
     const parentDOM = this.parent()[0];
+    const oldCss = {
+        display: this.css("display"), 
+        position: this.css("position"),
+        left: this.css("left"),
+        top: this.css("top")
+    };
     if (parentDOM === undefined || parentDOM != element[0]) this.appendTo(element).css('display','inline-block');
-    RefreshUntil.call(this,x,y,element,until);
+    RefreshUntil.call(this,x,y,element,until,oldCss);
 }
 
 // Returns the Levensthein distance between two words
