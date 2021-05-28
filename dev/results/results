@@ -1596,3 +1596,33 @@
 # 13. Comments.
 1622060338,fc8ed7dab60c543c8e779dbb4e3af831,PennController,0,0,unlabeled,NULL,PennController,0,_Header_,End,1622060335746,NULL
 1622060338,fc8ed7dab60c543c8e779dbb4e3af831,PennController,0,0,unlabeled,NULL,Button,finish,Click,Click,1622060337450,NULL
+#
+# Results on Thursday May 27 2021 15:14:48 UTC.
+# USER AGENT: Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:88.0) Gecko/20100101 Firefox/88.0
+# Design number was non-random = 176
+#
+# Columns below this comment are as follows:
+# 1. Time results were received.
+# 2. MD5 hash of participant's IP address.
+# 3. Controller name.
+# 4. Item number.
+# 5. Element number.
+# 6. Type.
+# 7. Group.
+# 8. PennElementType.
+# 9. PennElementName.
+# 10. Parameter.
+# 11. Value.
+# 12. EventTime.
+# 13. Comments.
+1622128489,79e8be147636c67156e3f99aeb3e300d,PennController,0,0,unlabeled,NULL,PennController,0,_Trial_,Start,1622128475522,NULL
+1622128489,79e8be147636c67156e3f99aeb3e300d,PennController,0,0,unlabeled,NULL,PennController,0,_Trial_,End,1622128477517,NULL
+1622128489,79e8be147636c67156e3f99aeb3e300d,PennController,1,0,images1,NULL,PennController,1,_Trial_,Start,1622128477530,NULL
+1622128489,79e8be147636c67156e3f99aeb3e300d,PennController,1,0,images1,NULL,PennController,1,_Trial_,End,1622128479943,NULL
+1622128489,79e8be147636c67156e3f99aeb3e300d,PennController,2,0,images2,NULL,PennController,2,_Trial_,Start,1622128479954,NULL
+1622128489,79e8be147636c67156e3f99aeb3e300d,PennController,2,0,images2,NULL,PennController,2,_Trial_,End,1622128480684,NULL
+1622128489,79e8be147636c67156e3f99aeb3e300d,PennController,3,0,audios,NULL,PennController,3,_Trial_,Start,1622128480697,NULL
+1622128489,79e8be147636c67156e3f99aeb3e300d,PennController,3,0,audios,NULL,Audio,ctl_nwin_f_1_con.mp3,buffer,8.601,1622128483307,NULL
+1622128489,79e8be147636c67156e3f99aeb3e300d,PennController,3,0,audios,NULL,PennController,3,_Trial_,End,1622128485272,NULL
+1622128489,79e8be147636c67156e3f99aeb3e300d,PennController,4,0,selector1,NULL,Button,finish,Click,Click,1622128487338,NULL
+1622128489,79e8be147636c67156e3f99aeb3e300d,PennController,5,0,selector2,NULL,Button,finish,Click,Click,1622128488776,NULL

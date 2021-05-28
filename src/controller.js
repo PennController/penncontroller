@@ -33,7 +33,7 @@ export class Controller {
         if (!this.elements.hasOwnProperty(element.type))
             this.elements[element.type] = {};
         if (this.elements[element.type].hasOwnProperty(element.id))
-            PennEngine.debug.error("Overwrting another "+element.type+" element with the same name ("+element.id+")");
+            PennEngine.debug.warning("Overwrting another "+element.type+" element with the same name ("+element.id+")");
         this.elements[element.type][element.id] = element;
     }
     _getElement(id, type){                  // Returns element from the list
@@ -64,7 +64,7 @@ export class Controller {
         if (value==undefined)
             value = name;
         if (name===undefined){
-            PennEngine.debug.error("Used <tt>newTrial().log</tt> with no arguments");
+            PennEngine.debug.warning("Used <tt>newTrial().log</tt> with no arguments");
             return this;
         }
         this.appendResultLine.push([csv_url_encode(name), value]);
@@ -164,7 +164,7 @@ PennController.AddHost = function(...rest) {       /* $AC$ global.PennController
         if (typeof(rest[a])=="string" && rest[a].match(/^https?:\/\//i))
             PennEngine.URLs.push(rest[a]);
         else
-            PennEngine.debug.error("URL #"+a+" is not a valid URL (PennController.AddHost).", rest[a]);
+            PennEngine.debug.warning("URL #"+a+" is not a valid URL (PennController.AddHost).", rest[a]);
     }
 };
 

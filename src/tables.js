@@ -27,21 +27,21 @@ class Table {
         if (this.table[0].hasOwnProperty(col))
             this.item = col;
         else
-            PennEngine.debug.log("Error when setting table's item column: no column found with the name "+col);
+            PennEngine.debug.warning("Error when setting table's item column: no column found with the name "+col);
         return this;
     }
     setGroup(col) {
         if (this.table[0].hasOwnProperty(col))
             this.group = col;
         else
-            PennEngine.debug.log("Error when setting table's group column: no column found with the name "+col);
+            PennEngine.debug.warning("Error when setting table's group column: no column found with the name "+col);
         return this;
     }
     setLabel(col) {
         if (this.table[0].hasOwnProperty(col))
             this.label = col;
         else
-            PennEngine.debug.log("Error when setting table's label column: no column found with the name "+col);
+            PennEngine.debug.warning("Error when setting table's label column: no column found with the name "+col);
         return this;
     }
     filter(...args) {
@@ -188,7 +188,7 @@ PennController.AddTable = function(name, table) {
     if (typeof(name)!="string"||typeof(table)!="string")
         return PennEngine.debug.error("Table "+name+" not added: tables and table names should be strings");
     if (PennEngine.tables.hasOwnProperty(name))
-        PennEngine.debug.log("A table named "+name+" already exists; overriding it");
+        PennEngine.debug.warning("A table named "+name+" already exists; overriding it");
     if (table.match(/^http/)) {
         ajaxTables.push({name: name, table: table});
         return;
@@ -394,11 +394,12 @@ PennController.Template = function (tableName, func) {       /* $AC$ global.Penn
 
     // Handle inappropriate calls
     return {
-        log: ()=>PennEngine.debug.error("Tried to call .log command on PennController.Template(); .log commands should be called on PennController()"),
-        label: ()=>PennEngine.debug.error("Tried to call .label command on PennController.Template(); .label commands should be called on PennController()"),
-        setOption: ()=>PennEngine.debug.error("Tried to call .setOption command on PennController.Template(); .setOption commands should be called on PennController()"),
-        noHeader: ()=>PennEngine.debug.error("Tried to call .noHeader command on PennController.Template(); .noHeader commands should be called on PennController()"),
-        noFooter: ()=>PennEngine.debug.error("Tried to call .noFooter command on PennController.Template(); .noFooter commands should be called on PennController()")
+        log: ()=>PennEngine.debug.error("Tried to call <tt>.log</tt> command on <tt>Template()</tt>; <tt>.log</tt> commands should be called on <tt>newTrial()</tt>"),
+        label: ()=>PennEngine.debug.error("Tried to call <tt>.label</tt> command on <tt>Template()</tt>; <tt>.label</tt> commands should be called on <tt>newTrial()</tt>"),
+        setOption: ()=>PennEngine.debug.error("Tried to call <tt>.setOption</tt> command on <tt>Template()</tt>; <tt>.setOption</tt> commands should be called on <tt>newTrial()</tt>"),
+        noHeader: ()=>PennEngine.debug.error("Tried to call <tt>.noHeader</tt> command on <tt>Template()</tt>; <tt>.noHeader</tt> commands should be called on <tt>newTrial()</tt>"),
+        noFooter: ()=>PennEngine.debug.error("Tried to call <tt>.noFooter</tt> command on <tt>Template()</tt>; <tt>.noFooter</tt> commands should be called on <tt>newTrial()</tt>"),
+        noTrialLog: ()=>PennEngine.debug.error("Tried to call <tt>.noTrialLog</tt> command on <tt>Template()</tt>; <tt>.noTrialLog</tt> commands should be called on <tt>newTrial()</tt>")
     };
 };
 PennController.FeedItems = (tableName, func) => PennController.Template(tableName, func);

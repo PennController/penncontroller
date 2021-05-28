@@ -9,10 +9,6 @@
     > creating newVar it in Template is executed *AFTER* in newTrial
     > .value in general acts weird ("command 0 unknown")
     > eg. newText().text( getTextInput() ) should work (it doesn't) < should it?
-- Add a 'Warning' tab?
-    > many problems with duplicates (elements sharing the same name)
-    > throw warning when callback comes after wait
-    > throw warnings/errors when no 'stop' command for relevant elements
 
 - Go through command arguments not being executed as commands
     > serious problems with .value and recursion?
@@ -43,6 +39,11 @@
 
 
 Since 2.0
+- Audio reload: https://farm.pcibex.net/r/xZjuCE/
+- Add a 'Warning' tab?
+    > many problems with duplicates (elements sharing the same name)
+    > throw warning when callback comes after wait
+    > throw warnings/errors when no 'stop' command for relevant elements
 - Selector shuffle with before/after elements doesn't work
 - Flickering on Chrome with .scaling("page")
 - Add .nolog or something to trials to skip 'start' and 'end' events

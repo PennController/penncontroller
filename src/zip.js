@@ -94,7 +94,7 @@ function _preloadZip () {
         let url = _URLsToLoad[u];
         let extension = url.match(/^https?:\/\/.+\.(zip)$/i);
         if (typeof(url) != "string" || !extension) {
-            PennEngine.debug.log("Preload: entry #"+u+" is not a valid URL, ignoring it");
+            PennEngine.debug.warning("Preload: entry #"+u+" is not a valid URL, ignoring it");
             continue;
         }
         else if (extension[1].toLowerCase() == "zip")

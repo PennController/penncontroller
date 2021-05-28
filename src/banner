@@ -1,8 +1,8 @@
 PennController for IBEX
 This software is licensed under a BSD license; see the LICENSE file for details.
 
- - Version 2.0.alpha
- - Last Update:  2021, May 26
+ - Version 2.0.beta
+ - Last Update:  2021, May 28
  - Major changes in version 2.0.alpha:
    * Fixed Controller element duplicating lines and not rerunning properly
    * Fixed selector.shuffle and its order logging
@@ -19,6 +19,9 @@ This software is licensed under a BSD license; see the LICENSE file for details.
    * Fixed elusive flickering with scaling
    * Fixed selector.shuffle with elements printed before/after other elements
    * Replaced the EyeTracker test with a smoother one
+   * Resources are now preloading 4 at a time, following the running order (= less aggressive requests)
+   * Fixed audio and video preloading problems
+   * Fixed video.disable semi-opaque layer
    + Added newTrial().noTrialLog("start","end") to skip the tria's Start and/or End lines in the results file
    + Added controller.callback
    + Added textinput.callback

@@ -10,14 +10,30 @@ window.PennController._AddElementType("Audio", function(PennEngine) {
         let addHostURLs = !file.match(/^http/i);
 
         this.resource = PennEngine.resources.fetch(file, function(resolve){
-            this.object = new Audio(this.value);               // Creation of the audio using the resource's value
-            //this.object.addEventListener("canplay", resolve);  // Preloading is over when can play (>> resolve)
-            this.object.preload = "auto";
+            this.object = new Audio();               // Creation of the audio using the resource's value
+            this.object.muted = true;
+            let playing = false, checking = false;
+            const checkLoaded = ()=>{
+                checking = true;
+                if (this.object.buffered.length && this.object.seekable.length){
+                    if (this.object.buffered.end(0) == this.object.seekable.end(0)){
+                        this.object.pause();
+                        this.object.currentTime = 0;
+                        this.object.muted = false;
+                        resolved = true;
+                        return resolve();
+                    }
+                    else if (!playing){
+                        this.object.muted = true;
+                        this.object.play();
+                    }
+                }
+                window.requestAnimationFrame(checkLoaded);
+                return true;
+            };
+            this.object.addEventListener("progress", ()=>checking||checkLoaded());
+            this.object.src = this.value;
             this.object.load();                                // Forcing 'autopreload'
-            if (this.object.readyState > 3) 
-                resolve();
-            else
-                this.object.addEventListener("canplaythrough", resolve);  // Preloading is over when can play (>> resolve)
         }, addHostURLs);
         // Naming
         if (id===undefined||typeof(id)!="string"||id.length==0)
@@ -58,8 +74,8 @@ window.PennController._AddElementType("Audio", function(PennEngine) {
             this.bufferEvents.push(["buffer",this.audio.currentTime,Date.now()]);
         };
         this.printDisable = opacity=>{
-            if (isNaN(opacity)||opacity===null)
-                opacity = 0.5;
+            if (opacity===undefined) opacity = this.disabled;
+            if (opacity===true||isNaN(Number(opacity))) opacity = 0.5;
             if (this.jQueryDisable instanceof jQuery)
                 this.jQueryDisable.remove();
             this.jQueryDisable = $("<div>").css({
@@ -71,7 +87,7 @@ window.PennController._AddElementType("Audio", function(PennEngine) {
                 height: this.jQueryElement.height()
             });
             this.jQueryElement.before(this.jQueryDisable);
-            // this.jQueryElement.removeAttr("controls"); // don't remove controls: woud no longer print the player
+            // this.jQueryElement.removeAttr("controls");
         };
         resolve();
     };

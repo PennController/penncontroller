@@ -4,7 +4,7 @@ import { levensthein } from "./utils";
 $.prototype.left = function(){ return Number(this.css("left").replace(/px/,'')); }
 $.prototype.top = function(){ return Number(this.css("top").replace(/px/,'')); }
 
-const VERSION = "2.0.alpha";
+const VERSION = "2.0.beta";
 
 const WIDTH = 450;
 const HEIGHT = 250;
@@ -121,12 +121,13 @@ class PopIn {
                         'border-bottom': "solid 1px lightgray"
                     });
                     tab.jQuery.css({color: "black", background: "inherit", 'border-bottom': 'none'});
+                    debug.activeTab = tab;
                 }),
                 remove: ()=>this.jQuery.remove()
             };
             this.tabs.push(tab);
             this.tabBar.prepend(tab.jQuery);
-            tab.jQuery.click();
+            // tab.jQuery.click();
             return tab;
         };
         this.container.append($("<div>").css({
@@ -188,7 +189,8 @@ let debug = {
     runningIndex: -1,
     runningElement: -1,
     currentController: null,
-    currentTable: null
+    currentTable: null,
+    activeTab: null
 };
 
 PennEngine.debug = {
@@ -211,11 +213,19 @@ PennEngine.debug = {
         tab.prepend( $("<div>"+
             "["+[now.getHours(),now.getMinutes(),now.getSeconds()].join(":")+"] "+
             messages.join(';')+
-            " (PennController: "+controller.id+")"+
+            " (newTrial: "+controller.id+(controller.useLabel?'-'+controller.useLabel:'')+")"+
             "</div>"
         ).css({'border-bottom': 'dotted 1px gray', 'margin-bottom': '1px', 'padding-bottom': '1px'}) );
     },
     log: (...messages) => PennEngine.debug.addToTab(debug.logTab.log,...messages),
+    warning: (...messages) => {
+        if (!PennEngine.debug.on) return;
+        PennEngine.debug.addToTab(debug.warningsTab.content,...messages);
+        debug.warningsTab.title.css("color","orange");
+        debug.warningsTab.content.find(".PennController-debug-nowarnings").css("display","none");
+        if (debug.popin.titleExpand.html().charCodeAt(0)==9656) debug.popin.titleExpand.click();
+        debug.warningsTab.jQuery.click();
+    },
     error: (...messages) => {
         if (!PennEngine.debug.on) return;
         PennEngine.debug.addToTab(debug.errorsTab.content,...messages);
@@ -239,7 +249,11 @@ debug.logTab.controls = $("<div>")
     .css({background: "lightgray", "border-bottom": "dotted 1px black"})
     .appendTo( debug.logTab.content );
 debug.logTab.log = $("<div>").appendTo( debug.logTab.content );
-debug.errorsTab = debug.popin.newTab("Errors");         // Second tab: errors
+debug.warningsTab = debug.popin.newTab("Warnings");         // Second tab: warning
+debug.warningsTab.content.prepend( $("<div>No warnings</div>").css({
+    'font-style': 'italic', 'text-align': 'center', 'margin': '5px'
+}).addClass("PennController-debug-nowarnings"));
+debug.errorsTab = debug.popin.newTab("Errors");         // Third tab: errors
 debug.errorsTab.content.prepend( $("<div>No errors found</div>").css({
     'font-style': 'italic', 'text-align': 'center', 'margin': '5px'
 }).addClass("PennController-debug-noerrors"));
@@ -454,7 +468,10 @@ let init_debug = () => {
     debug.infoTab = debug.popin.newTab("Info");
 
     refreshSequenceTab();
-    debug.errorsTab.jQuery.click();
+    if (debug.activeTab)
+        debug.activeTab.jQuery.click();
+    else
+        debug.errorsTab.jQuery.click();
 
     // Key to open the debugger
     $(window.document).bind("keyup keydown", function(e){
@@ -540,7 +557,6 @@ PennEngine.Prerun(
 
     }
 );
-
 
 // Catch errors related to new*/get*/default*
 window.onerror = function(message, uri, line) {

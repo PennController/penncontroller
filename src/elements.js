@@ -49,7 +49,7 @@ const evaluateArguments = async function(args){
         //     args[r]._runPromises();
         //     args[r] = args[r]._element.evaluate();
         // }
-        if (args[r] instanceof PennElementCommands && args[r].type == "Var"){
+        if (args[r] instanceof PennElementCommands && args[r].type == "Var" && args[r]._promises.length==0){
             if (args[r]._runPromises instanceof Function) await args[r]._runPromises();
             args[r] = args[r].value;
         }
@@ -141,13 +141,13 @@ let newTest = function(condition){
     test.success = function (...commands) {
         success = lazyPromiseFromArrayOfLazyPromises(commands.map(c=>async()=>{
             const new_c =  await evaluateArguments.call(this,[c]);
-            new_c[0]._runPromises();
+            if (new_c[0] && new_c[0]._runPromises instanceof Function) new_c[0]._runPromises();
         }));
     };
     test.failure = function (...commands) {
         failure = lazyPromiseFromArrayOfLazyPromises(commands.map(c=>async()=>{
             const new_c =  await evaluateArguments.call(this,[c]);
-            new_c[0]._runPromises();
+            if (new_c[0] && new_c[0]._runPromises instanceof Function) new_c[0]._runPromises();
         }));
     };
     // test.failure = (...commands)=>failure = lazyPromiseFromArrayOfLazyPromises(commands.map(c=>()=>c._runPromises()));
@@ -501,7 +501,7 @@ let standardCommands = {
                         ));
             }
             else
-                PennEngine.debug.error("No jQuery instance to print for element "+this.id);
+                PennEngine.debug.warning("No jQuery instance to print for element "+this.id);
             this.printTime = Date.now();
             for (let f = 0; f < this._printCallback.length; f++)
                 if (this._printCallback[f] instanceof Function)
@@ -982,7 +982,7 @@ PennController._AddElementType = function(name, Type) {
         for (let n = 2; controller.elements.hasOwnProperty(name) && controller.elements[name].hasOwnProperty(element.id); n++)
             element.id = oldId + String(n);
         if (oldId != element.id){
-            PennEngine.debug.log("Found an existing "+element.type+" element named &ldquo;"+oldId+"&rdquo;--using name &ldquo;"+element.id+"&rdquo; instead for new element");
+            PennEngine.debug.warning("Found an existing "+element.type+" element named &ldquo;"+oldId+"&rdquo;--using name &ldquo;"+element.id+"&rdquo; instead for new element");
             controller.ambiguousElementNames.push(oldId);
         }
         controller._addElement(element);                        // Adding the element to the controller's dictionary

@@ -50,12 +50,10 @@ window.PennController._AddElementType("Selector", function(PennEngine) {
                         // the other element is part of the shuffle, 
                         // so we'll want to print on the associated post-shuffle element instead
                         r[befOrAft] = this.elements[shuffledIndices[n]][0];
-                        console.log("returning r", r);
                         return r;
                     }
                 }
             }
-            console.log("returning lastPrint",lastPrint);
             return lastPrint;
         });
         indicesToShuffle.forEach(async i=>{
@@ -65,10 +63,7 @@ window.PennController._AddElementType("Selector", function(PennEngine) {
         shuffledIndices.forEach(async (index,i)=>{
             let element = this.elements[index][0], print = prints[i];
             if (print===undefined) return;
-            console.log("current print", print);
-            console.log("current element",element,"type",element.type);
             const handler = window.PennController.Elements['get'+element.type](element.id);
-            console.log("handler", handler);
             if (print.hasOwnProperty("After"))
                 await window.PennController.Elements['get'+print.After.type](print.After.id).after( handler )._runPromises();
             else if (print.hasOwnProperty("Before"))

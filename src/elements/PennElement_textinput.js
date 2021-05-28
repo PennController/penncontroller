@@ -202,7 +202,7 @@ window.PennController._AddElementType("TextInput", function(PennEngine) {
                 what = ["final", "validate", "first"];
             this.log = what;
             if (what.indexOf("all")>-1)
-                PennEngine.debug.log("<div style='color:red;'>"+
+                PennEngine.debug.warning("<div style='color:red;'>"+
                              "Now logging all typing events in inputText element "+this.id+
                              ": this can drastically increase the weight of the results file"+
                              "</div>");
