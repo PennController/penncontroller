@@ -15,7 +15,7 @@ window.PennController._AddElementType("EyeTracker", function(PennEngine) {
     let uploadURL = "";
     let detectedFace = false;
 
-    window.PennController.EyeTrackerURL = url => uploadURL = url; /* $AC$ PennController.EyeTrackerURL(url) Will send eye-tracking data to specified URL $AC$ */
+    window.PennController.EyeTrackerURL = url => uploadURL = url; /* $AC$ global.EyeTrackerURL(url) Will send eye-tracking data to specified URL $AC$ */
 
     // GENERIC FUNCTIONS
     //

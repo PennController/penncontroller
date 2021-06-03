@@ -130,13 +130,13 @@ PennEngine.NewTrialArgumentCallback = f=>newTrialArgumentCallbacks.push(f);
 PennController.newTrial = PennController;
 
 // Whether to print debug information
-PennController.Debug = function (onOff) {   /* $AC$ global.PennController.Debug() Enables the debug mode for testing your experiment $AC$ */
+PennController.Debug = function (onOff) {   /* $AC$ global.Debug() Enables the debug mode for testing your experiment $AC$ */
     PennEngine.debug.on = onOff==undefined||onOff;
 };
-PennController.DebugOff = ()=>PennController.Debug(false);  /* $AC$ global.PennController.DebugOff() Disables the debug mode; use before making public $AC$ */
+PennController.DebugOff = ()=>PennController.Debug(false);  /* $AC$ global.DebugOff() Disables the debug mode; use before making public $AC$ */
 
 // Handler for definition of shuffleSequence
-PennController.Sequence = function(...seq) {   /* $AC$ global.PennController.Sequence(sequence) Defines the running order of your trials, based on their labels (see documentation) $AC$ */
+PennController.Sequence = function(...seq) {   /* $AC$ global.Sequence(sequence) Defines the running order of your trials, based on their labels (see documentation) $AC$ */
     for (let i = 0; i < seq.length; i++)
         if (seq[i]._item && seq[i]._item instanceof Array && seq[i]._item.length>1 && seq[i]._item[1] == "__SendResults__"){
             let label = "sendResults-"+guidGenerator()
@@ -148,7 +148,7 @@ PennController.Sequence = function(...seq) {   /* $AC$ global.PennController.Seq
 
 // A handler for retrieving parameters passed in the URL
 let Parameters = {};                                        // URL will never change, so no need to recreate at each call
-PennController.GetURLParameter = function(parameter){       /* $AC$ global.PennController.GetURLParameter(parameter) Returns the value of the parameter from the URL $AC$ */
+PennController.GetURLParameter = function(parameter){       /* $AC$ global.GetURLParameter(parameter) Returns the value of the parameter from the URL $AC$ */
     if (!Object.keys(Parameters).length){                   // Feed Parameters only once
         let URLParameters = window.location.search.replace("?", "").split("&");
         for (let param in URLParameters)                    // Go through each param in the URL
@@ -159,7 +159,7 @@ PennController.GetURLParameter = function(parameter){       /* $AC$ global.PennC
 }
 
 // This adds a URL where resources will be looked for
-PennController.AddHost = function(...rest) {       /* $AC$ global.PennController.AddHost(url) Will look resources at the specified URL $AC$ */
+PennController.AddHost = function(...rest) {       /* $AC$ global.AddHost(url) Will look resources at the specified URL $AC$ */
     for (let a in rest) {
         if (typeof(rest[a])=="string" && rest[a].match(/^https?:\/\//i))
             PennEngine.URLs.push(rest[a]);
@@ -169,7 +169,7 @@ PennController.AddHost = function(...rest) {       /* $AC$ global.PennController
 };
 
 // Creates an item checking that the resources (used by the items with matching labels, if specified) are preloaded
-PennController.CheckPreloaded = function(...rest) {       /* $AC$ global.PennController.CheckPreloaded() Creates a trial that is validated when the resources are preloaded $AC$ */
+PennController.CheckPreloaded = function(...rest) {       /* $AC$ global.CheckPreloaded() Creates a trial that is validated when the resources are preloaded $AC$ */
     let controller = new Controller();                  // Create a new controller
     controller.id = "Preloader-"+preloaders.length;
     controller.runHeader = false;                       // Don't run header and footer
@@ -274,7 +274,7 @@ window.alert = function(message, ...args){
         return old_alert.call(this, message, ...args);
 }
 
-PennController.SendResults = function(label,url){  /* $AC$ global.PennController.SendResults(label) Creates a trial that sends the results to the server $AC$ */
+PennController.SendResults = function(label,url){  /* SendResults(label) Creates a trial that sends the results to the server $AC$ */
     if (window.items == undefined)
         window.items = [];
     if (window.manualSendResults == undefined || window.manualSendResults != false)
@@ -335,7 +335,7 @@ PennController.SendResults = function(label,url){  /* $AC$ global.PennController
 };
 
 
-PennController.SetCounter = function(...args){       /* $AC$ global.PennController.SetCounter(value) Set Ibex's internal counter to a specified value (see Ibex manual) $AC$ */
+PennController.SetCounter = function(...args){       /* $AC$ global.SetCounter(value) Set Ibex's internal counter to a specified value (see Ibex manual) $AC$ */
     if (window.items == undefined)
         window.items = [];
     let label = "setCounter", options = {};
@@ -375,7 +375,7 @@ PennController.SetCounter = function(...args){       /* $AC$ global.PennControll
 };
 
 
-PennController.Header = function(...rest){       /* $AC$ global.PennController.Header(commands) Will run the commands at the beginning of every PennController trial $AC$ */
+PennController.Header = function(...rest){       /* $AC$ global.Header(commands) Will run the commands at the beginning of every PennController trial $AC$ */
     let controller = PennEngine.controllers.underConstruction;                      // To be returned
     controller.id = "Header";                                                       // Special controller
     controller.addToItems = false;                                                  // Do no add to 'items'
@@ -398,7 +398,7 @@ PennController.Header = function(...rest){       /* $AC$ global.PennController.H
     return headerController;                                                        // Return Header controller
 };
 
-PennController.Footer = function(...rest){       /* $AC$ global.PennController.Footer(commands) Will run the commands at the end of every PennController trial $AC$ */
+PennController.Footer = function(...rest){       /* $AC$ global.Footer(commands) Will run the commands at the end of every PennController trial $AC$ */
     let controller = PennEngine.controllers.underConstruction;                      // To be returned
     controller.id = "Footer";                                                       // Special controller
     controller.addToItems = false;                                                  // Do no add to 'items'

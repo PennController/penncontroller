@@ -55,7 +55,7 @@ window.PennController._AddElementType("MediaRecorder", function(PennEngine) {
     }
 
     // This controller MUST be manually added to items and specify a URL to a PHP file for uploading the archive
-    window.PennController.InitiateRecorder = function(saveURL,warning,consent) {    /* $AC$ global.PennController.InitiateRecorder(url,warning,consent) Sets the URL where to upload the recordings and creates a trial inviting the user to activate their microphone $AC$ */
+    window.PennController.InitiateRecorder = function(saveURL,warning,consent) {    /* $AC$ global.InitiateRecorder(url,warning,consent) Sets the URL where to upload the recordings and creates a trial inviting the user to activate their microphone $AC$ */
         if (window.MediaRecorder===undefined){
             PennEngine.debug.error("This browser does not support audio recording");
             return alert("Your browser does not support audio recording");
@@ -180,7 +180,7 @@ window.PennController._AddElementType("MediaRecorder", function(PennEngine) {
         return controller;
     };
 
-    window.PennController.UploadRecordings = function(label,async) {  /* $AC$ global.PennController.UploadRecordings(label,noblock) Creates a trial that sends the recordings to the server $AC$ */
+    window.PennController.UploadRecordings = function(label,async) {  /* $AC$ global.UploadRecordings(label,noblock) Creates a trial that sends the recordings to the server $AC$ */
         let uploadController = PennEngine.controllers.new();
         PennEngine.tmpItems.push(uploadController);
         const callback = a=>{
@@ -570,7 +570,7 @@ window.PennController._AddElementType("MediaRecorder", function(PennEngine) {
 });
 
 // Handler generating a HTML button to download the zip archive containing the recordings
-window.PennController.DownloadRecordingButton = function (text) {    /* $AC$ global.PennController.DownloadRecordingButton(text) Returns an HTML string representing a button to download an archive of the recordings $AC$ */
+window.PennController.DownloadRecordingButton = function (text) {    /* $AC$ global.DownloadRecordingButton(text) Returns an HTML string representing a button to download an archive of the recordings $AC$ */
     return "<button type=\"button\" onclick=\""+
            "if (PennController.hasOwnProperty('downloadRecordingsArchive'))"+
            "  PennController.downloadRecordingsArchive();"+

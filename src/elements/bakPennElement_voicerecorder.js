@@ -1,6 +1,6 @@
 // // VOICERECORDER element
-// /* $AC$ PennController.newVoiceRecorder(name,file) Creates a new VoiceRecorder element $AC$ */
-// /* $AC$ PennController.getVoiceRecorder(name) Retrieves an existing Video element $AC$ */
+// /* $AC$ newVoiceRecorder(name,file) Creates a new VoiceRecorder element $AC$ */
+// /* $AC$ getVoiceRecorder(name) Retrieves an existing Video element $AC$ */
 // window.PennController._AddElementType("VoiceRecorder", function(PennEngine) {
 
 //     // ====== INTERNAL SETTINGS AND FUNCTIONS ====== //
@@ -48,7 +48,7 @@
 //     // Set mime end
 
 //     // This controller MUST be manually added to items and specify a URL to a PHP file for uploading the archive
-//     window.PennController.InitiateRecorder = function(saveURL,warning,consent) {    /* $AC$ global.PennController.InitiateRecorder(url,warning,consent) Sets the URL where to upload the recordings and creates a trial inviting the user to activate their microphone $AC$ */
+//     window.PennController.InitiateRecorder = function(saveURL,warning,consent) {    /* $AC$ global.InitiateRecorder(url,warning,consent) Sets the URL where to upload the recordings and creates a trial inviting the user to activate their microphone $AC$ */
 //         if (window.MediaRecorder===undefined){
 //             PennEngine.debug.error("This browser does not support audio recording");
 //             return alert("Your browser does not support audio recording");
@@ -141,7 +141,7 @@
 //     };
 
 
-//     window.PennController.UploadVoiceRecordings = function(label,async) {  /* $AC$ global.PennController.UploadVoiceRecordings(label,noblock) Creates a trial that sends the voice recordings to the server $AC$ */
+//     window.PennController.UploadVoiceRecordings = function(label,async) {  /* $AC$ global.UploadVoiceRecordings(label,noblock) Creates a trial that sends the voice recordings to the server $AC$ */
 //         let uploadController = PennEngine.controllers.new();
 //         PennEngine.tmpItems.push(uploadController);
 //         if (typeof label == "string" && label.length)
@@ -547,7 +547,7 @@
 // });
 
 // // Handler generating a HTML button to download the zip archive containing the voice recordings
-// window.PennController.DownloadVoiceButton = function (text) {    /* $AC$ global.PennController.DownloadVoiceButton(text) Returns an HTML string representing a button to download an archive of the recordings $AC$ */
+// window.PennController.DownloadVoiceButton = function (text) {    /* $AC$ global.DownloadVoiceButton(text) Returns an HTML string representing a button to download an archive of the recordings $AC$ */
 //     return "<button type=\"button\" onclick=\""+
 //            "if (PennController.hasOwnProperty('downloadVoiceRecordingsArchive'))"+
 //            "  PennController.downloadVoiceRecordingsArchive();"+

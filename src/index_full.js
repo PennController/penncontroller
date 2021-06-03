@@ -15,6 +15,7 @@ import "./elements/PennElement_audio.js";
 import "./elements/PennElement_button.js";
 import "./elements/PennElement_canvas.js";
 import "./elements/PennElement_controller.js";
+import "./elements/PennElement_dragdrop.js";
 import "./elements/PennElement_dropdown.js";
 import "./elements/PennElement_eyetracker.js";
 import "./elements/PennElement_function.js";

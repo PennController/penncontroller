@@ -22,7 +22,8 @@ module.exports = (env, argv) => {
   if (argv.mode === 'production') {
     config.entry = {
       'Components/PennCore': './src/index_core.js',
-      PennController: './src/index_full.js'
+      PennController: './src/index_full.js',
+      doc: './src/doc.js'
     };
     config.output = {
       filename: '[name].js',
@@ -64,18 +65,32 @@ var ACdir = function(dir){
 }
 ACdir('./src/');
 
+// config.plugins.push(
+//   new webpack.BannerPlugin({
+//     banner: ACstringAll,
+//     include: /.*PennCo.*/
+//   })
+// );
 config.plugins.push(
   new webpack.BannerPlugin({
     banner: ACstringAll,
-    include: /.*PennCo.*/
+    include: /doc/
   })
 );
 
+// for (let el in ACstringElement){
+//   config.plugins.push(
+//     new webpack.BannerPlugin({
+//       banner: ACstringElement[el],
+//       include: [new RegExp(".*"+el+".*"), /.*PennController.*/]
+//     })
+//   );
+// }
 for (let el in ACstringElement){
   config.plugins.push(
     new webpack.BannerPlugin({
       banner: ACstringElement[el],
-      include: [new RegExp(".*"+el+".*"), /.*PennController.*/]
+      include: /doc/
     })
   );
 }
@@ -84,6 +99,6 @@ for (let el in ACstringElement){
 config.plugins.push(
   new webpack.BannerPlugin({
     banner: fs.readFileSync('./src/banner', 'utf8'),
-    exclude: /.*PennElement.*/
+    exclude: [/.*PennElement.*/,/doc/]
   })
 );

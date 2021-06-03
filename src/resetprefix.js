@@ -10,7 +10,7 @@ let newPrefix = (p,o) => {
 };
 
 // This allows the users to call the instruction methods as global functions
-window.PennController.ResetPrefix = function(prefixName) { /* $AC$ global.PennController.ResetPrefix(prefix) Resets the prefix for the new* and get* commands; pass null to make them global $AC$ */
+window.PennController.ResetPrefix = function(prefixName) { /* $AC$ global.ResetPrefix(prefix) Resets the prefix for the new* and get* commands; pass null to make them global $AC$ */
     if (typeof(prefixName)=="string"){
         if (window[prefixName])
             throw "ERROR: prefix string already used for another JS object";

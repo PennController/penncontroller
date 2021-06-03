@@ -219,7 +219,7 @@ let asyncFeedItems = [];                        // All Template functions are ex
 //         ,
 //         p.key("FJ")
 //     )    
-PennController.Template = function (tableName, func) {       /* $AC$ global.PennController.Template(table,penncontroller) Generates trials from a table $AC$ */
+PennController.Template = function (tableName, func) {       /* $AC$ global.Template(table,penncontroller) Generates trials from a table $AC$ */
                                 // FeedItems deprecated since 1.0
     if (window.items)
         for (let i in window.items)
