@@ -127,7 +127,7 @@ PennEngine.NewTrialArgumentCallback = f=>newTrialArgumentCallbacks.push(f);
 
 
 // More explicit method to create a trial
-PennController.newTrial = PennController;
+PennController.newTrial = PennController;   /* $AC$ global.newTrial(label, commands) Creates a new trial $AC$ */
 
 // Whether to print debug information
 PennController.Debug = function (onOff) {   /* $AC$ global.Debug() Enables the debug mode for testing your experiment $AC$ */
@@ -274,7 +274,7 @@ window.alert = function(message, ...args){
         return old_alert.call(this, message, ...args);
 }
 
-PennController.SendResults = function(label,url){  /* SendResults(label) Creates a trial that sends the results to the server $AC$ */
+PennController.SendResults = function(label,url){  /* $AC$ global.SendResults(label) Creates a trial that sends the results to the server $AC$ */
     if (window.items == undefined)
         window.items = [];
     if (window.manualSendResults == undefined || window.manualSendResults != false)

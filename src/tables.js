@@ -44,7 +44,7 @@ class Table {
             PennEngine.debug.warning("Error when setting table's label column: no column found with the name "+col);
         return this;
     }
-    filter(...args) {
+    filter(...args) {     /* $AC$ GetTable().filter(function|[column,value]) Subsets the table to the rows that match the specified criterion $AC$ */
         if (args.length == 2 && typeof(args[0]) == "string" && (typeof(args[1]) == "string" || args[1] instanceof RegExp)){
             if (this.table[0].hasOwnProperty(args[0])){
                 let match = args[1];
@@ -184,7 +184,7 @@ window["$"].ajax = function(...args){
 }
 
 // Adds a table to the dictionary
-PennController.AddTable = function(name, table) {
+PennController.AddTable = function(name, table) {     /* $AC$ global.AddTable(name, table) Manually adds a table to the project $AC$ */
     if (typeof(name)!="string"||typeof(table)!="string")
         return PennEngine.debug.error("Table "+name+" not added: tables and table names should be strings");
     if (PennEngine.tables.hasOwnProperty(name))
@@ -202,7 +202,7 @@ PennController.AddTable = function(name, table) {
 }
 
 // Returns a table from the dictionary
-PennController.GetTable = function(name) {
+PennController.GetTable = function(name) {     /* $AC$ global.GetTable(filename) Refers to a table so you can then filter it $AC$ */
     return new TableHandler(name);
 };
 
