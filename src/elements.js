@@ -141,13 +141,13 @@ let newTest = function(condition){
     test.success = function (...commands) {
         success = lazyPromiseFromArrayOfLazyPromises(commands.map(c=>async()=>{
             const new_c =  await evaluateArguments.call(this,[c]);
-            if (new_c[0] && new_c[0]._runPromises instanceof Function) new_c[0]._runPromises();
+            if (new_c[0] && new_c[0]._runPromises instanceof Function) await new_c[0]._runPromises();
         }));
     };
     test.failure = function (...commands) {
         failure = lazyPromiseFromArrayOfLazyPromises(commands.map(c=>async()=>{
             const new_c =  await evaluateArguments.call(this,[c]);
-            if (new_c[0] && new_c[0]._runPromises instanceof Function) new_c[0]._runPromises();
+            if (new_c[0] && new_c[0]._runPromises instanceof Function) await new_c[0]._runPromises();
         }));
     };
     // test.failure = (...commands)=>failure = lazyPromiseFromArrayOfLazyPromises(commands.map(c=>()=>c._runPromises()));

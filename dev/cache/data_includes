@@ -2,7 +2,14 @@ PennController.ResetPrefix(null) // Shorten command names (keep this line here)
 
 AddHost("https://test.pcibex.net/")
 
-newTrial(newButton("Start").print().wait())
+newTrial(
+    newButton("Start").print().wait()
+    ,
+    newVar("grrr",Math.random())
+        .test.is(v=>v>0.5)
+        .success( newButton("Sup").print().wait() )
+        .failure( newButton("Inf").print().wait() )
+)
 
 CheckPreloaded( startsWith("trial") )
     .label( "preloadTrial" );   
