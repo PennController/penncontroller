@@ -2,7 +2,7 @@ PennController for IBEX
 This software is licensed under a BSD license; see the LICENSE file for details.
 
  - Version 2.0.beta
- - Last Update:  2021, June 3
+ - Last Update:  2021, June 22
  - Major changes in version 2.0.beta:
    * Fixed Controller element duplicating lines and not rerunning properly
    * Fixed selector.shuffle and its order logging
