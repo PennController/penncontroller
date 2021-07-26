@@ -4,11 +4,11 @@ import { levensthein } from "./utils";
 $.prototype.left = function(){ return Number(this.css("left").replace(/px/,'')); }
 $.prototype.top = function(){ return Number(this.css("top").replace(/px/,'')); }
 
-const VERSION = "2.0.beta";
+const VERSION = "2.0";
 
 PennEngine.Prerun( ()=>{
     const xppath = window.location.pathname;
-    if (!PennEngine.debug.on || VERSION.match(/beta/i)===null || window.localStorage.getItem(xppath)) return;
+    if (!PennEngine.debug.on || VERSION.match(/beta/i)===null || (window.localStorage && window.localStorage.getItem(xppath))) return;
     const beta_warning = new PopIn("Beta Version", 400, 200, "calc(50vw - 200px)", "calc(50vh - 100px)");
     beta_warning.container.find("div:nth-child(3)").remove();   // remove 'DebugOff' warning
     beta_warning.content.html(`<p>Please note that this project is using a <strong>beta</strong> version of PennController (${VERSION}).</p>

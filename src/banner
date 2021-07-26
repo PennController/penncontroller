@@ -1,9 +1,9 @@
 PennController for IBEX
 This software is licensed under a BSD license; see the LICENSE file for details.
 
- - Version 2.0.beta
- - Last Update:  2021, June 22
- - Major changes in version 2.0.beta:
+ - Version 2.0
+ - Last Update:  2021, July 26
+ - Major changes in version 2.0:
    * Fixed Controller element duplicating lines and not rerunning properly
    * Fixed selector.shuffle and its order logging
    * Improved handling of trial end for the MediaRecorder element
@@ -27,3 +27,4 @@ This software is licensed under a BSD license; see the LICENSE file for details.
    + Added textinput.callback
    + Added specialcommand jump to navigate the sequence
    + Added element DragDrop
+   + Added support of flac audios in zip files

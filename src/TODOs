@@ -1,3 +1,7 @@
+- Elements keep absolute position when printing them without arguments after printing them with coordinates
+- Scaled elements do not occupy the flow normally (they occupy their original size)
+- Elements in after/before do not get printed if those are called after print
+
 - "Reach trial" won't work because of a log command that fails with this mousetracking experiment:
     https://farm.pcibex.net/experiments/cOTofa/edit
 - Revise Selector's frame to use printAndRefresh? 

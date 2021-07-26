@@ -123,6 +123,8 @@ export function getMimetype (signature, filename) {
         return 'audio/aiff';
     if (signature.match(/^(fff[b3a2]|494433)/i))    //  b = mpeg-1 audio, 3 = mpeg-2, a = 1protected, 2 = 2protected
         return 'audio/mpeg';
+    if (signature.match(/^664C6143/i))
+        return 'audio/flac';
     if (signature.match(/^4F67675300/i))
         return 'application/ogg';
     if (signature.match(/^4D546864......06/i))
@@ -155,6 +157,8 @@ export function getMimetype (signature, filename) {
                     return 'image/jpeg';
                 case 'mp3':
                     return 'audio/mpeg';
+                case 'flac':
+                    return 'audio/flac';
                 case 'ogg':
                 case 'oga':
                     return 'audio/ogg';
