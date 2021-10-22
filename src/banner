@@ -1,30 +1,8 @@
 PennController for IBEX
 This software is licensed under a BSD license; see the LICENSE file for details.
 
- - Version 2.0
- - Last Update:  2021, July 26
- - Major changes in version 2.0:
-   * Fixed Controller element duplicating lines and not rerunning properly
-   * Fixed selector.shuffle and its order logging
-   * Improved handling of trial end for the MediaRecorder element
-   * Improved audio/video recording upload
-   * Fixed print/canvas.add coordinates format bug (introduced in 1.9)
-   * Can now pass opacity of 0 to audio.disable and video.disable
-   * Fixed all-digit strings passed to Key element
-   * Fixed MediaRecorder stop / end of trials
-   * Fixed problems with some special commands (eg. fullscreen) not being properly executed as callback
-   * Fixed: Controller elements no longer appear multiple times when printed onto a Canvas element
-   * Fixed: calling print() after print(x,y[, canvas]) no longer preserves old positioning
-   * Fixed: referencing PennController element in scale.label before printing it
-   * Fixed elusive flickering with scaling
-   * Fixed selector.shuffle with elements printed before/after other elements
-   * Replaced the EyeTracker test with a smoother one
-   * Resources are now preloading 4 at a time, following the running order (= less aggressive requests)
-   * Fixed audio and video preloading problems
-   * Fixed video.disable semi-opaque layer
-   + Added newTrial().noTrialLog("start","end") to skip the tria's Start and/or End lines in the results file
-   + Added controller.callback
-   + Added textinput.callback
-   + Added specialcommand jump to navigate the sequence
-   + Added element DragDrop
-   + Added support of flac audios in zip files
+ - Version 2.1.beta
+ - Last Update:  2021, October 22
+ - Major changes in version 2.1.beta:
+   * Improved resource creation and zip downloads
+   * Improved preloading of audio and video elements

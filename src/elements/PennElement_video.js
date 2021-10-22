@@ -3,36 +3,67 @@
 /* $AC$ PennController.getVideo(name) Retrieves an existing Video element $AC$ */
 window.PennController._AddElementType("Video", function(PennEngine) {
 
+    const RATIO_PRELOADED = 0.95;
+
     this.immediate = function(id, file){
         if (typeof id == "string" && file===undefined)
             file = id;
         let addHostURLs = !file.match(/^http/i);
-        this.resource = PennEngine.resources.fetch(file, function(resolve){
-            this.object = document.createElement("video");
-            this.object.muted = true;
-            let playing = false, checking = false;
+        // this.resource = new PennEngine.resources.Resource(file, function(uri, resolve){
+        this.resource = PennEngine.resources.new(file, function(uri, resolve){
+            const object = document.createElement("video");
+            object.muted = true;
+            let loading = false;
             const checkLoaded = ()=>{
-                checking = true;
-                if (this.object.buffered.length && this.object.seekable.length){
-                    if (this.object.buffered.end(0) == this.object.seekable.end(0)){
-                        this.object.pause();
-                        this.object.currentTime = 0;
-                        this.object.muted = false;
-                        resolved = true;
-                        return resolve();
-                    }
-                    else if (!playing){
-                        this.object.muted = true;
-                        this.object.play();
+                if (!loading){
+                    console.log("Starting to preload "+file, object);
+                    object.muted = true;
+                    object.play();
+                }
+                loading = true;
+                if (object.buffered.length && object.seekable.length){
+                    const ratio = object.buffered.end(0) / object.seekable.end(0);
+                    if (object.currentTime == object.duration || ratio >= RATIO_PRELOADED){
+                        object.pause();
+                        object.currentTime = 0;
+                        object.muted = false;
+                        loading = false;
+                        return resolve(object);
                     }
                 }
                 window.requestAnimationFrame(checkLoaded);
                 return true;
             };
-            this.object.addEventListener("progress", ()=>checking||checkLoaded());
-            this.object.src = this.value;
-            this.object.load();                                // Forcing 'autopreload'
+            object.addEventListener("progress", ()=>loading||checkLoaded());
+            object.src = uri;
+            object.load();                                // Forcing 'autopreload'
         }, addHostURLs);
+        // this.resource = PennEngine.resources.fetch(file, function(resolve){
+        //     this.object = document.createElement("video");
+        //     this.object.muted = true;
+        //     let playing = false, checking = false;
+        //     const checkLoaded = ()=>{
+        //         checking = true;
+        //         if (this.object.buffered.length && this.object.seekable.length){
+        //             if (this.object.buffered.end(0) == this.object.seekable.end(0)){
+        //                 this.object.pause();
+        //                 this.object.currentTime = 0;
+        //                 this.object.muted = false;
+        //                 resolved = true;
+        //                 return resolve();
+        //             }
+        //             else if (!playing){
+        //                 this.object.muted = true;
+        //                 this.object.play();
+        //             }
+        //         }
+        //         window.requestAnimationFrame(checkLoaded);
+        //         return true;
+        //     };
+        //     this.object.addEventListener("progress", ()=>checking||checkLoaded());
+        //     this.object.src = this.value;
+        //     this.object.load();                                // Forcing 'autopreload'
+        // }, addHostURLs);
         if (id===undefined||typeof(id)!="string"||id.length==0)
             id = "Video";
         this.id = id;

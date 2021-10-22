@@ -8,11 +8,16 @@ window.PennController._AddElementType("Image", function(PennEngine) {
             file = id;
         this.id = id;
         let addHostURLs = !file.match(/^http/i);
-        this.resource = PennEngine.resources.fetch(file, function(resolve){
-            this.object = new Image();          // Creation of the image element
-            this.object.onload = resolve;       // Preloading is over when image is loaded
-            this.object.src = this.value;       // Now point to the image
+        this.resource = PennEngine.resources.new(file, function(uri, resolve){
+            const object = new Image();          // Creation of the image element
+            object.onload = ()=>resolve(object);       // Preloading is over when image is loaded
+            object.src = uri;       // Now point to the image
         }, addHostURLs);
+        // this.resource = PennEngine.resources.fetch(file, function(resolve){
+        //     this.object = new Image();          // Creation of the image element
+        //     this.object.onload = resolve;       // Preloading is over when image is loaded
+        //     this.object.src = this.value;       // Now point to the image
+        // }, addHostURLs);
     };
 
     this.uponCreation = function(resolve){

@@ -32,7 +32,7 @@ window.PennController._AddElementType("Youtube", function(PennEngine) {
             showControls = 1;
         else
             showControls = 0;
-        this.resource = PennEngine.resources.fetch(code, function(resolve){
+        this.resource = PennEngine.resources.new(code, function(uri, resolve){
             let playerID = code+"-"+PennEngine.resources.list.length;// Unique ID (if copies of resource, e.g. duplicates on same page)
             this.ended = function(){};                  // Called when YT resource playback ends
             this.playing = function(){};                // Called when YT resource playback starts playing
@@ -65,7 +65,7 @@ window.PennController._AddElementType("Youtube", function(PennEngine) {
                                         event.target.pauseVideo();
                                         event.target.seekTo(0);
                                         loading = false;
-                                        resolve();      // Now it's loaded and ready to play
+                                        resolve(iframe);      // Now it's loaded and ready to play
                                     }
                                     else                // Do no log loading event
                                         this.playing(event);
@@ -82,8 +82,59 @@ window.PennController._AddElementType("Youtube", function(PennEngine) {
                 else
                     createPlayer();                     // If it is ready, create the player already
             });
-            this.object = iframe;
         }, false);                                      // Do not try to add host urls
+        // this.resource = PennEngine.resources.fetch(code, function(resolve){
+        //     let playerID = code+"-"+PennEngine.resources.list.length;// Unique ID (if copies of resource, e.g. duplicates on same page)
+        //     this.ended = function(){};                  // Called when YT resource playback ends
+        //     this.playing = function(){};                // Called when YT resource playback starts playing
+        //     this.paused = function(){};                 // Called when YT resource is paused
+        //     this.buffering = function(){};              // Called when YT resource is buffering
+        //     let iframeLoaded = false;                   // IFRAME not loaded at first
+        //     let iframe = $("<iframe>");                 // Create iframe element (TODO: check preloaded files, no need to recreate each time)
+        //     iframe.attr({
+        //         src: "https://www.youtube-nocookie.com/embed/"+code+"?enablejsapi=1&controls="+showControls,
+        //         id: playerID,
+        //         frameborder: 0
+        //     }).bind("load", ()=>iframeLoaded = true)    // Signal loading
+        //         .css({display: "none", position: "absolute"});
+        //     $(document).ready(()=>$(document.body).append(iframe)); // Add frame to body (invisible)
+        //     youtubeVideos.push( ()=>{                   // Create a player when the YT API is ready
+        //         let loading = true;
+        //         let createPlayer = () =>
+        //             this.player = new YT.Player(playerID, { playerVars: { 'controls': showControls },
+        //                 events: {
+        //                     onReady: e=>{               // Cue and start playing video when ready
+        //                         iframe = 
+        //                         e.target.cueVideoById(code);
+        //                         e.target.playVideo();
+        //                     },
+        //                     onStateChange: event=>{ 
+        //                         if (event.data == YT.PlayerState.ENDED && !loading)
+        //                             this.ended(event);
+        //                         else if (event.data == YT.PlayerState.PLAYING) {
+        //                             if (loading){       // Stop video as soon as it starts playing
+        //                                 event.target.pauseVideo();
+        //                                 event.target.seekTo(0);
+        //                                 loading = false;
+        //                                 resolve();      // Now it's loaded and ready to play
+        //                             }
+        //                             else                // Do no log loading event
+        //                                 this.playing(event);
+        //                         }
+        //                         else if (event.data == YT.PlayerState.PAUSED && !loading)
+        //                             this.paused(event);
+        //                         else if (event.data == YT.PlayerState.BUFFERING && !loading)
+        //                             this.buffering(event);
+        //                         //else if (event.data == YT.PlayerState.CUED)
+        //                     }
+        //                 }});
+        //         if (!iframeLoaded)                      // If the iframe is not ready yet, wait before creating the player
+        //             iframe.bind("load", createPlayer);
+        //         else
+        //             createPlayer();                     // If it is ready, create the player already
+        //     });
+        //     this.object = iframe;
+        // }, false);                                      // Do not try to add host urls
         this.id = id;
     };
 

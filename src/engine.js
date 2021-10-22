@@ -5,50 +5,114 @@ let functionsDictionary = {
     keypress: []
 };
 
+const resources = {};
+
 // Resources can be created from PennEngine.resources.fetch or when uploading ZIP files (see zip.js)
 class Resource {
-    constructor(name, creation, useURLs){
+    constructor(name, creator, useURLs=true){
+        if (resources[name]===undefined) resources[name] = [];
+        resources[name].push(this);
+        const controller = PennEngine.controllers.underConstruction;
+        controller.resources.push(this);      // Link resource to controller
+        PennEngine.resources.list.push(this);
+        // if (resources[name]===undefined) resources[name] = [];
+        // resources[name].push(this);
         this.name = name;           // Identifies the resource when fetching
         this.value = name;          // Meant to be used in 'create'
-        this.creator = creation;    // Function called in 'create'
-        this.controllers = [];      // List of controllers using this resource
-        this.object = null;         // Meant to be defined in 'create'
+        this.uris = [name];         // List of URIs from which to generate the resource
+        this.creator = creator;     // Function called in 'create'
+        this.object = null;         // Meant to be defined in 'resolve'
         this.status = "void";       // Can be 'void' (not created), 'pending' (still prelaoding) or 'ready' (resolved)
-        this.useURLs = useURLs===undefined||useURLs;
+        this.useURLs = useURLs;
         this.created_at = 0;
+        this.controller = controller;
+        this.resolveCallback = [];
+    }
+    addURI(uri){
+        if (this.uris.indexOf(uri)>=0) return;
+        this.uris.push(uri);
+        if (this.status=="pending")
+            this.creator.call(this, uri, object=>this.resolve(object));
+    }
+    callCreatorOnAllURIs(){
+        this.uris.forEach(uri=>{
+            this.creator.call(this, uri, object=>this.resolve(object));
+        });
     }
     create() {
-        this.status = "pending";
+        if (this.status!="void") return;
         this.created_at = Date.now();
-        this.creator.call(this, ()=>this.resolve());
+        if (this.useURLs)
+            PennEngine.URLs.forEach(url=>{
+                if (!url.endsWith('/')) url += '/';
+                this.addURI(url+this.name)
+            });
+        this.status = "pending";
+        this.callCreatorOnAllURIs();
+        // Homonyms share the same name and *are not in the same trial*
+        // const homonyms = resources[this.name].filter(
+        //     r=> r!=this && r.controller!=this.controller && r.controller.id!="Header" && r.controller.id!="Footer"
+        // );
+        // If no other resource with this name, just call creator already
+        // if (homonyms.length===0)
+        //     this.callCreatorOnAllURIs();
+        // else{
+        //     const homonymsByStatus = {void:[],pending:[],ready:[]};
+        //     homonyms.forEach(r=>homonymsByStatus[r.status].push(r));
+        //     if (homonymsByStatus.ready.length>0){
+        //         // If there is a homonym that's ready, resolve this and all pending resources
+        //         const object = homonymsByStatus.ready[0].object;
+        //         homonymsByStatus.void.forEach(r=>r.resolve(object));
+        //         homonymsByStatus.pending.forEach(r=>r.resolve(object));
+        //         this.resolve(object);
+        //     }
+        //     else if (homonymsByStatus.pending.length>0)
+        //         // If there are pending homonyms, resolve this resource with the first resolving homonym
+        //         homonymsByStatus.pending.forEach(r=>r.resolveCallback.push( object => this.resolve(object) ));
+        //     else{
+        //         // If all homonyms are void, bypass their creation and call creator on this resource
+        //         homonymsByStatus.void.forEach( r=> {
+        //             r.status = 'pending';
+        //             r.created_at = Date.now();
+        //             this.resolveCallback.push( object => r.resolve(object) );
+        //         });
+        //         this.callCreatorOnAllURIs();
+        //     }
+        // }   
     }
-    resolve() {
+    resolve(object) {
+        if (this.status==='ready') return;
+        this.object = object;
         this.status = "ready";
         PennEngine.debug.log("<div style='color: purple;'>Successfully preloaded resource "+this.name+"</div>");
+        this.resolveCallback.forEach(cb => cb instanceof Function && cb.call(this, object) );
     }
 }
 
 // Basically an API for designers
 export var PennEngine = {
     resources: {
-        list: [],                                   // List of resources (audios, images, videos, ...)
-        fetch: function(name, creation, useURLs){   // Fetches an existing resource, or creates it using 'creation'
-            var resource = PennEngine.resources.list.filter(    // Looking for resources with the same filename
-                r => r.name==name && r.controllers.indexOf(PennEngine.controllers.underConstruction.id)<0
-            );
-            if (resource.length)                // If found (at least) one, use it
-                resource = resource[0];
-            else                                // Else, create one
-                resource = new Resource(name, creation, useURLs);
-            resource.controllers.push(PennEngine.controllers.underConstruction.id); // Link controller to resource
-            PennEngine.controllers.underConstruction.resources.push(resource);      // Link resource to controller
-            if (resource.status!="void")        // Return the resource if already created
-                return resource;
-            else                                // If resource not created yet, (re)set the creation method to this one
-                resource.creator = creation;
-            PennEngine.resources.list.push(resource);   // Add the resource to the list
-            return resource;                            // Return the resource itself
-        }
+        new: (name, creator, useURLs=true)=>{
+            let resource;
+            if (resources[name]===undefined)
+                resource = new Resource(name, creator, useURLs);
+            else{
+                resource = resources[name][0];
+                const controller = PennEngine.controllers.underConstruction;
+                const header = PennEngine.controllers.header;
+                const footer = PennEngine.controllers.footer;
+                const need_new_resource = (
+                    controller.resources.filter(r=>r.name==name).length>0 ||
+                    (header&&controller.runHeader!==false&&header.resources.filter(r=>r.name==name).length>0) ||
+                    (footer&&controller.runFooter!==false&&footer.resources.filter(r=>r.name==name).length>0)
+                );
+                if (need_new_resource || (!resource instanceof Resource))
+                    resource = new Resource(name,creator,useURLs);
+                    
+            }
+            return resource;
+        },
+        list: []                                   // List of resources (audios, images, videos, ...)
     }
     ,
     controllers: {
@@ -142,14 +206,18 @@ PennEngine.Prerun( async ()=> {
     };
     await new Promise(checkRunningOrder);   // Wait until runningOrder is defined
     let remaining_resources = [];
-    PennEngine.runningOrder.active.forEach(item =>item.forEach(element=>{
-        if (element.controller == "PennController")
-            remaining_resources = [...remaining_resources, ...element.options.resources];
-    }));
+    for (let i = 0; i < PennEngine.runningOrder.active.length; i++){
+        const item = PennEngine.runningOrder.active[i];
+        for (let n = 0; n < item.length; n++){
+            const element = item[n];
+            if (element.controller == "PennController")
+                remaining_resources = [...remaining_resources, ...element.options.resources];
+        }
+    }
     let loading_resources = [];
     const loadResources = ()=>{
         loading_resources = loading_resources.filter(r=>
-            r.status!="ready" || (r.created_at && Date.now()-r.created_at > TIMEOUT)
+            r.status!="ready" && (r.created_at===0 || Date.now()-r.created_at > TIMEOUT)
         );
         if (remaining_resources.length>0 && loading_resources.length<PARALLEL_RESOURCES){
             let resource = remaining_resources.shift();
@@ -161,19 +229,6 @@ PennEngine.Prerun( async ()=> {
         loading_resources.forEach(resource=>{
             if (!(resource instanceof Resource) || resource.status!="void") return;
             resource.create();                      // Resource is void: try to create it
-            if (resource.useURLs)                   // Also try adding candidate URLs (if not explicitly prevented)
-                for (let url in PennEngine.URLs) 
-                    resource.create.apply(
-                        $.extend({}, resource, {    // We use a copy of the original resource for each candidate URL
-                            value: PennEngine.URLs[url] + resource.name,
-                            resolve: function(){    // If the copy gets resolved, it sets the original resource's object
-                                if (resource.status!="ready"){
-                                    resource.object = this.object;
-                                    resource.resolve();
-                                }
-                            }
-                        })
-                    );
         });
         window.requestAnimationFrame(loadResources);
     }

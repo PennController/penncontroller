@@ -4,7 +4,7 @@ import { levensthein } from "./utils";
 $.prototype.left = function(){ return Number(this.css("left").replace(/px/,'')); }
 $.prototype.top = function(){ return Number(this.css("top").replace(/px/,'')); }
 
-const VERSION = "2.0";
+const VERSION = "2.1.beta";
 
 PennEngine.Prerun( ()=>{
     const xppath = window.location.pathname;

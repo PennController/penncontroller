@@ -394,6 +394,7 @@ PennController.Header = function(...rest){       /* $AC$ global.Header(commands)
     }
     else
         headerController = controller;
+    PennEngine.controllers.header = headerController;
     PennEngine.controllers.underConstruction = new Controller();                    // Create a new controller for next build
     return headerController;                                                        // Return Header controller
 };
@@ -414,6 +415,7 @@ PennController.Footer = function(...rest){       /* $AC$ global.Footer(commands)
     }
     else
         footerController = controller;
+    PennEngine.controllers.footer = footerController;
     PennEngine.controllers.underConstruction = new Controller();                    // Create a new controller for next build
     return footerController;                                                        // Return controller
 };
@@ -557,17 +559,15 @@ define_ibex_controller({
                     width:'100vw'
                 });
                 trialStarted = true;
-                if (failedToPreload){                   // Some resources failed to load
-                    for (let r in _t.controller.resources.filter(r=>r.status!="ready"))
-                        _t.save(
-                            "PennController",
-                            _t.id,
-                            "_PreloadFailed_",          // Save the name of the resources that failed to load
-                            csv_url_encode(_t.controller.resources[r].name),
-                            Date.now(),
-                            "NULL"
-                        );
-                }
+                if (failedToPreload)                   // Some resources failed to load
+                    _t.controller.resources.forEach(r=> r.status!="ready" && (_t.save(
+                        "PennController",
+                        _t.id,
+                        "_PreloadFailed_",          // Save the name of the resources that failed to load
+                        csv_url_encode(r.name),
+                        Date.now(),
+                        "NULL"
+                    ) || PennEngine.debug.warning("Failed to preload a resource named '"+r.name+"'")) );
                 preloadElement.remove();                // Remove preload message
                 if (!(_t.controller.skipLog instanceof Array) || (_t.controller.skipLog.length>0 && _t.controller.skipLog.filter(v=>v.match(/start/i)).length==0))
                     _t.save("PennController", _t.id, "_Trial_", "Start", Date.now(), "NULL");
@@ -586,20 +586,16 @@ define_ibex_controller({
             let preloadElement = $("<div><p>Please wait while the resources are preloading</p>"+
                                     "<p>This may take up to "+minsecStringFromMilliseconds(preloadDelay)+".</p></div>");
             _t.element.append(preloadElement);          // Add the preload message to the screen
-            for (let r in _t.controller.resources){     // Go through the list of resources used in this trial
-                let resource = _t.controller.resources[r], originalResolve = resource.resolve;
-                if (resource.status!="ready")
-                    resource.resolve = function(){      // Redefine each non-ready resource's resolve
-                        originalResolve.apply(resource);
-                        if (_t.controller.resources.filter(r=>r.status!="ready").length==0)
-                            startTrial();               // Start trial if no non-ready resource left
-                    };
+            let preloadStartTime;
+            const checkAllResourcesPreloaded = timestamp=>{
+                if (preloadStartTime===undefined) preloadStartTime = timestamp;
+                const timedout = (timestamp-preloadStartTime) >= preloadDelay;
+                if (timedout || _t.controller.resources.filter(r=>r.status!="ready").length==0)
+                    startTrial(timedout);
+                else
+                    window.requestAnimationFrame(checkAllResourcesPreloaded);
             }
-            if (_t.controller.resources.filter(r=>r.status!="ready").length==0)
-                startTrial();                           // Start trial if no non-ready resource
-            else                                        // Start trial after a delay if resources failed to load
-                setTimeout(function(){startTrial(true);}, preloadDelay);
-
+            window.requestAnimationFrame(checkAllResourcesPreloaded);
         }
     },
 

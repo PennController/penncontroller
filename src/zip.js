@@ -1,6 +1,7 @@
 //import * as JSZip from 'jszip';
-var JSZip = require("jszip");
-import { getBinaryContent } from 'jszip-utils';
+// var JSZip = require("jszip");
+const zip = require("@zip.js/zip.js");
+// import { getBinaryContent } from 'jszip-utils';
 import { hexFromArrayBuffer, getMimetype } from './utils.js';
 import { PennController } from "./controller.js";
 import { PennEngine } from "./engine.js";
@@ -8,8 +9,8 @@ import { saveAs } from 'file-saver';
 
 let _URLsToLoad = [];
 
-PennEngine.utils.JSZip = JSZip;                                 // Pass JSZip to PennEngin.utils to make it accessible
-PennEngine.utils.JSZip.getBinaryContent = getBinaryContent;     // from element type development (see, e.g., voicerecorder)
+// PennEngine.utils.JSZip = JSZip;                                 // Pass JSZip to PennEngin.utils to make it accessible
+// PennEngine.utils.JSZip.getBinaryContent = getBinaryContent;     // from element type development (see, e.g., voicerecorder)
 PennEngine.utils.saveAs = saveAs;                               // saveAs is also useful to provide a way to download archive
 
 // Loads the file at each URL passed as an argument
@@ -19,75 +20,141 @@ PennController.PreloadZip = function () {   /* $AC$ global.PreloadZip() Silently
         _URLsToLoad.push(arguments[url]);
 };
 
+
+async function processBlob (blob,filename) {
+    const matching_resources = PennEngine.resources.list.filter(r=>r && r.name==filename);
+    if (matching_resources.length<1) return;
+    console.log("Processing",filename);
+    const content = await blob.arrayBuffer();
+    let type = getMimetype( hexFromArrayBuffer(content.slice(0,28)) , filename ); // Get type using magic numbers (see utils.js)
+    if (type===undefined)
+        return console.log("Could not determine type for file", filename);
+    const url = URL.createObjectURL(blob);                          // The URL of the Blob
+    matching_resources.forEach( r => r.addURI(url) );
+    // let resourceFound = false;                                    // Check extent resources
+    // for (let r in PennEngine.resources.list){
+    //     const resource = PennEngine.resources.list[r];
+    //     if (resource && resource.name==filename){
+    //         // console.log("Applying create to a copy of",filename);
+    //         resource.addURI(url);
+            // resource.create.apply(                              // Create the resource's object
+            //     $.extend({}, resource, {                        // using a copy of the resource found
+            //         value: url,                                 // with its value set to the Blob's URL
+            //         object: null,                               // No object yet
+            //         resolve: function() {                       // and its resolve taking care of object
+            //             console.log("Resolving",filename,"current status",resource.status);
+            //             if (resource.status=="ready")
+            //                 return;                             // Assign copy's object to original's
+            //             resource.object = this.object;
+            //             console.log("Set",filename," object to",resource.object,"calling resolve now");
+            //             resource.resolve();
+            //         }
+            //     })
+            // );
+            // resourceFound = true;
+        // }
+    // }
+    // if (!resourceFound)                     // If no resource was found:
+        // PennEngine.resources.list.push({    // add a new one to the list
+        //     name: filename,
+        //     value: url,                     // Use the Blob's URL
+        //     controllers: [],
+        //     object: null,
+        //     status: "void",
+        //     create: function(){ this.status="pending"; },
+        //     resolve: function(){ this.status="ready"; }
+        // });
+}
+
 // Internal loading of the zip files
 // Will be executed when jQuery is ready
 function _preloadZip () {
     if (!_URLsToLoad.length) return;        // If no zip file to download, that's it, we're done
-    var getZipFile = function(url){         // Called for each URL that was passed
+    const getZipFile = async function(url){         // Called for each URL that was passed
         function removeURL() {              // Called to remove a URL from the array (when unzipped done, or error)
             let index = _URLsToLoad.indexOf(url);
             if (index >= 0)
                 _URLsToLoad.splice(index,1);
         }
-        var zip = new JSZip();
-        getBinaryContent(url, function(error, data) {
-            if (error) {
-                removeURL();    // Problem with downloading the file: remove the URL from the array
-                PennEngine.debug.error("Error downloading "+url+":", error);
-                throw error;    // Throw the error
+        try {
+            const response = await fetch(url);
+            PennEngine.debug.log("Download of "+url+" complete");
+            const zipBlob = await response.blob();
+            const zipReader = new zip.ZipReader(new zip.BlobReader(zipBlob));
+            const entries = await zipReader.getEntries();
+            for (let i = 0; i < entries.length; i++) {
+                const entry = entries[i];
+                if (entry.directory) continue;
+                const filename = entry.filename.split('/').pop();
+                if (filename.startsWith(".")) continue; // hidden file
+                const entryBlob = await entry.getData(new zip.BlobWriter());
+                await processBlob(entryBlob,filename);
             }
-            zip.loadAsync(data).then(function(){                // Load the zip object with the data stream
-                PennEngine.debug.log("Download of "+url+" complete");
-                var unzippedFilesSoFar = 0;                     // Number of files unzipped
-                zip.forEach(function(path, file){               // Going through each zip file
-                    file.async('arraybuffer').then(function(content){   // Unzip the file
-                        if (!path.match(/__MACOS.+\/\.[^\/]+$/)) {                            // Excluding weird MACOS zip files
-                            let filename = path.replace(/^.*?([^\/]+)$/,"$1");                // Get rid of path, keep just filename
-                            let type = getMimetype( hexFromArrayBuffer(content.slice(0,28)) , filename ); // Get type using magic numbers (see utils.js)
-                            if (type){                                                        // Add only type was recognized
-                                let url = URL.createObjectURL(new Blob([content], {type: type}));   // The URL of the Blob
-                                console.log("Found a resource named",filename,"of type",type,"with url",url);
-                                var resourceFound = false;                                    // Check extent resources
-                                for (let r in PennEngine.resources.list){
-                                    let resource = PennEngine.resources.list[r];
-                                    if (resource.name==filename && resource.status!="ready"){
-                                        console.log("Applying create to a copye of",filename);
-                                        resource.create.apply(                              // Create the resource's object
-                                            $.extend({}, resource, {                        // using a copy of the resource found
-                                                value: url,                                 // with its value set to the Blob's URL
-                                                object: null,                               // No object yet
-                                                resolve: function() {                       // and its resolve taking care of object
-                                                    console.log("Resolving",filename,"current status",resource.status);
-                                                    if (resource.status=="ready")
-                                                        return;                             // Assign copy's object to original's
-                                                    resource.object = this.object;
-                                                    console.log("Set",filename," object to",resource.object,"calling resolve now");
-                                                    resource.resolve();
-                                                }
-                                            })
-                                        );
-                                        resourceFound = true;
-                                    }
-                                }
-                                if (!resourceFound)                     // If no resource was found:
-                                    PennEngine.resources.list.push({    // add a new one to the list
-                                        name: filename,
-                                        value: url,                     // Use the Blob's URL
-                                        controllers: [],
-                                        object: null,
-                                        status: "void",
-                                        create: function(){ this.status="pending"; },
-                                        resolve: function(){ this.status="ready"; }
-                                    });
-                            }
-                        }
-                        unzippedFilesSoFar++;                           // Keep track of progression
-                        if (unzippedFilesSoFar >= Object.keys(zip.files).length)    // All files unzipped:
-                            removeURL();                                            // remove the URL from the array
-                    });
-                });
-            });
-        });
+            await zipReader.close();
+        } catch (error) {
+            PennEngine.debug.error("Error downloading "+url+":", error);
+            throw error;    // Throw the error
+        }
+        removeURL();                              // remove the URL from the array
+        // var zip = new JSZip();
+        // getBinaryContent(url, function(error, data) {
+        //     if (error) {
+        //         removeURL();    // Problem with downloading the file: remove the URL from the array
+        //         PennEngine.debug.error("Error downloading "+url+":", error);
+        //         throw error;    // Throw the error
+        //     }
+        //     zip.loadAsync(data).then(function(){                // Load the zip object with the data stream
+        //         PennEngine.debug.log("Download of "+url+" complete");
+        //         var unzippedFilesSoFar = 0;                     // Number of files unzipped
+        //         zip.forEach(function(path, file){               // Going through each zip file
+        //             file.async('arraybuffer').then(function(content){   // Unzip the file
+        //                 if (!path.match(/__MACOS.+\/\.[^\/]+$/)) {                            // Excluding weird MACOS zip files
+        //                     let filename = path.replace(/^.*?([^\/]+)$/,"$1");                // Get rid of path, keep just filename
+        //                     let type = getMimetype( hexFromArrayBuffer(content.slice(0,28)) , filename ); // Get type using magic numbers (see utils.js)
+        //                     if (type){                                                        // Add only type was recognized
+        //                         let url = URL.createObjectURL(new Blob([content], {type: type}));   // The URL of the Blob
+        //                         console.log("Found a resource named",filename,"of type",type,"with url",url);
+        //                         var resourceFound = false;                                    // Check extent resources
+        //                         for (let r in PennEngine.resources.list){
+        //                             let resource = PennEngine.resources.list[r];
+        //                             if (resource.name==filename && resource.status!="ready"){
+        //                                 console.log("Applying create to a copye of",filename);
+        //                                 resource.create.apply(                              // Create the resource's object
+        //                                     $.extend({}, resource, {                        // using a copy of the resource found
+        //                                         value: url,                                 // with its value set to the Blob's URL
+        //                                         object: null,                               // No object yet
+        //                                         resolve: function() {                       // and its resolve taking care of object
+        //                                             console.log("Resolving",filename,"current status",resource.status);
+        //                                             if (resource.status=="ready")
+        //                                                 return;                             // Assign copy's object to original's
+        //                                             resource.object = this.object;
+        //                                             console.log("Set",filename," object to",resource.object,"calling resolve now");
+        //                                             resource.resolve();
+        //                                         }
+        //                                     })
+        //                                 );
+        //                                 resourceFound = true;
+        //                             }
+        //                         }
+        //                         if (!resourceFound)                     // If no resource was found:
+        //                             PennEngine.resources.list.push({    // add a new one to the list
+        //                                 name: filename,
+        //                                 value: url,                     // Use the Blob's URL
+        //                                 controllers: [],
+        //                                 object: null,
+        //                                 status: "void",
+        //                                 create: function(){ this.status="pending"; },
+        //                                 resolve: function(){ this.status="ready"; }
+        //                             });
+        //                     }
+        //                 }
+        //                 unzippedFilesSoFar++;                           // Keep track of progression
+        //                 if (unzippedFilesSoFar >= Object.keys(zip.files).length)    // All files unzipped:
+        //                     removeURL();                                            // remove the URL from the array
+        //             });
+        //         });
+        //     });
+        // });
     };
     
     for (let u in _URLsToLoad) {    // Fetch the zip file

@@ -1,3 +1,5 @@
+- PRIORITY: investigate resource preloading (esp. with zip files)!!
+- Resize the Video element's disable overlay when the video is resized (even after print)
 - Elements keep absolute position when printing them without arguments after printing them with coordinates
 - Scaled elements do not occupy the flow normally (they occupy their original size)
 - Elements in after/before do not get printed if those are called after print
