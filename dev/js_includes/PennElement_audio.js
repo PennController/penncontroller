@@ -3,6 +3,8 @@
 /* $AC$ PennController.getAudio(name) Retrieves an existing Audio element $AC$ */
 window.PennController._AddElementType("Audio", function(PennEngine) {
 
+    const RATIO_PRELOADED = 0.95;
+
     // This is executed when Ibex runs the script in data_includes (not a promise, no need to resolve)
     this.immediate = function(id, file){
         if (typeof id == "string" && file===undefined)

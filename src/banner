@@ -2,7 +2,7 @@ PennController for IBEX
 This software is licensed under a BSD license; see the LICENSE file for details.
 
  - Version 2.1.beta
- - Last Update:  2021, October 22
+ - Last Update:  2021, November 2
  - Major changes in version 2.1.beta:
    * Improved resource creation and zip downloads
    * Improved preloading of audio and video elements
