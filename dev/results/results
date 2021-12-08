@@ -1626,3 +1626,135 @@
 1622128489,79e8be147636c67156e3f99aeb3e300d,PennController,3,0,audios,NULL,PennController,3,_Trial_,End,1622128485272,NULL
 1622128489,79e8be147636c67156e3f99aeb3e300d,PennController,4,0,selector1,NULL,Button,finish,Click,Click,1622128487338,NULL
 1622128489,79e8be147636c67156e3f99aeb3e300d,PennController,5,0,selector2,NULL,Button,finish,Click,Click,1622128488776,NULL
+#
+# Results on Sunday December 05 2021 16:27:38 UTC.
+# USER AGENT: Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:94.0) Gecko/20100101 Firefox/94.0
+# Design number was non-random = 177
+#
+# Columns below this comment are as follows:
+# 1. Time results were received.
+# 2. MD5 hash of participant's IP address.
+# 3. Controller name.
+# 4. Item number.
+# 5. Element number.
+# 6. Type.
+# 7. Group.
+# 8. PennElementType.
+# 9. PennElementName.
+# 10. Parameter.
+# 11. Value.
+# 12. EventTime.
+# 13. Comments.
+1638721659,b6c19dcf464c44fdd86014ab9c932f4f,PennController,0,0,dashed,NULL,PennController,0,_Trial_,Start,1638721652733,NULL
+1638721659,b6c19dcf464c44fdd86014ab9c932f4f,PennController,0,0,dashed,NULL,PennController,0,_Trial_,End,1638721658636,NULL
+#
+# Results on Sunday December 05 2021 16:28:03 UTC.
+# USER AGENT: Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:94.0) Gecko/20100101 Firefox/94.0
+# Design number was non-random = 178
+#
+# The lines below this comment are in groups of 2.
+# The formats of the lines in each of these groups are as follows:
+#
+# Line 1:
+#     Col. 1: Time results were received.
+#     Col. 2: MD5 hash of participant's IP address.
+#     Col. 3: Controller name.
+#     Col. 4: Item number.
+#     Col. 5: Element number.
+#     Col. 6: Type.
+#     Col. 7: Group.
+#     Col. 8: PennElementType.
+#     Col. 9: PennElementName.
+#     Col. 10: Parameter.
+#     Col. 11: Value.
+#     Col. 12: EventTime.
+#     Col. 13: Comments.
+# Line 2:
+#     Col. 1: Time results were received.
+#     Col. 2: MD5 hash of participant's IP address.
+#     Col. 3: Controller name.
+#     Col. 4: Item number.
+#     Col. 5: Element number.
+#     Col. 6: Type.
+#     Col. 7: Group.
+#     Col. 8: PennElementType.
+#     Col. 9: PennElementName.
+#     Col. 10: Parameter.
+#     Col. 11: Value.
+#     Col. 12: EventTime.
+#     Col. 13: Reading time.
+#     Col. 14: Newline?
+#     Col. 15: Sentence (or sentence MD5).
+#     Col. 16: Comments.
+1638721684,b6c19dcf464c44fdd86014ab9c932f4f,PennController,0,0,dashed,NULL,PennController,0,_Trial_,Start,1638721681056,NULL
+1638721684,b6c19dcf464c44fdd86014ab9c932f4f,PennController,0,0,dashed,NULL,Controller-DashedSentence,DashedSentence,1 2 3 4 5 6 7 8 9 10,Hello my very dear friend%2C how are we doing today?,1638721683745,177 154 167 166 166 171 185 185 176 323,0 0 0 0 0 0 0 0 0 0,Hello my very dear friend%2C how are we doing today?,Any addtional parameters were appended as additional columns
+# Columns below this comment are as follows:
+# 1. Time results were received.
+# 2. MD5 hash of participant's IP address.
+# 3. Controller name.
+# 4. Item number.
+# 5. Element number.
+# 6. Type.
+# 7. Group.
+# 8. PennElementType.
+# 9. PennElementName.
+# 10. Parameter.
+# 11. Value.
+# 12. EventTime.
+# 13. Comments.
+1638721684,b6c19dcf464c44fdd86014ab9c932f4f,PennController,0,0,dashed,NULL,PennController,0,_Trial_,End,1638721683749,NULL
+#
+# Results on Sunday December 05 2021 16:29:15 UTC.
+# USER AGENT: Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:94.0) Gecko/20100101 Firefox/94.0
+# Design number was non-random = 179
+#
+# The lines below this comment are in groups of 2.
+# The formats of the lines in each of these groups are as follows:
+#
+# Line 1:
+#     Col. 1: Time results were received.
+#     Col. 2: MD5 hash of participant's IP address.
+#     Col. 3: Controller name.
+#     Col. 4: Item number.
+#     Col. 5: Element number.
+#     Col. 6: Type.
+#     Col. 7: Group.
+#     Col. 8: PennElementType.
+#     Col. 9: PennElementName.
+#     Col. 10: Parameter.
+#     Col. 11: Value.
+#     Col. 12: EventTime.
+#     Col. 13: Comments.
+# Line 2:
+#     Col. 1: Time results were received.
+#     Col. 2: MD5 hash of participant's IP address.
+#     Col. 3: Controller name.
+#     Col. 4: Item number.
+#     Col. 5: Element number.
+#     Col. 6: Type.
+#     Col. 7: Group.
+#     Col. 8: PennElementType.
+#     Col. 9: PennElementName.
+#     Col. 10: Parameter.
+#     Col. 11: Value.
+#     Col. 12: EventTime.
+#     Col. 13: Newline?
+#     Col. 14: Sentence (or sentence MD5).
+#     Col. 15: Comments.
+1638721755,b6c19dcf464c44fdd86014ab9c932f4f,PennController,0,0,dashed,NULL,PennController,0,_Trial_,Start,1638721752662,NULL
+1638721755,b6c19dcf464c44fdd86014ab9c932f4f,PennController,0,0,dashed,NULL,Controller-DashedSentence,DashedSentence,Hello my very dear friend%2C how are we doing today?,186 170 181 170 154 162 174 181 195 299,1638721755263,0 0 0 0 0 0 0 0 0 0,Hello my very dear friend%2C how are we doing today?,Any addtional parameters were appended as additional columns
+# Columns below this comment are as follows:
+# 1. Time results were received.
+# 2. MD5 hash of participant's IP address.
+# 3. Controller name.
+# 4. Item number.
+# 5. Element number.
+# 6. Type.
+# 7. Group.
+# 8. PennElementType.
+# 9. PennElementName.
+# 10. Parameter.
+# 11. Value.
+# 12. EventTime.
+# 13. Comments.
+1638721755,b6c19dcf464c44fdd86014ab9c932f4f,PennController,0,0,dashed,NULL,PennController,0,_Trial_,End,1638721755272,NULL

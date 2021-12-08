@@ -297,18 +297,35 @@ jqueryWidget: {
 	            nonSpaceWords.push(this.words[i]);
         }
 
+        var word_numbers = [];
+        var words = [];
+        var reading_times= [];
+        var newlines = [];
         for (var i = 0; i < nonSpaceWords.length; ++i) {
-            this.resultsLines.push([
-                ["Word number", i+1],
-                ["Word", csv_url_encode(nonSpaceWords[i])],
-                ["Reading time", this.sprResults[i][0] - this.sprResults[i][1]],
-                ["Newline?", (this.display != "in place") &&
-                             boolToInt(((i+1) < this.wordOSpans.length) &&
-                            (this.wordOSpans[i].offset().top != this.wordOSpans[i+1].offset().top))],
-                            //  this.newlines[i] ],
-                ["Sentence (or sentence MD5)", this.sentenceDesc]
-            ]);
+            word_numbers.push(i+1);
+            words.push(csv_url_encode(nonSpaceWords[i].replace(/\s+/g,'_')));
+            reading_times.push(this.sprResults[i][0] - this.sprResults[i][1])
+            newlines.push((this.display != "in place") &&
+                          boolToInt(((i+1) < this.wordOSpans.length) &&
+                          (this.wordOSpans[i].offset().top != this.wordOSpans[i+1].offset().top)));
+            // this.resultsLines.push([
+            //     ["Word number", i+1],
+            //     ["Word", csv_url_encode(nonSpaceWords[i])],
+            //     ["Reading time", this.sprResults[i][0] - this.sprResults[i][1]],
+            //     ["Newline?", (this.display != "in place") &&
+            //                  boolToInt(((i+1) < this.wordOSpans.length) &&
+            //                 (this.wordOSpans[i].offset().top != this.wordOSpans[i+1].offset().top))],
+            //                 //  this.newlines[i] ],
+            //     ["Sentence (or sentence MD5)", this.sentenceDesc]
+            // ]);
         }
+        this.resultsLines.push([
+            // ["Word number", word_numbers.join(" ")],
+            ["Word", words.join(" ")],
+            ["Reading time", reading_times.join(" ")],
+            ["Newline?", newlines.join(" ")],
+            ["Sentence (or sentence MD5)", this.sentenceDesc]
+        ])
     }
 },
 

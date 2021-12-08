@@ -199,25 +199,38 @@ window.PennController._AddElementType("MediaRecorder", function(PennEngine) {
             let controller = PennEngine.controllers.running;    // In SEQUENCE, controller is running instance
             controller.element.append($("<p>Please wait while the archive of your recordings is being uploaded to the server...</p>"));
             if (!async) await checkRequests();  // If not an async upload, wait for all requests to finish before proceeding
-            const zip = new PennEngine.utils.JSZip(); // Create the object representing the zip file
+            // const zip = new PennEngine.utils.JSZip(); // Create the object representing the zip file
+            const blobWriter = new PennEngine.utils.zip.BlobWriter("application/zip");
+            const writer = new PennEngine.utils.zip.ZipWriter(blobWriter);
             const uploadingStreams = [];
-            streams.forEach(s=>{
-                if (s.uploadStatus==="uploaded") return;
-                zip.file(s.name, s.data);
-                s.uploadStatus = "uploading";
-                uploadingStreams.push(s);
-            });
-            if (uploadingStreams.length===0) return resolve();
+            for (let i = 0; i < streams.length; i++){
+                const s = streams[i];
+                if (s.uploadStatus!="uploaded") {
+                    // zip.file(s.name, s.data);
+                    await writer.add(s.name, new PennEngine.utils.zip.BlobReader(s.data));
+                    s.uploadStatus = "uploading";
+                    uploadingStreams.push(s);
+                }
+            }
+            if (uploadingStreams.length===0) return resolve( writer.close() ); // close writer
+            
+            // close the ZipReader
+            await writer.close();
+            // get the zip file as a Blob
+            const blob = await blobWriter.getData();
+
             // Create and push the request now, without any further delay
             const request = {};
             pendingRequests.push(request);
-            zip.generateAsync({
-                compression: 'DEFLATE',
-                type: 'blob'
-            }).then(function(zc) {                  // Generation/Compression of zip is complete
-                window.PennController.downloadRecordingsArchive = ()=>PennEngine.utils.saveAs(zc, "RecordingsArchive.zip");
+            // zip.generateAsync({
+            //     compression: 'DEFLATE',
+            //     type: 'blob'
+            // }).then(function(zc) {                  // Generation/Compression of zip is complete
+                // window.PennController.downloadRecordingsArchive = ()=>PennEngine.utils.saveAs(zc, "RecordingsArchive.zip");
+                window.PennController.downloadRecordingsArchive = ()=>PennEngine.utils.saveAs(blob, "RecordingsArchive.zip");
                 let fileName = PennEngine.utils.guidGenerator()+'.zip';
-                var fileObj = new File([zc], fileName); // Create file object to upload with uniquename
+                // var fileObj = new File([zc], fileName); // Create file object to upload with uniquename
+                var fileObj = new File([blob], fileName); // Create file object to upload with uniquename
                 if (uploadURL.match(/^aws:/i))
                     PennEngine.debug.error("The 'aws:' prefix in InitiateRecorder is no longer supported");
                 else {
@@ -249,14 +262,15 @@ window.PennController._AddElementType("MediaRecorder", function(PennEngine) {
                                 .append($("<p>There was an error uploading the recordings: "+e+"</p>"))
                                 .append($("<p>Please click here to download a copy of your recordings "+
                                         "in case you need to send them manually.</p>").bind('click', ()=>{
-                                                PennEngine.utils.saveAs(zc, "RecordingsArchive.zip");
+                                                // PennEngine.utils.saveAs(zc, "RecordingsArchive.zip");
+                                                PennEngine.utils.saveAs(blob, "RecordingsArchive.zip");
                                                 if (!async)
                                                     resolve();
                                         }).addClass("Message-continue-link"));
                             pendingRequests = pendingRequests.filter(v=>v!=request);
                         });
                     }
-            });
+            // });
             if (async)
                 resolve();
         });

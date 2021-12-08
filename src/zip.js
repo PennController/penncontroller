@@ -9,6 +9,7 @@ import { saveAs } from 'file-saver';
 
 let _URLsToLoad = [];
 
+PennEngine.utils.zip = zip;
 // PennEngine.utils.JSZip = JSZip;                                 // Pass JSZip to PennEngin.utils to make it accessible
 // PennEngine.utils.JSZip.getBinaryContent = getBinaryContent;     // from element type development (see, e.g., voicerecorder)
 PennEngine.utils.saveAs = saveAs;                               // saveAs is also useful to provide a way to download archive

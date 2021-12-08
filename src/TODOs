@@ -1,4 +1,6 @@
-- PRIORITY: investigate resource preloading (esp. with zip files)!!
+- chain of references in values of Var elements is unstable
+- make sure key.test.pressed and selector.test.selected are updated before .callback and .wait are evaluated
+- self.testNot commands are broken!
 - Resize the Video element's disable overlay when the video is resized (even after print)
 - Elements keep absolute position when printing them without arguments after printing them with coordinates
 - Scaled elements do not occupy the flow normally (they occupy their original size)
@@ -42,6 +44,9 @@
 
 
 - canvas.add should not reprint the canvas (messes with order)      < FIXED?
+
+Since 2.1
+- DONE: PRIORITY: investigate resource preloading (esp. with zip files)!!
 
 
 Since 2.0

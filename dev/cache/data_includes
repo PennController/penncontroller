@@ -1,5 +1,14 @@
 PennController.ResetPrefix(null) // Shorten command names (keep this line here)
 
+Sequence("dashed")
+
+newTrial( "dashed",
+    newController("DashedSentence", {s: "Hello my very dear friend, how are we doing today?"})
+        .print()
+        .log()
+        .wait()
+)
+
 AddHost("https://test.pcibex.net/")
 
 newTrial(
